@@ -1,5 +1,4 @@
 .design-categories-trigger {
-  position: absolute;
   width: 350px;
   height: 50px;
   display: flex;
@@ -15,9 +14,30 @@
   font-size: 1rem;
   color: var(--black);
   cursor: pointer;
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 998;
   box-shadow: 0 4px 16px rgba(18, 53, 36, 0.08);
+}
+
+/* Hero position - aligned with logo */
+.design-categories-trigger.position-hero {
+  position: absolute;
+  top: 104px;
+  left: 40px;
+}
+
+/* Viewport position - fixed to bottom left */
+.design-categories-trigger.position-viewport {
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+}
+
+/* Footer position - absolute within footer */
+.design-categories-trigger.position-footer {
+  position: absolute;
+  bottom: auto;
+  left: 40px;
 }
 
 .design-categories-trigger:hover {
@@ -72,6 +92,10 @@
   animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.categories-panel.from-footer {
+  animation: slideUpFromBottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 @keyframes slideUp {
   from {
     transform: translateY(40px);
@@ -81,6 +105,26 @@
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+@keyframes slideUpFromBottom {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.panel-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 2rem;
+  color: var(--black);
+  margin-bottom: var(--space-8);
+  text-transform: uppercase;
 }
 
 .close-btn {
@@ -96,6 +140,7 @@
   align-items: center;
   justify-content: center;
   transition: color 0.3s ease;
+  z-index: 10;
 }
 
 .close-btn:hover {
@@ -106,7 +151,6 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: var(--space-4);
-  margin-top: var(--space-8);
 }
 
 .category-chip {
@@ -147,6 +191,25 @@
     width: 280px;
     height: 44px;
     font-size: 0.875rem;
+  }
+
+  .design-categories-trigger.position-hero,
+  .design-categories-trigger.position-viewport,
+  .design-categories-trigger.position-footer {
+    left: 20px;
+  }
+
+  .design-categories-trigger.position-hero {
+    top: 84px;
+  }
+
+  .design-categories-trigger.position-viewport {
+    bottom: 20px;
+  }
+
+  .panel-title {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-6);
   }
 
   .categories-grid {
