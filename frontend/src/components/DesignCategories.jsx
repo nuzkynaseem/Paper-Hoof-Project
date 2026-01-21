@@ -3,7 +3,7 @@ import { X, ChevronUp } from 'lucide-react';
 import { designCategories, projects } from '../mock';
 import './DesignCategories.css';
 
-const DesignCategories = ({ scrollPosition, isHomePage = false }) => {
+const DesignCategories = ({ scrollPosition, isHomePage = false, isDocked = false }) => {
   const [position, setPosition] = useState('hero');
   const [isExpanded, setIsExpanded] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState(null);
@@ -164,6 +164,11 @@ const DesignCategories = ({ scrollPosition, isHomePage = false }) => {
     return null;
   }
 
+  // On homepage, when docked, don't render - footer shows it
+  if (isDocked) {
+    return null;
+  }
+
   // Calculate the top position for floating state
   const getTopPosition = () => {
     if (position === 'hero') {
@@ -179,7 +184,7 @@ const DesignCategories = ({ scrollPosition, isHomePage = false }) => {
     <div 
       className={`design-categories-trigger position-${position} ${isMobile ? 'mobile' : ''}`}
       style={{
-        top: position === 'floating' ? '40px' : 'auto',
+        top: position === 'floating' ? '40px' : (position === 'hero' ? (isMobile ? '20px' : '40px') : 'auto'),
         position: position === 'floating' ? 'fixed' : 'absolute'
       }}
       onClick={handleClick}
