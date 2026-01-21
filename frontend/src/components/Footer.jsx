@@ -9,65 +9,93 @@ const Footer = () => {
 
   return (
     <footer className="footer">
-      <div className="footer-content">
-        <div className="footer-left">
-          <div className="footer-logo">
-            <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
-              <rect x="30" y="45" width="60" height="45" fill="currentColor" />
-              <path d="M45 30 L60 15 L75 30" stroke="currentColor" strokeWidth="6" />
-              <circle cx="60" cy="67.5" r="7.5" fill="var(--bg-cream)" />
-            </svg>
-          </div>
-          <h2 className="footer-brand">Branfern</h2>
-          <nav className="footer-nav">
-            <a href="/" className="footer-link">HOME</a>
-            <a href="/brand-review" className="footer-link">BRAND REVIEW</a>
-            <a href="/about" className="footer-link">ABOUT</a>
-            <a href="/work" className="footer-link">WORK</a>
-            <a href="/contact" className="footer-link">CONTACT</a>
-          </nav>
-          
-          {/* Spacer for "We Design Everything" rectangle */}
-          <div className="design-trigger-spacer"></div>
-        </div>
-
-        <div className="footer-right">
-          <div className="footer-section">
-            <h3 className="footer-heading">Get in Touch</h3>
-            <div className="footer-social">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon">
-                <Instagram size={20} />
-              </a>
-              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="social-icon">
-                <Music size={20} />
-              </a>
-              <a href="https://whatsapp.com" target="_blank" rel="noopener noreferrer" className="social-icon">
-                <MessageCircle size={20} />
-              </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-icon">
-                <Linkedin size={20} />
-              </a>
+      {/* Main Footer Block */}
+      <div className="footer-main">
+        <div className="footer-container">
+          {/* Left Column - Oversized Brand Mark */}
+          <div className="footer-col footer-col-left">
+            <div className="footer-brand-mark">
+              <svg viewBox="0 0 400 400" fill="none" className="brand-mark-svg">
+                <rect x="80" y="140" width="240" height="180" fill="currentColor" />
+                <path d="M140 100 L200 40 L260 100" stroke="currentColor" strokeWidth="24" />
+                <circle cx="200" cy="230" r="30" fill="var(--bg-cream)" />
+              </svg>
             </div>
           </div>
 
-          <div className="footer-section">
-            <h3 className="footer-heading">Contact Us</h3>
-            <a href="mailto:branfern@gmail.com" className="footer-contact">
-              branfern@gmail.com
-            </a>
+          {/* Vertical Divider 1 */}
+          <div className="footer-divider-vertical"></div>
+
+          {/* Middle Column - Branfern Wordmark */}
+          <div className="footer-col footer-col-middle">
+            <h2 className="footer-wordmark">Branfern</h2>
           </div>
 
-          <div className="footer-section">
-            <h3 className="footer-heading">Location</h3>
-            <p className="footer-location">Mawanella, Sri Lanka</p>
+          {/* Vertical Divider 2 */}
+          <div className="footer-divider-vertical"></div>
+
+          {/* Right Column - Contact Info */}
+          <div className="footer-col footer-col-right">
+            <div className="footer-contact-section">
+              <h3 className="footer-contact-heading">Get in Touch</h3>
+              <div className="footer-social-icons">
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon">
+                  <Instagram size={20} />
+                </a>
+                <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon">
+                  <Music size={20} />
+                </a>
+                <a href="https://whatsapp.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon">
+                  <MessageCircle size={20} />
+                </a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon">
+                  <Linkedin size={20} />
+                </a>
+              </div>
+            </div>
+
+            <div className="footer-contact-section">
+              <h3 className="footer-contact-heading">Contact Us</h3>
+              <a href="mailto:branfern@gmail.com" className="footer-contact-link">
+                branfern@gmail.com
+              </a>
+            </div>
+
+            <div className="footer-contact-section">
+              <h3 className="footer-contact-heading">Location</h3>
+              <p className="footer-contact-text">Mawanella, Sri Lanka</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <button className="scroll-top" onClick={scrollToTop}>
-        <ArrowUp size={24} />
-        <span>Scroll Up</span>
-      </button>
+      {/* Horizontal Divider */}
+      <div className="footer-divider-horizontal"></div>
+
+      {/* Bottom Navigation Strip */}
+      <div className="footer-bottom">
+        <div className="footer-bottom-container">
+          {/* Zone A - Docking Area */}
+          <div className="footer-dock-zone">
+            <div className="footer-dock-placeholder"></div>
+          </div>
+
+          {/* Zone B - Navigation Links */}
+          <nav className="footer-nav">
+            <a href="/" className="footer-nav-link">HOME</a>
+            <a href="/brand-review" className="footer-nav-link">BRAND REVIEW</a>
+            <a href="/about" className="footer-nav-link">ABOUT</a>
+            <a href="/work" className="footer-nav-link">WORK</a>
+            <a href="/contact" className="footer-nav-link">CONTACT</a>
+          </nav>
+
+          {/* Zone C - Scroll to Top */}
+          <button className="footer-scroll-top" onClick={scrollToTop}>
+            <ArrowUp size={20} />
+            <span>Scroll Up</span>
+          </button>
+        </div>
+      </div>
     </footer>
   );
 };
