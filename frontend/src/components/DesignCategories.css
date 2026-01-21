@@ -35,7 +35,7 @@
 /* Floating position - sticks to viewport while scrolling, below navbar */
 .design-categories-trigger.position-floating {
   position: fixed;
-  top: 100px;
+  top: calc(80px + 8px);
   left: 40px;
   z-index: 999;
 }
@@ -43,7 +43,7 @@
 .design-categories-trigger.position-floating.mobile {
   left: 50%;
   transform: translateX(-50%);
-  top: 84px;
+  top: calc(64px + 4px);
 }
 
 /* Docked position - in footer docking station */
