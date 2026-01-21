@@ -1,3 +1,6 @@
+/* Import DesignCategories styles for expansion panel */
+@import './DesignCategories.css';
+
 .footer {
   background: var(--primary-green);
   color: var(--bg-cream);
