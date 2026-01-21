@@ -50,8 +50,18 @@ function HomePage() {
 function AppContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isBrandReviewOpen, setIsBrandReviewOpen] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollPosition(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -89,7 +99,7 @@ function AppContent() {
         <Route path="/work/:projectId" element={<ProjectCaseStudy />} />
       </Routes>
       
-      <Footer showDockedRectangle={!isHomePage || scrollPosition > 1500} />
+      <Footer showDockedRectangle={!isHomePage || (isHomePage && scrollPosition > 1500)} />
       
       <HamburgerMenu 
         isOpen={isMenuOpen} 
