@@ -1,15 +1,27 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { projects } from '../mock';
 import './RecentProjects.css';
 
 const RecentProjects = () => {
+  const navigate = useNavigate();
+
+  const handleProjectClick = (projectName) => {
+    const projectId = projectName.toLowerCase().replace(/ /g, '-');
+    navigate(`/work/${projectId}`);
+  };
+
   return (
     <section id="recent-projects" className="recent-projects-section">
       <div className="container">
         <h2 className="section-title">RECENT PROJECTS</h2>
         <div className="projects-grid">
           {projects.map((project) =>
-          <div key={project.id} className="project-card">
+          <div 
+            key={project.id} 
+            className="project-card"
+            onClick={() => handleProjectClick(project.name)}
+          >
               <div className="project-image-wrapper">
                 <img
                 src={project.image}
