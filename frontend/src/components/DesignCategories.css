@@ -78,7 +78,7 @@
   right: 0;
   bottom: 0;
   background: rgba(18, 18, 18, 0.4);
-  z-index: 9999;
+  z-index: 10000;
   animation: fadeIn 0.3s ease;
 }
 
