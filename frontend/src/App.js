@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import BrandReviewForm from "./components/BrandReviewForm";
 import BrandReview from "./pages/BrandReview";
 import ContactUs from "./pages/ContactUs";
+import AboutUs from "./pages/AboutUs";
 
 function HomePage() {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -70,6 +71,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/brand-review" element={<BrandReview />} />
           <Route path="/contact" element={<ContactUs />} />
+          <Route path="/about" element={<AboutUs />} />
         </Routes>
         
         <Footer />
