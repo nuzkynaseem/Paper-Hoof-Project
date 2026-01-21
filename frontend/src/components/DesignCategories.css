@@ -278,9 +278,14 @@
 
   .categories-panel-expanded-new {
     width: calc(100vw - 40px);
-    height: 500px;
+    height: 80vh;
     left: 20px;
     right: 20px;
+    bottom: 20px;
+    padding: var(--space-6);
+  }
+
+  .categories-panel-expanded-new.from-footer {
     bottom: 20px;
   }
 
@@ -291,10 +296,27 @@
 
   .expanded-left {
     flex: 0 0 auto;
+    max-height: 40%;
+  }
+
+  .expanded-header {
+    font-size: 0.9rem;
+    padding: var(--space-1) 0;
   }
 
   .categories-list-vertical {
-    max-height: 150px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .category-item-vertical {
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.8rem;
+  }
+
+  .expanded-right {
+    flex: 1;
+    min-height: 250px;
   }
 
   .expanded-content {
