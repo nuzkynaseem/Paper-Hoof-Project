@@ -57,77 +57,131 @@ const DesignCategories = ({ scrollPosition, isHomePage = false }) => {
     return matchingProject || projects[0];
   };
 
-  // On non-home pages or when docked, always show in footer position
-  const showInFooter = !isHomePage || position === 'footer';
-
+  // Expanded state with layout based on where it was expanded from
   if (isExpanded) {
+    const isExpandedFromTop = expandedFrom === 'hero' || expandedFrom === 'floating';
+    
     return (
       <div className="design-categories-overlay" onClick={handleClose}>
         <div 
-          className={`categories-panel-expanded-new ${showInFooter ? 'from-footer' : ''}`}
+          className={`categories-panel-new ${isExpandedFromTop ? 'expanded-from-top' : 'expanded-from-bottom'}`}
           onClick={(e) => e.stopPropagation()}
         >
-          <button className="close-btn-expanded" onClick={handleClose}>
+          <button className="close-btn-new" onClick={handleClose}>
             <X size={20} />
           </button>
           
-          <div className="expanded-layout">
-            <div className="expanded-left">
-              <div className="expanded-header">
+          {isExpandedFromTop ? (
+            // Layout when expanded from hero/floating: Title at top
+            <>
+              <div className="expanded-title">
                 <span>We Design</span>
                 <span className="bullet">•</span>
                 <span>Everything</span>
               </div>
               
-              <div className="categories-list-vertical">
+              <div className="categories-grid">
                 {designCategories.map((category, index) => (
                   <button 
                     key={index} 
-                    className={`category-item-vertical ${hoveredCategory === category ? 'active' : ''}`}
+                    className={`category-btn ${hoveredCategory === category ? 'active' : ''}`}
                     onMouseEnter={() => setHoveredCategory(category)}
                     onMouseLeave={() => setHoveredCategory(null)}
                   >
-                    <span className="category-number">{String(index + 1).padStart(2, '0')}</span>
-                    <span className="category-name">{category}</span>
+                    {category} +
                   </button>
                 ))}
               </div>
-            </div>
-            
-            <div className="expanded-right">
-              {hoveredCategory ? (
-                <div className="showreel-preview-large">
-                  <img 
-                    src={getProjectForCategory(hoveredCategory).image} 
-                    alt={hoveredCategory}
-                    className="showreel-image-large"
-                  />
-                  <div className="showreel-overlay-large">
-                    <span className="showreel-label-large">{hoveredCategory}</span>
+              
+              <div className="preview-container">
+                {hoveredCategory ? (
+                  <div className="preview-content">
+                    <img 
+                      src={getProjectForCategory(hoveredCategory).image} 
+                      alt={hoveredCategory}
+                      className="preview-image"
+                    />
+                    <div className="preview-overlay">
+                      <span className="preview-label">{hoveredCategory}</span>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div className="showreel-placeholder-large">
-                  <span>Hover over a category</span>
-                </div>
-              )}
-            </div>
-          </div>
+                ) : (
+                  <div className="preview-placeholder">
+                    <span>Hover over a category</span>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            // Layout when expanded from footer: Title at bottom
+            <>
+              <div className="preview-container">
+                {hoveredCategory ? (
+                  <div className="preview-content">
+                    <img 
+                      src={getProjectForCategory(hoveredCategory).image} 
+                      alt={hoveredCategory}
+                      className="preview-image"
+                    />
+                    <div className="preview-overlay">
+                      <span className="preview-label">{hoveredCategory}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="preview-placeholder">
+                    <span>Hover over a category</span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="categories-grid">
+                {designCategories.map((category, index) => (
+                  <button 
+                    key={index} 
+                    className={`category-btn ${hoveredCategory === category ? 'active' : ''}`}
+                    onMouseEnter={() => setHoveredCategory(category)}
+                    onMouseLeave={() => setHoveredCategory(null)}
+                  >
+                    {category} +
+                  </button>
+                ))}
+              </div>
+              
+              <div className="expanded-title">
+                <span>We Design</span>
+                <span className="bullet">•</span>
+                <span>Everything</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
     );
   }
 
-  // Render docked rectangle (non-expanded state)
+  // On non-home pages, don't render - footer will show it
   if (!isHomePage) {
-    // On non-home pages, don't render - footer will show it
     return null;
   }
 
+  // Calculate the top position for floating state
+  const getTopPosition = () => {
+    if (position === 'hero') {
+      return isMobile ? '20px' : '40px';
+    } else if (position === 'floating') {
+      // Stick to viewport - always visible while scrolling
+      return '40px';
+    }
+    return 'auto'; // docked state
+  };
+
   return (
     <div 
-      className={`design-categories-trigger !rounded-lg position-${position}`}
-      style={position === 'viewport' ? { top: `${Math.min(scrollPosition, (document.querySelector('.footer')?.offsetTop || 99999) - window.innerHeight + 100)}px` } : {}}
+      className={`design-categories-trigger position-${position} ${isMobile ? 'mobile' : ''}`}
+      style={{
+        top: position === 'floating' ? '40px' : 'auto',
+        position: position === 'floating' ? 'fixed' : 'absolute'
+      }}
       onClick={handleClick}
     >
       <span>We Design</span>
