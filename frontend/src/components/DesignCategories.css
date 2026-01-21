@@ -271,76 +271,46 @@
     font-size: 0.875rem;
   }
 
-  /* On mobile, center the rectangle at the top of hero section */
-  .design-categories-trigger.position-hero {
-    position: absolute;
-    top: 20px;
+  /* Mobile positions */
+  .design-categories-trigger.position-hero.mobile,
+  .design-categories-trigger.position-floating.mobile {
     left: 50%;
     transform: translateX(-50%);
   }
 
-  /* Mobile doesn't use viewport or footer positions on homepage */
-  .design-categories-trigger.position-viewport,
-  .design-categories-trigger.position-footer {
-    left: 20px;
-  }
-
-  .categories-panel-expanded {
+  .categories-panel-new {
     width: calc(100vw - 40px);
-    height: 500px;
-    left: 20px;
-    padding: var(--space-6);
+    height: 70vh;
+    max-height: 500px;
+    padding: var(--space-5);
   }
 
-  .categories-panel-expanded-new {
-    width: calc(100vw - 40px);
-    height: 80vh;
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
-    padding: var(--space-6);
+  .categories-panel-new.expanded-from-top {
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 
-  .categories-panel-expanded-new.from-footer {
+  .categories-panel-new.expanded-from-bottom {
     bottom: 20px;
   }
 
-  .expanded-layout {
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-
-  .expanded-left {
-    flex: 0 0 auto;
-    max-height: 40%;
-  }
-
-  .expanded-header {
-    font-size: 0.9rem;
-    padding: var(--space-1) 0;
-  }
-
-  .categories-list-vertical {
-    max-height: 200px;
+  .categories-grid {
+    gap: var(--space-1);
+    max-height: 120px;
     overflow-y: auto;
   }
 
-  .category-item-vertical {
-    padding: var(--space-2) var(--space-3);
-    font-size: 0.8rem;
+  .category-btn {
+    padding: var(--space-1) var(--space-3);
+    font-size: 0.7rem;
   }
 
-  .expanded-right {
-    flex: 1;
-    min-height: 250px;
-  }
-
-  .expanded-content {
-    flex-direction: column;
-  }
-
-  .showreel-preview {
+  .preview-container {
     min-height: 200px;
+  }
+
+  .expanded-title {
+    font-size: 0.9rem;
   }
 
 
