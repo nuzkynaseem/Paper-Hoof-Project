@@ -1,15 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { X, Instagram, Music, MessageCircle, Linkedin } from 'lucide-react';
 import { navigationLinks } from '../mock';
 import './HamburgerMenu.css';
 
-const HamburgerMenu = ({ isOpen, onClose, onBrandReviewClick }) => {
+const HamburgerMenu = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
+
   if (!isOpen) return null;
 
   const handleNavClick = (path) => {
-    if (path === '/brand-review') {
-      onBrandReviewClick();
-    }
+    navigate(path);
     onClose();
   };
 
