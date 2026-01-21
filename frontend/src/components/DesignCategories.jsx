@@ -3,33 +3,26 @@ import { X, ChevronUp } from 'lucide-react';
 import { designCategories } from '../mock';
 import './DesignCategories.css';
 
-const DesignCategories = ({ isOpen, onClose, scrollPosition }) => {
-  const [position, setPosition] = useState({ top: 104, left: 40, fixed: false });
+const DesignCategories = ({ scrollPosition }) => {
+  const [position, setPosition] = useState('hero');
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    const heroHeight = 583 + 80; // Hero height + navbar height
-    const footerElement = document.querySelector('.footer');
-    const footerStart = footerElement?.offsetTop || 99999;
+    const navbar = document.querySelector('.navbar');
+    const navbarHeight = navbar?.offsetHeight || 80;
+    const heroSection = document.querySelector('.hero-section');
+    const heroBottom = heroSection ? heroSection.offsetTop + heroSection.offsetHeight : 700;
+    const footer = document.querySelector('.footer');
+    const footerTop = footer?.offsetTop || 99999;
     const viewportHeight = window.innerHeight;
     
-    // In hero section - absolute positioning
-    if (scrollPosition < 100) {
-      setPosition({ top: 104, left: 40, fixed: false, inFooter: false });
-    }
-    // Scrolling through content - fixed to viewport bottom-left
-    else if (scrollPosition >= 100 && scrollPosition < footerStart - viewportHeight + 200) {
-      setPosition({ bottom: 40, left: 40, fixed: true, inFooter: false });
-    }
-    // In footer - absolute positioning within footer
-    else if (scrollPosition >= footerStart - viewportHeight + 200) {
-      const footerOffset = footerStart - scrollPosition;
-      setPosition({ 
-        top: footerStart + 40, 
-        left: 40, 
-        fixed: false, 
-        inFooter: true 
-      });
+    // Determine position based on scroll
+    if (scrollPosition < heroBottom - viewportHeight / 2) {
+      setPosition('hero');
+    } else if (scrollPosition >= footerTop - viewportHeight + 150) {
+      setPosition('footer');
+    } else {
+      setPosition('viewport');
     }
   }, [scrollPosition]);
 
@@ -37,29 +30,10 @@ const DesignCategories = ({ isOpen, onClose, scrollPosition }) => {
     setIsExpanded(!isExpanded);
   };
 
-  const getPositionStyle = () => {
-    if (position.fixed) {
-      return {
-        position: 'fixed',
-        bottom: `${position.bottom}px`,
-        left: `${position.left}px`,
-        top: 'auto'
-      };
-    } else {
-      return {
-        position: 'absolute',
-        top: `${position.top}px`,
-        left: `${position.left}px`,
-        bottom: 'auto'
-      };
-    }
-  };
-
   return (
     <>
       <div 
-        className={`design-categories-trigger !rounded-lg ${isExpanded ? 'expanded' : ''}`}
-        style={getPositionStyle()}
+        className={`design-categories-trigger !rounded-lg position-${position} ${isExpanded ? 'expanded' : ''}`}
         onClick={handleClick}
       >
         <span>We Design</span>
@@ -70,10 +44,14 @@ const DesignCategories = ({ isOpen, onClose, scrollPosition }) => {
 
       {isExpanded && (
         <div className="design-categories-overlay" onClick={() => setIsExpanded(false)}>
-          <div className="categories-panel" onClick={(e) => e.stopPropagation()}>
+          <div 
+            className={`categories-panel ${position === 'footer' ? 'from-footer' : ''}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <button className="close-btn" onClick={() => setIsExpanded(false)}>
               <X size={24} />
             </button>
+            <h3 className="panel-title">What We Design</h3>
             <div className="categories-grid">
               {designCategories.map((category, index) => (
                 <button key={index} className="category-chip">
@@ -87,7 +65,6 @@ const DesignCategories = ({ isOpen, onClose, scrollPosition }) => {
       )}
     </>
   );
-
 };
 
 export default DesignCategories;
