@@ -59,103 +59,55 @@ const DesignCategories = ({ scrollPosition, isHomePage = false, isDocked = false
     return matchingProject || projects[0];
   };
 
-  // Expanded state with layout based on where it was expanded from
+  // Expanded state - single layout for all cases
   if (isExpanded) {
-    const isExpandedFromTop = expandedFrom === 'hero' || expandedFrom === 'floating';
-    
     return (
       <div className="design-categories-overlay" onClick={handleClose}>
         <div 
-          className={`categories-panel-new ${isExpandedFromTop ? 'expanded-from-top' : 'expanded-from-bottom'}`}
+          className="categories-panel-new"
           onClick={(e) => e.stopPropagation()}
         >
           <button className="close-btn-new" onClick={handleClose}>
             <X size={20} />
           </button>
           
-          {isExpandedFromTop ? (
-            // Layout when expanded from hero/floating: Title at top
-            <>
-              <div className="expanded-title">
-                <span>We Design</span>
-                <span className="bullet">•</span>
-                <span>Everything</span>
+          <div className="expanded-title">
+            <span>We Design</span>
+            <span className="bullet">•</span>
+            <span>Everything</span>
+          </div>
+          
+          <div className="categories-grid">
+            {designCategories.map((category, index) => (
+              <button 
+                key={index} 
+                className={`category-btn ${hoveredCategory === category ? 'active' : ''}`}
+                onMouseEnter={() => setHoveredCategory(category)}
+                onMouseLeave={() => setHoveredCategory(null)}
+              >
+                {category} +
+              </button>
+            ))}
+          </div>
+          
+          <div className="preview-container">
+            {hoveredCategory ? (
+              <div className="preview-content">
+                <img 
+                  src={getProjectForCategory(hoveredCategory).image} 
+                  alt={hoveredCategory}
+                  className="preview-image"
+                />
+                <div className="preview-overlay">
+                  <span className="preview-label">{hoveredCategory}</span>
+                </div>
               </div>
-              
-              <div className="categories-grid">
-                {designCategories.map((category, index) => (
-                  <button 
-                    key={index} 
-                    className={`category-btn ${hoveredCategory === category ? 'active' : ''}`}
-                    onMouseEnter={() => setHoveredCategory(category)}
-                    onMouseLeave={() => setHoveredCategory(null)}
-                  >
-                    {category} +
-                  </button>
-                ))}
+            ) : (
+              <div className="preview-placeholder">
+                <span>Hover over a category</span>
               </div>
-              
-              <div className="preview-container">
-                {hoveredCategory ? (
-                  <div className="preview-content">
-                    <img 
-                      src={getProjectForCategory(hoveredCategory).image} 
-                      alt={hoveredCategory}
-                      className="preview-image"
-                    />
-                    <div className="preview-overlay">
-                      <span className="preview-label">{hoveredCategory}</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="preview-placeholder">
-                    <span>Hover over a category</span>
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
-            // Layout when expanded from footer: Title at bottom
-            <>
-              <div className="preview-container">
-                {hoveredCategory ? (
-                  <div className="preview-content">
-                    <img 
-                      src={getProjectForCategory(hoveredCategory).image} 
-                      alt={hoveredCategory}
-                      className="preview-image"
-                    />
-                    <div className="preview-overlay">
-                      <span className="preview-label">{hoveredCategory}</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="preview-placeholder">
-                    <span>Hover over a category</span>
-                  </div>
-                )}
-              </div>
-              
-              <div className="categories-grid">
-                {designCategories.map((category, index) => (
-                  <button 
-                    key={index} 
-                    className={`category-btn ${hoveredCategory === category ? 'active' : ''}`}
-                    onMouseEnter={() => setHoveredCategory(category)}
-                    onMouseLeave={() => setHoveredCategory(null)}
-                  >
-                    {category} +
-                  </button>
-                ))}
-              </div>
-              
-              <div className="expanded-title">
-                <span>We Design</span>
-                <span className="bullet">•</span>
-                <span>Everything</span>
-              </div>
-            </>
-          )}
+            )}
+          </div>
         </div>
       </div>
     );
