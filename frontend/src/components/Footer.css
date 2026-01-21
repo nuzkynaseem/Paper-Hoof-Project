@@ -185,7 +185,7 @@
   font-family: var(--font-primary);
   font-weight: 500;
   font-size: 1rem;
-  color: var(--bg-cream);
+  color: var(--primary-green);
   box-shadow: 0 4px 16px rgba(240, 233, 223, 0.2);
   opacity: 1;
   cursor: pointer;
@@ -196,6 +196,15 @@
   background: rgba(240, 233, 223, 0.95);
   transform: translateY(-2px);
   box-shadow: 0 6px 24px rgba(240, 233, 223, 0.3);
+}
+
+.footer-docked-rectangle .bullet {
+  color: var(--primary-green);
+  font-weight: 700;
+}
+
+.footer-docked-rectangle .arrow-icon-footer {
+  color: var(--primary-green);
 }
 
 .footer-docked-rectangle .bullet {
