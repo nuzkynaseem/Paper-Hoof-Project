@@ -10,6 +10,7 @@ import RecentProjects from "./components/RecentProjects";
 import Footer from "./components/Footer";
 import BrandReviewForm from "./components/BrandReviewForm";
 import BrandReview from "./pages/BrandReview";
+import ContactUs from "./pages/ContactUs";
 
 function HomePage() {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -68,6 +69,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/brand-review" element={<BrandReview />} />
+          <Route path="/contact" element={<ContactUs />} />
         </Routes>
         
         <Footer />
