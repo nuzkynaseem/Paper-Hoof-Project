@@ -7,9 +7,28 @@ const DesignCategories = ({ scrollPosition, isHomePage = false }) => {
   const [position, setPosition] = useState('hero');
   const [isExpanded, setIsExpanded] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Check if mobile on mount and resize
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (!isHomePage) return; // Only animate on homepage
+    
+    // On mobile, always stay in hero position
+    if (isMobile) {
+      setPosition('hero');
+      return;
+    }
     
     const heroSection = document.querySelector('.hero-section');
     const heroBottom = heroSection ? heroSection.offsetTop + heroSection.offsetHeight : 700;
@@ -17,7 +36,7 @@ const DesignCategories = ({ scrollPosition, isHomePage = false }) => {
     const footerTop = footer?.offsetTop || 99999;
     const viewportHeight = window.innerHeight;
     
-    // Calculate position based on scroll
+    // Calculate position based on scroll (desktop only)
     if (scrollPosition < 100) {
       setPosition('hero');
     } else if (scrollPosition >= footerTop - viewportHeight) {
@@ -25,7 +44,7 @@ const DesignCategories = ({ scrollPosition, isHomePage = false }) => {
     } else {
       setPosition('viewport');
     }
-  }, [scrollPosition, isHomePage]);
+  }, [scrollPosition, isHomePage, isMobile]);
 
   const handleClick = () => {
     setIsExpanded(!isExpanded);
