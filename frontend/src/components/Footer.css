@@ -188,11 +188,23 @@
   color: var(--bg-cream);
   box-shadow: 0 4px 16px rgba(240, 233, 223, 0.2);
   opacity: 1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.footer-docked-rectangle:hover {
+  background: rgba(240, 233, 223, 0.95);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(240, 233, 223, 0.3);
 }
 
 .footer-docked-rectangle .bullet {
   color: var(--bg-cream);
   font-weight: 700;
+}
+
+.arrow-icon-footer {
+  color: var(--bg-cream);
 }
 
 /* Zone B - Navigation Links */
