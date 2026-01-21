@@ -2,7 +2,7 @@ import React from 'react';
 import { Instagram, Music, MessageCircle, Linkedin, ArrowUp } from 'lucide-react';
 import './Footer.css';
 
-const Footer = () => {
+const Footer = ({ showDockedRectangle = false }) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -77,7 +77,15 @@ const Footer = () => {
         <div className="footer-bottom-container">
           {/* Zone A - Docking Area */}
           <div className="footer-dock-zone">
-            <div className="footer-dock-placeholder"></div>
+            {showDockedRectangle ? (
+              <div className="footer-docked-rectangle">
+                <span>We Design</span>
+                <span className="bullet">•</span>
+                <span>Everything</span>
+              </div>
+            ) : (
+              <div className="footer-dock-placeholder"></div>
+            )}
           </div>
 
           {/* Zone B - Navigation Links */}
