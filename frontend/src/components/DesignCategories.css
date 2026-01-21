@@ -255,14 +255,18 @@
     font-size: 0.875rem;
   }
 
-  .design-categories-trigger.position-hero,
+  /* On mobile, center the rectangle at the top of hero section */
+  .design-categories-trigger.position-hero {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* Mobile doesn't use viewport or footer positions on homepage */
   .design-categories-trigger.position-viewport,
   .design-categories-trigger.position-footer {
     left: 20px;
-  }
-
-  .design-categories-trigger.position-hero {
-    top: 84px;
   }
 
   .categories-panel-expanded {
