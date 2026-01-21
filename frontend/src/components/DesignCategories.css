@@ -280,18 +280,25 @@
 
   .categories-panel-new {
     width: calc(100vw - 40px);
+    max-width: 600px;
     height: 70vh;
     max-height: 500px;
     padding: var(--space-5);
+    left: 20px;
+    right: 20px;
+    transform: none !important;
   }
 
   .categories-panel-new.expanded-from-top {
     top: 50%;
-    transform: translate(-50%, -50%);
+    left: 50%;
+    transform: translate(-50%, -50%) !important;
   }
 
   .categories-panel-new.expanded-from-bottom {
     bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) !important;
   }
 
   .categories-grid {
