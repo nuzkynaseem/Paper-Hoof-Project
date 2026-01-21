@@ -8,6 +8,7 @@ const DesignCategories = ({ scrollPosition, isHomePage = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [expandedFrom, setExpandedFrom] = useState('hero'); // Track where expansion was triggered from
 
   useEffect(() => {
     // Check if mobile on mount and resize
@@ -24,29 +25,23 @@ const DesignCategories = ({ scrollPosition, isHomePage = false }) => {
   useEffect(() => {
     if (!isHomePage) return; // Only animate on homepage
     
-    // On mobile, always stay in hero position
-    if (isMobile) {
-      setPosition('hero');
-      return;
-    }
-    
-    const heroSection = document.querySelector('.hero-section');
-    const heroBottom = heroSection ? heroSection.offsetTop + heroSection.offsetHeight : 700;
     const footer = document.querySelector('.footer');
     const footerTop = footer?.offsetTop || 99999;
     const viewportHeight = window.innerHeight;
+    const scrollThreshold = footerTop - viewportHeight + 100; // Start docking animation 100px before footer visible
     
-    // Calculate position based on scroll (desktop only)
-    if (scrollPosition < 100) {
-      setPosition('hero');
-    } else if (scrollPosition >= footerTop - viewportHeight) {
-      setPosition('footer');
+    // Determine position based on scroll
+    if (scrollPosition < 50) {
+      setPosition('hero'); // Initial position at top
+    } else if (scrollPosition >= scrollThreshold) {
+      setPosition('docked'); // Docked in footer
     } else {
-      setPosition('viewport');
+      setPosition('floating'); // Floating with viewport
     }
-  }, [scrollPosition, isHomePage, isMobile]);
+  }, [scrollPosition, isHomePage]);
 
   const handleClick = () => {
+    setExpandedFrom(position); // Remember where we expanded from
     setIsExpanded(!isExpanded);
   };
 
