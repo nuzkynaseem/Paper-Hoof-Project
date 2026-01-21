@@ -540,8 +540,14 @@
     gap: var(--space-8);
   }
 
+  .pillar-left {
+    order: 1;
+  }
+
   .pillar-right {
+    order: 2;
     align-items: flex-start;
+    justify-content: flex-start;
     text-align: left;
   }
 
