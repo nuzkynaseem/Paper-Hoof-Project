@@ -11,7 +11,7 @@ const DesignCategories = ({ isOpen, onClose, scrollPosition }) => {
     const heroHeight = 583 + 120; // Hero height + navbar height
     const footerStart = document.querySelector('.footer')?.offsetTop || 99999;
     const viewportHeight = window.innerHeight;
-    
+
     if (scrollPosition > heroHeight && scrollPosition < footerStart - viewportHeight) {
       const newTop = Math.min(scrollPosition - heroHeight + 80, footerStart - 200);
       setPosition({ top: newTop, left: 40 });
@@ -31,36 +31,36 @@ const DesignCategories = ({ isOpen, onClose, scrollPosition }) => {
 
   return (
     <>
-      <div 
-        className={`design-categories-trigger ${isExpanded ? 'expanded' : ''}`}
+      <div
+        className="design-categories-trigger !rounded-lg"
         style={{ top: `${position.top}px`, left: `${position.left}px` }}
-        onClick={handleClick}
-      >
+        onClick={handleClick}>
+
         <span>We Design</span>
         <span className="bullet">•</span>
         <span>Everything</span>
         <span className="arrow">{isExpanded ? '↑' : '↓'}</span>
       </div>
 
-      {isExpanded && (
-        <div className="design-categories-overlay">
+      {isExpanded &&
+      <div className="design-categories-overlay">
           <div className="categories-panel">
             <button className="close-btn" onClick={() => setIsExpanded(false)}>
               <X size={24} />
             </button>
             <div className="categories-grid">
-              {designCategories.map((category, index) => (
-                <button key={index} className="category-chip">
+              {designCategories.map((category, index) =>
+            <button key={index} className="category-chip">
                   {category}
                   <span className="plus">+</span>
                 </button>
-              ))}
+            )}
             </div>
           </div>
         </div>
-      )}
-    </>
-  );
+      }
+    </>);
+
 };
 
 export default DesignCategories;
