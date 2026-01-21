@@ -14,28 +14,44 @@
   font-size: 1rem;
   color: var(--black);
   cursor: pointer;
-  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 998;
   box-shadow: 0 4px 16px rgba(18, 53, 36, 0.08);
 }
 
-/* Hero position - 40px from left and top */
+/* Hero position - initial state at top left (desktop) or top center (mobile) */
 .design-categories-trigger.position-hero {
   position: absolute;
   top: 40px;
   left: 40px;
 }
 
-/* Viewport position - moves with scroll */
-.design-categories-trigger.position-viewport {
-  position: absolute;
-  left: 40px;
+.design-categories-trigger.position-hero.mobile {
+  left: 50%;
+  transform: translateX(-50%);
+  top: 20px;
 }
 
-/* Footer position - docked in footer */
-.design-categories-trigger.position-footer {
-  position: absolute;
+/* Floating position - sticks to viewport while scrolling */
+.design-categories-trigger.position-floating {
+  position: fixed;
+  top: 40px;
   left: 40px;
+  z-index: 1000;
+}
+
+.design-categories-trigger.position-floating.mobile {
+  left: 50%;
+  transform: translateX(-50%);
+  top: 20px;
+}
+
+/* Docked position - in footer docking station */
+.design-categories-trigger.position-docked {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  /* Will be positioned by footer dock */
 }
 
 .design-categories-trigger:hover {
