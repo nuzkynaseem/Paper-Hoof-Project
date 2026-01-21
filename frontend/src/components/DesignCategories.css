@@ -280,46 +280,34 @@
 
   .categories-panel-new {
     width: calc(100vw - 40px);
-    max-width: 600px;
-    height: 70vh;
-    max-height: 500px;
-    padding: var(--space-5);
-    left: 20px;
-    right: 20px;
-    transform: none !important;
-  }
-
-  .categories-panel-new.expanded-from-top {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) !important;
-  }
-
-  .categories-panel-new.expanded-from-bottom {
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) !important;
+    max-width: 100%;
+    max-height: 80vh;
+    padding: var(--space-6);
   }
 
   .categories-grid {
-    gap: var(--space-1);
-    max-height: 120px;
-    overflow-y: auto;
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+    max-height: none;
+    padding-bottom: var(--space-4);
   }
 
   .category-btn {
-    padding: var(--space-1) var(--space-3);
-    font-size: 0.7rem;
+    padding: var(--space-3) var(--space-4);
+    font-size: 0.875rem;
+    text-align: left;
   }
 
+  /* Hide preview container on mobile */
   .preview-container {
-    min-height: 200px;
+    display: none;
   }
 
   .expanded-title {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    padding-bottom: var(--space-3);
   }
-
+}
 
 /* New Expanded Panel - Based on Design Reference */
 .categories-panel-new {
