@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import './Navbar.css';
 
-const Navbar = ({ onMenuClick, onBrandReviewClick }) => {
+const Navbar = ({ onMenuClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,11 +16,15 @@ const Navbar = ({ onMenuClick, onBrandReviewClick }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleBrandReviewClick = () => {
+    navigate('/brand-review');
+  };
+
   return (
     <nav className={`navbar ${isScrolled ? 'navbar-scrolled' : ''}`}>
       <div className="navbar-content">
         <div className="navbar-left">
-          <div className="logo-container">
+          <div className="logo-container" onClick={() => navigate('/')}>
             <div className="logo-icon">
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <rect x="8" y="12" width="16" height="12" fill="currentColor" />
@@ -30,7 +36,9 @@ const Navbar = ({ onMenuClick, onBrandReviewClick }) => {
           </div>
         </div>
         <div className="navbar-right">
-          <button className="brand-review-btn" onClick={onBrandReviewClick}>Brand Review</button>
+          <button className="brand-review-btn" onClick={handleBrandReviewClick}>
+            Brand Review
+          </button>
           <button className="hamburger-btn" onClick={onMenuClick}>
             <Menu size={24} />
           </button>
