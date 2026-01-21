@@ -276,6 +276,27 @@
     padding: var(--space-6);
   }
 
+  .categories-panel-expanded-new {
+    width: calc(100vw - 40px);
+    height: 500px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+  }
+
+  .expanded-layout {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .expanded-left {
+    flex: 0 0 auto;
+  }
+
+  .categories-list-vertical {
+    max-height: 150px;
+  }
+
   .expanded-content {
     flex-direction: column;
   }
