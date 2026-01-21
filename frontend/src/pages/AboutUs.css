@@ -275,6 +275,8 @@
   font-size: 1.5rem;
   margin-right: var(--space-2);
   line-height: 1;
+  position: relative;
+  z-index: 1;
 }
 
 .card-title {
@@ -285,6 +287,8 @@
   margin: 0 0 var(--space-3) 0;
   line-height: 1.2;
   display: inline;
+  position: relative;
+  z-index: 1;
 }
 
 .card-description {
@@ -294,6 +298,8 @@
   line-height: 1.6;
   color: var(--grey);
   margin: var(--space-3) 0 0 0;
+  position: relative;
+  z-index: 1;
 }
 
 .carousel-controls {
