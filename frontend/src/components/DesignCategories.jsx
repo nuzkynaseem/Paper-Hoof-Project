@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { X, ChevronUp } from 'lucide-react';
 import { designCategories } from '../mock';
 import './DesignCategories.css';
@@ -6,10 +6,9 @@ import './DesignCategories.css';
 const DesignCategories = ({ scrollPosition }) => {
   const [position, setPosition] = useState('hero');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [footerOffset, setFooterOffset] = useState(0);
 
   useEffect(() => {
-    const navbar = document.querySelector('.navbar');
-    const navbarHeight = navbar?.offsetHeight || 80;
     const heroSection = document.querySelector('.hero-section');
     const heroBottom = heroSection ? heroSection.offsetTop + heroSection.offsetHeight : 700;
     const footer = document.querySelector('.footer');
@@ -17,12 +16,16 @@ const DesignCategories = ({ scrollPosition }) => {
     const viewportHeight = window.innerHeight;
     
     // Determine position based on scroll
-    if (scrollPosition < heroBottom - viewportHeight / 2) {
+    if (scrollPosition < heroBottom - 200) {
       setPosition('hero');
-    } else if (scrollPosition >= footerTop - viewportHeight + 150) {
+      setFooterOffset(0);
+    } else if (scrollPosition >= footerTop - viewportHeight + 100) {
       setPosition('footer');
+      // Calculate absolute position within footer
+      setFooterOffset(footerTop + 40);
     } else {
       setPosition('viewport');
+      setFooterOffset(0);
     }
   }, [scrollPosition]);
 
@@ -30,10 +33,20 @@ const DesignCategories = ({ scrollPosition }) => {
     setIsExpanded(!isExpanded);
   };
 
+  const getInlineStyle = () => {
+    if (position === 'footer') {
+      return {
+        top: `${footerOffset}px`
+      };
+    }
+    return {};
+  };
+
   return (
     <>
       <div 
         className={`design-categories-trigger !rounded-lg position-${position} ${isExpanded ? 'expanded' : ''}`}
+        style={getInlineStyle()}
         onClick={handleClick}
       >
         <span>We Design</span>
