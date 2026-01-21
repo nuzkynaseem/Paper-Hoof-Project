@@ -29,7 +29,7 @@ function HomePage() {
 
   return (
     <>
-      <DesignCategories scrollPosition={scrollPosition} />
+      <DesignCategories scrollPosition={scrollPosition} isHomePage={true} />
       <Hero />
       <ScrollIndicator />
       <RecentProjects />
