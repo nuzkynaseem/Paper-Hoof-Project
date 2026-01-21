@@ -36,16 +36,6 @@ function HomePage() {
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isBrandReviewOpen, setIsBrandReviewOpen] = useState(false);
-  const [scrollPosition, setScrollPosition] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollPosition(window.scrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -72,8 +62,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Navbar 
-          onMenuClick={handleMenuToggle} 
-          onBrandReviewClick={handleBrandReviewOpen}
+          onMenuClick={handleMenuToggle}
         />
         
         <Routes>
@@ -86,7 +75,6 @@ function App() {
         <HamburgerMenu 
           isOpen={isMenuOpen} 
           onClose={handleMenuClose}
-          onBrandReviewClick={handleBrandReviewOpen}
         />
         
         <BrandReviewForm 
