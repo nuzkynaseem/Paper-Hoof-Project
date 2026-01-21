@@ -18,10 +18,15 @@ const Work = () => {
         <div className="work-hero-container">
           <div className="work-hero-content">
             <h1 className="work-hero-title">Our Work</h1>
-            <div className="work-hero-divider"></div>
+            <div className="work-hero-divider-gradient"></div>
             <p className="work-hero-description">
               Branfern's ambition is to operate at the intersection of design, systems, and culture. We aim to build holistic brand ecosystems where strategy, identity, and experience work as one. Our work is not to follow the industry's pace, but to define our own: thoughtful, rigorous, and sustainable.
             </p>
+          </div>
+          <div className="work-hero-right">
+            <div className="work-display">
+              <span className="work-text">WORK</span>
+            </div>
           </div>
         </div>
       </section>
