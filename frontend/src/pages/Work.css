@@ -123,7 +123,7 @@
   left: 0;
   width: 100px;
   height: 2px;
-  background: var(--black);
+  background: linear-gradient(90deg, var(--black) 0%, var(--bg-cream) 100%);
 }
 
 /* Projects Grid */
