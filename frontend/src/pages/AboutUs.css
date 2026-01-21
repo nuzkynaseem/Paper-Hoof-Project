@@ -177,7 +177,10 @@
 
 .pillar-left {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
 }
 
 .pillar-description {
@@ -191,10 +194,8 @@
 
 .pillar-right {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  text-align: right;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .pillar-label {
