@@ -321,34 +321,35 @@
   }
 
 
-/* New Expanded Panel - 600px × 400px */
+/* New Expanded Panel - Based on Design Reference */
 .categories-panel-new {
   position: fixed;
   left: 50%;
-  width: 600px;
-  height: 400px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  max-width: 90vw;
+  height: auto;
+  max-height: 90vh;
   background: rgba(240, 233, 223, 0.98);
   backdrop-filter: blur(12px);
   border: 2px solid var(--primary-green);
   border-radius: var(--radius-lg);
-  padding: var(--space-6);
+  padding: var(--space-8);
   animation: expandPanel 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 8px 32px rgba(18, 53, 36, 0.15);
   z-index: 10001;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-6);
   overflow: hidden;
 }
 
-.categories-panel-new.expanded-from-top {
+.categories-panel-new.expanded-from-top,
+.categories-panel-new.expanded-from-bottom {
+  /* Same positioning for both */
   top: 50%;
   transform: translate(-50%, -50%);
-}
-
-.categories-panel-new.expanded-from-bottom {
-  bottom: 100px;
-  transform: translateX(-50%);
 }
 
 @keyframes expandPanel {
