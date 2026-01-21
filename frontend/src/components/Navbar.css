@@ -21,7 +21,7 @@
   max-width: 1100px;
   background: rgba(240, 233, 223, 0.85);
   backdrop-filter: blur(12px);
-  border: 2px solid var(--primary-green);
+  border: 2px solid var(--bg-cream);
   border-radius: var(--radius-xl);
   padding: var(--space-4) var(--space-8);
   box-shadow: 0 4px 24px rgba(18, 53, 36, 0.08);
