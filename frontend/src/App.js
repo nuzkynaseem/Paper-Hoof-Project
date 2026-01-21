@@ -17,10 +17,20 @@ import ProjectCaseStudy from "./pages/ProjectCaseStudy";
 
 function HomePage() {
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [isDocked, setIsDocked] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrollPosition(window.scrollY);
+      const pos = window.scrollY;
+      setScrollPosition(pos);
+      
+      // Check if we should dock
+      const footer = document.querySelector('.footer');
+      const footerTop = footer?.offsetTop || 99999;
+      const viewportHeight = window.innerHeight;
+      const scrollThreshold = footerTop - viewportHeight + 100;
+      
+      setIsDocked(pos >= scrollThreshold);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -29,7 +39,7 @@ function HomePage() {
 
   return (
     <>
-      <DesignCategories scrollPosition={scrollPosition} isHomePage={true} />
+      <DesignCategories scrollPosition={scrollPosition} isHomePage={true} isDocked={isDocked} />
       <Hero />
       <ScrollIndicator />
       <RecentProjects />
