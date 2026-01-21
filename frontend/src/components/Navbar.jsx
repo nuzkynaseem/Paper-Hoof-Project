@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Menu } from 'lucide-react';
 import './Navbar.css';
 
-const Navbar = ({ onMenuClick }) => {
+const Navbar = ({ onMenuClick, onBrandReviewClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const Navbar = ({ onMenuClick }) => {
           </div>
         </div>
         <div className="navbar-right">
-          <button className="brand-review-btn">Brand Review</button>
+          <button className="brand-review-btn" onClick={onBrandReviewClick}>Brand Review</button>
           <button className="hamburger-btn" onClick={onMenuClick}>
             <Menu size={24} />
           </button>
