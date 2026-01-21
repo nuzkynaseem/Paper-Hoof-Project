@@ -207,15 +207,6 @@
   color: var(--primary-green);
 }
 
-.footer-docked-rectangle .bullet {
-  color: var(--bg-cream);
-  font-weight: 700;
-}
-
-.arrow-icon-footer {
-  color: var(--bg-cream);
-}
-
 /* Zone B - Navigation Links */
 .footer-nav {
   display: flex;
