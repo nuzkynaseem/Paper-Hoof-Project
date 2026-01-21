@@ -1,0 +1,132 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: var(--space-6) var(--space-10);
+  transition: var(--transition-smooth);
+}
+
+.navbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
+  margin: 0 auto;
+  transition: var(--transition-smooth);
+}
+
+.navbar-scrolled .navbar-content {
+  max-width: 1100px;
+  background: rgba(240, 233, 223, 0.85);
+  backdrop-filter: blur(12px);
+  border: 2px solid var(--primary-green);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4) var(--space-8);
+  box-shadow: 0 4px 24px rgba(18, 53, 36, 0.08);
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+
+.logo-icon {
+  color: var(--primary-green);
+  animation: logoBreath 3s ease-in-out infinite;
+}
+
+@keyframes logoBreath {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.logo-eye {
+  animation: logoBlink 4s ease-in-out infinite;
+}
+
+@keyframes logoBlink {
+  0%, 48%, 52%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.logo-text {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--black);
+  letter-spacing: -0.02em;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.brand-review-btn {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--black);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  padding: var(--space-2) var(--space-4);
+}
+
+.brand-review-btn:hover {
+  color: var(--primary-green);
+}
+
+.hamburger-btn {
+  background: transparent;
+  border: none;
+  color: var(--black);
+  cursor: pointer;
+  padding: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.hamburger-btn:hover {
+  color: var(--primary-green);
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .navbar-scrolled .navbar-content {
+    max-width: calc(100% - 40px);
+    padding: var(--space-3) var(--space-5);
+  }
+
+  .logo-text {
+    font-size: 1.25rem;
+  }
+
+  .brand-review-btn {
+    font-size: 0.875rem;
+  }
+}
