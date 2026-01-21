@@ -46,7 +46,10 @@ function App() {
 
   return (
     <div className="App">
-      <Navbar onMenuClick={handleMenuToggle} />
+      <Navbar 
+        onMenuClick={handleMenuToggle} 
+        onBrandReviewClick={handleBrandReviewOpen}
+      />
       <DesignCategories scrollPosition={scrollPosition} />
       <Hero />
       <ScrollIndicator />
