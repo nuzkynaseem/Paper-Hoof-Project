@@ -254,6 +254,15 @@
     padding: var(--space-12) var(--space-5);
   }
 
+  .work-hero-container {
+    grid-template-columns: 1fr;
+    gap: var(--space-12);
+  }
+
+  .work-hero-right {
+    justify-content: flex-start;
+  }
+
   .work-projects-section {
     padding: var(--space-16) var(--space-5);
   }
