@@ -1,0 +1,193 @@
+.brand-review-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(18, 18, 18, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease;
+}
+
+.brand-review-modal {
+  background: var(--bg-cream);
+  border-radius: var(--radius-md);
+  max-width: 900px;
+  width: 100%;
+  padding: var(--space-12);
+  position: relative;
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: var(--space-6);
+  right: var(--space-6);
+  background: transparent;
+  border: none;
+  color: var(--black);
+  cursor: pointer;
+  padding: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.modal-close-btn:hover {
+  color: var(--primary-green);
+}
+
+.modal-header {
+  margin-bottom: var(--space-10);
+}
+
+.modal-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--black);
+  margin-bottom: var(--space-3);
+}
+
+.modal-subtitle {
+  font-family: var(--font-primary);
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--grey);
+}
+
+.brand-review-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.form-label {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--black);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  padding: var(--space-4);
+  border: 1px solid rgba(18, 53, 36, 0.2);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--black);
+  transition: all 0.3s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(18, 53, 36, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.calendar-wrapper {
+  border: 1px solid rgba(18, 53, 36, 0.2);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  background: var(--white);
+}
+
+.brand-review-calendar {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: flex-end;
+  margin-top: var(--space-6);
+}
+
+.btn-cancel,
+.btn-submit {
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: var(--space-4) var(--space-8);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.btn-cancel {
+  background: transparent;
+  color: var(--grey);
+  border: 1px solid rgba(18, 53, 36, 0.2);
+}
+
+.btn-cancel:hover {
+  background: rgba(18, 53, 36, 0.05);
+  border-color: var(--primary-green);
+  color: var(--black);
+}
+
+.btn-submit {
+  background: var(--primary-green);
+  color: var(--white);
+}
+
+.btn-submit:hover {
+  background: var(--black);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(18, 53, 36, 0.2);
+}
+
+@media (max-width: 768px) {
+  .brand-review-modal {
+    padding: var(--space-8);
+    margin: var(--space-4);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-cancel,
+  .btn-submit {
+    width: 100%;
+  }
+}
