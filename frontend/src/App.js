@@ -89,7 +89,7 @@ function AppContent() {
         <Route path="/work/:projectId" element={<ProjectCaseStudy />} />
       </Routes>
       
-      <Footer showDockedRectangle={!isHomePage} />
+      <Footer showDockedRectangle={!isHomePage || scrollPosition > 1500} />
       
       <HamburgerMenu 
         isOpen={isMenuOpen} 
