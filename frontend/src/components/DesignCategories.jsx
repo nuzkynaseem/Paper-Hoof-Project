@@ -26,9 +26,11 @@ const DesignCategories = ({ scrollPosition, isHomePage = false, isDocked = false
     if (!isHomePage) return; // Only animate on homepage
     
     const footer = document.querySelector('.footer');
-    const footerTop = footer?.offsetTop || 99999;
+    if (!footer) return;
+    
+    const footerTop = footer.offsetTop;
     const viewportHeight = window.innerHeight;
-    const scrollThreshold = footerTop - viewportHeight + 100; // Start docking animation 100px before footer visible
+    const scrollThreshold = footerTop - viewportHeight + 150; // Start transition 150px before footer visible
     
     // Determine position based on scroll
     if (scrollPosition < 50) {
