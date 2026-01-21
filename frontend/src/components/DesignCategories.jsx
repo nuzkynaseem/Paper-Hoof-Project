@@ -186,7 +186,7 @@ const DesignCategories = ({ scrollPosition, isHomePage = false, isDocked = false
     <div 
       className={`design-categories-trigger position-${position} ${isMobile ? 'mobile' : ''}`}
       style={{
-        top: position === 'floating' ? '40px' : (position === 'hero' ? (isMobile ? '20px' : '40px') : 'auto'),
+        top: position === 'floating' ? (isMobile ? '84px' : '100px') : (position === 'hero' ? (isMobile ? '20px' : '40px') : 'auto'),
         position: position === 'floating' ? 'fixed' : 'absolute'
       }}
       onClick={handleClick}
