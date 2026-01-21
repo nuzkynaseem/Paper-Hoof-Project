@@ -211,13 +211,13 @@ const AboutUs = () => {
         <div className="pillar-container">
           <div className="pillar-content">
             <div className="pillar-left">
+              <h3 className="pillar-label">03</h3>
+              <h2 className="pillar-heading">Human</h2>
+            </div>
+            <div className="pillar-right">
               <p className="pillar-description">
                 Behind every brand are people. Your team, your customers, your community. We design systems that consider human behavior, language, and culture. Because brands that understand people build lasting relationships.
               </p>
-            </div>
-            <div className="pillar-right">
-              <h3 className="pillar-label">03</h3>
-              <h2 className="pillar-heading">Human</h2>
             </div>
           </div>
           
