@@ -26,6 +26,9 @@ const Footer = () => {
             <a href="/work" className="footer-link">WORK</a>
             <a href="/contact" className="footer-link">CONTACT</a>
           </nav>
+          
+          {/* Spacer for "We Design Everything" rectangle */}
+          <div className="design-trigger-spacer"></div>
         </div>
 
         <div className="footer-right">
