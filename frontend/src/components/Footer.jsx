@@ -31,58 +31,55 @@ const Footer = ({ showDockedRectangle = false }) => {
 
   return (
     <>
-      {/* Expanded Overlay */}
+      {/* Expanded Overlay from Footer */}
       {isExpanded && (
         <div className="design-categories-overlay" onClick={handleClose}>
           <div 
-            className="categories-panel-expanded-new from-footer"
+            className="categories-panel-new expanded-from-bottom"
             onClick={(e) => e.stopPropagation()}
           >
-            <button className="close-btn-expanded" onClick={handleClose}>
+            <button className="close-btn-new" onClick={handleClose}>
               <X size={20} />
             </button>
             
-            <div className="expanded-layout">
-              <div className="expanded-left">
-                <div className="expanded-header">
-                  <span>We Design</span>
-                  <span className="bullet">•</span>
-                  <span>Everything</span>
-                </div>
-                
-                <div className="categories-list-vertical">
-                  {designCategories.map((category, index) => (
-                    <button 
-                      key={index} 
-                      className={`category-item-vertical ${hoveredCategory === category ? 'active' : ''}`}
-                      onMouseEnter={() => setHoveredCategory(category)}
-                      onMouseLeave={() => setHoveredCategory(null)}
-                    >
-                      <span className="category-number">{String(index + 1).padStart(2, '0')}</span>
-                      <span className="category-name">{category}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              
-              <div className="expanded-right">
-                {hoveredCategory ? (
-                  <div className="showreel-preview-large">
-                    <img 
-                      src={getProjectForCategory(hoveredCategory).image} 
-                      alt={hoveredCategory}
-                      className="showreel-image-large"
-                    />
-                    <div className="showreel-overlay-large">
-                      <span className="showreel-label-large">{hoveredCategory}</span>
-                    </div>
+            {/* Layout for footer expansion: Image at top, categories in middle, title at bottom */}
+            <div className="preview-container">
+              {hoveredCategory ? (
+                <div className="preview-content">
+                  <img 
+                    src={getProjectForCategory(hoveredCategory).image} 
+                    alt={hoveredCategory}
+                    className="preview-image"
+                  />
+                  <div className="preview-overlay">
+                    <span className="preview-label">{hoveredCategory}</span>
                   </div>
-                ) : (
-                  <div className="showreel-placeholder-large">
-                    <span>Hover over a category</span>
-                  </div>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div className="preview-placeholder">
+                  <span>Hover over a category</span>
+                </div>
+              )}
+            </div>
+            
+            <div className="categories-grid">
+              {designCategories.map((category, index) => (
+                <button 
+                  key={index} 
+                  className={`category-btn ${hoveredCategory === category ? 'active' : ''}`}
+                  onMouseEnter={() => setHoveredCategory(category)}
+                  onMouseLeave={() => setHoveredCategory(null)}
+                >
+                  {category} +
+                </button>
+              ))}
+            </div>
+            
+            <div className="expanded-title">
+              <span>We Design</span>
+              <span className="bullet">•</span>
+              <span>Everything</span>
+              <ChevronUp className="arrow-icon-title" size={20} />
             </div>
           </div>
         </div>
