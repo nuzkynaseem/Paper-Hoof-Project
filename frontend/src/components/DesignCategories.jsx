@@ -57,35 +57,36 @@ const DesignCategories = ({ isOpen, onClose, scrollPosition }) => {
 
   return (
     <>
-      <div
-        className="design-categories-trigger !rounded-lg"
-        style={{ top: `${position.top}px`, left: `${position.left}px` }}
-        onClick={handleClick}>
-
+      <div 
+        className={`design-categories-trigger !rounded-lg ${isExpanded ? 'expanded' : ''}`}
+        style={getPositionStyle()}
+        onClick={handleClick}
+      >
         <span>We Design</span>
         <span className="bullet">•</span>
         <span>Everything</span>
-        <span className="arrow">{isExpanded ? '↑' : '↓'}</span>
+        <ChevronUp className={`arrow-icon ${isExpanded ? 'rotated' : ''}`} size={20} />
       </div>
 
-      {isExpanded &&
-      <div className="design-categories-overlay">
-          <div className="categories-panel">
+      {isExpanded && (
+        <div className="design-categories-overlay" onClick={() => setIsExpanded(false)}>
+          <div className="categories-panel" onClick={(e) => e.stopPropagation()}>
             <button className="close-btn" onClick={() => setIsExpanded(false)}>
               <X size={24} />
             </button>
             <div className="categories-grid">
-              {designCategories.map((category, index) =>
-            <button key={index} className="category-chip">
+              {designCategories.map((category, index) => (
+                <button key={index} className="category-chip">
                   {category}
                   <span className="plus">+</span>
                 </button>
-            )}
+              ))}
             </div>
           </div>
         </div>
-      }
-    </>);
+      )}
+    </>
+  );
 
 };
 
