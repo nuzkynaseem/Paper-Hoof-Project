@@ -109,13 +109,13 @@ const AboutUs = () => {
         <div className="pillar-container">
           <div className="pillar-content">
             <div className="pillar-left">
+              <h3 className="pillar-label">01</h3>
+              <h2 className="pillar-heading">Digital</h2>
+            </div>
+            <div className="pillar-right">
               <p className="pillar-description">
                 Digital presence is more than websites and apps. It's the architecture of how your brand exists online, how it communicates, how it serves your audience. We design digital systems that are intuitive, scalable, and grounded in human behavior.
               </p>
-            </div>
-            <div className="pillar-right">
-              <h3 className="pillar-label">01</h3>
-              <h2 className="pillar-heading">Digital</h2>
             </div>
           </div>
           
@@ -160,13 +160,13 @@ const AboutUs = () => {
         <div className="pillar-container">
           <div className="pillar-content">
             <div className="pillar-left">
+              <h3 className="pillar-label">02</h3>
+              <h2 className="pillar-heading">Physical</h2>
+            </div>
+            <div className="pillar-right">
               <p className="pillar-description">
                 Physical touchpoints matter. They're tactile, memorable, and permanent. From packaging to print collateral, we craft materials that feel considered, premium, and aligned with your brand's values. Every detail counts.
               </p>
-            </div>
-            <div className="pillar-right">
-              <h3 className="pillar-label">02</h3>
-              <h2 className="pillar-heading">Physical</h2>
             </div>
           </div>
           
