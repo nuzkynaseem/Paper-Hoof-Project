@@ -244,11 +244,24 @@
 
 .carousel-card {
   min-width: 100%;
-  background: var(--white);
+  background: var(--bg-cream);
   padding: var(--space-8);
   border-radius: var(--radius-md);
   box-shadow: 0 4px 16px rgba(18, 53, 36, 0.06);
   transition: all 0.3s ease;
+  position: relative;
+}
+
+.carousel-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(18, 53, 36, 0.05);
+  border-radius: var(--radius-md);
+  pointer-events: none;
 }
 
 .carousel-card:hover {
