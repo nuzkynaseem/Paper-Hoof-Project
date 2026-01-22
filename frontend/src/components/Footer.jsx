@@ -35,14 +35,32 @@ const Footer = ({ showDockedRectangle = false }) => {
       {isExpanded && (
         <div className="design-categories-overlay" onClick={handleClose}>
           <div 
-            className="categories-panel-new expanded-from-bottom"
+            className="categories-panel-new"
             onClick={(e) => e.stopPropagation()}
           >
             <button className="close-btn-new" onClick={handleClose}>
               <X size={20} />
             </button>
             
-            {/* Layout for footer expansion: Image at top, categories in middle, title at bottom */}
+            <div className="expanded-title">
+              <span>We Design</span>
+              <span className="bullet">•</span>
+              <span>Everything</span>
+            </div>
+            
+            <div className="categories-grid">
+              {designCategories.map((category, index) => (
+                <button 
+                  key={index} 
+                  className={`category-btn ${hoveredCategory === category ? 'active' : ''}`}
+                  onMouseEnter={() => setHoveredCategory(category)}
+                  onMouseLeave={() => setHoveredCategory(null)}
+                >
+                  {category} +
+                </button>
+              ))}
+            </div>
+            
             <div className="preview-container">
               {hoveredCategory ? (
                 <div className="preview-content">
@@ -60,26 +78,6 @@ const Footer = ({ showDockedRectangle = false }) => {
                   <span>Hover over a category</span>
                 </div>
               )}
-            </div>
-            
-            <div className="categories-grid">
-              {designCategories.map((category, index) => (
-                <button 
-                  key={index} 
-                  className={`category-btn ${hoveredCategory === category ? 'active' : ''}`}
-                  onMouseEnter={() => setHoveredCategory(category)}
-                  onMouseLeave={() => setHoveredCategory(null)}
-                >
-                  {category} +
-                </button>
-              ))}
-            </div>
-            
-            <div className="expanded-title">
-              <span>We Design</span>
-              <span className="bullet">•</span>
-              <span>Everything</span>
-              <ChevronUp className="arrow-icon-title" size={20} />
             </div>
           </div>
         </div>
