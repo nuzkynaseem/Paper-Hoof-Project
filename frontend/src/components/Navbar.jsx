@@ -16,15 +16,19 @@ const Navbar = ({ onMenuClick }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleBrandReviewClick = () => {
-    navigate('/brand-review');
+  const handleLogoClick = () => {
+    navigate('/');
+    // Scroll to top of homepage
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   };
 
   return (
     <nav className={`navbar ${isScrolled ? 'navbar-scrolled' : ''}`}>
       <div className="navbar-content">
         <div className="navbar-left">
-          <div className="logo-container" onClick={() => navigate('/')}>
+          <div className="logo-container" onClick={handleLogoClick}>
             <div className="logo-icon">
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <rect x="8" y="12" width="16" height="12" fill="currentColor" />
