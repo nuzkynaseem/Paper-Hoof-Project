@@ -31,8 +31,16 @@ The result is a brand that feels confident, modern, and unmistakably Burger Hot.
     ]
   };
 
-  const prevProject = { name: 'Odera', id: 'odera' };
-  const nextProject = { name: 'Yaloo', id: 'yaloo' };
+  const prevProject = { 
+    name: 'Odera', 
+    id: 'odera',
+    image: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600&h=400&fit=crop'
+  };
+  const nextProject = { 
+    name: 'Yaloo', 
+    id: 'yaloo',
+    image: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=600&h=400&fit=crop'
+  };
 
   return (
     <div className="case-study-page">
@@ -111,12 +119,22 @@ The result is a brand that feels confident, modern, and unmistakably Burger Hot.
       <section className="project-navigation">
         <div className="nav-container">
           <div className="nav-item prev" onClick={() => navigate(`/work/${prevProject.id}`)}>
-            <span className="nav-label">Previous Project</span>
-            <h3 className="nav-project-name">{prevProject.name}</h3>
+            <div className="nav-image-wrapper">
+              <img src={prevProject.image} alt={prevProject.name} className="nav-project-image" />
+            </div>
+            <div className="nav-content">
+              <span className="nav-label">Previous Project</span>
+              <h3 className="nav-project-name">{prevProject.name}</h3>
+            </div>
           </div>
           <div className="nav-item next" onClick={() => navigate(`/work/${nextProject.id}`)}>
-            <span className="nav-label">Next Project</span>
-            <h3 className="nav-project-name">{nextProject.name}</h3>
+            <div className="nav-image-wrapper">
+              <img src={nextProject.image} alt={nextProject.name} className="nav-project-image" />
+            </div>
+            <div className="nav-content">
+              <span className="nav-label">Next Project</span>
+              <h3 className="nav-project-name">{nextProject.name}</h3>
+            </div>
           </div>
         </div>
       </section>
