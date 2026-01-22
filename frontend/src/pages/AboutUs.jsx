@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 import './AboutUs.css';
 
 const AboutUs = () => {
@@ -277,6 +277,7 @@ const AboutUs = () => {
                   <img src={member.image} alt={member.name} className="team-image" />
                   <a href={member.instagram} target="_blank" rel="noopener noreferrer" className="team-overlay">
                     <span>Instagram</span>
+                    <ArrowUpRight size={20} />
                   </a>
                 </div>
                 <h4 className="team-name">{member.name}</h4>
