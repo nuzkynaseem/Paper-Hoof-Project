@@ -46,11 +46,12 @@
   height: 100%;
 }
 
-/* Vertical Dividers */
+/* Vertical Dividers with gradient - touch the horizontal divider */
 .footer-divider-vertical {
   width: 1px;
-  background: rgba(240, 233, 223, 0.2);
+  background: linear-gradient(to bottom, var(--primary-green), transparent);
   height: 100%;
+  align-self: stretch;
 }
 
 /* Middle Column - Wordmark at Bottom */
