@@ -83,11 +83,11 @@
   margin: 0;
 }
 
-/* Sticky About Button - Desktop: Left bottom of hero, Mobile: Right bottom */
+/* Sticky About Button - Desktop: Right bottom corner, stays at that viewport height */
 .sticky-about-button {
   position: fixed;
   bottom: var(--space-10);
-  left: var(--space-10);
+  right: var(--space-10);
   z-index: 1000;
   display: flex;
   align-items: center;
