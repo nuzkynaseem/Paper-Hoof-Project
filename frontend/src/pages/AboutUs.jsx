@@ -95,8 +95,13 @@ const AboutUs = () => {
       {/* Our Philosophy Section */}
       <section className="philosophy-section">
         <div className="philosophy-container">
-          <span className="section-eyebrow">Our Philosophy</span>
-          <h2 className="section-heading">Brand as Action</h2>
+          <div className="philosophy-header">
+            <div className="philosophy-text">
+              <span className="section-eyebrow">Our Philosophy</span>
+              <h2 className="section-heading">Brand as Action</h2>
+            </div>
+            <a href="/contact" className="philosophy-cta">Contact Us</a>
+          </div>
           <p className="philosophy-description">
             We believe a brand is not what you say, but what you do. It's the cumulative experience of every interaction, every product, every conversation. Our work is rooted in systems thinking: building frameworks that scale, evolve, and remain coherent across digital, physical, and human touchpoints.
           </p>
