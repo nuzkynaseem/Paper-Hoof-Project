@@ -43,7 +43,7 @@
 .design-categories-trigger.position-floating.mobile {
   left: 50%;
   transform: translateX(-50%);
-  top: calc(64px + 4px);
+  top: calc(80px + 4px);
 }
 
 /* Docked position - in footer docking station */
