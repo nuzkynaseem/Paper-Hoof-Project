@@ -54,6 +54,11 @@ function AppContent() {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
 
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [location.pathname]);
+
   useEffect(() => {
     const handleScroll = () => {
       setScrollPosition(window.scrollY);
