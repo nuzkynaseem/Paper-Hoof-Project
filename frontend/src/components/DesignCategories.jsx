@@ -8,7 +8,8 @@ const DesignCategories = ({ scrollPosition, isHomePage = false, isDocked = false
   const [isExpanded, setIsExpanded] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [expandedFrom, setExpandedFrom] = useState('hero'); // Track where expansion was triggered from
+  const [expandedFrom, setExpandedFrom] = useState('hero');
+  const [isNavbarScrolled, setIsNavbarScrolled] = useState(false);
 
   useEffect(() => {
     // Check if mobile on mount and resize
@@ -21,6 +22,11 @@ const DesignCategories = ({ scrollPosition, isHomePage = false, isDocked = false
     
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    // Track if navbar is scrolled (shrunk)
+    setIsNavbarScrolled(scrollPosition > 100);
+  }, [scrollPosition]);
 
   useEffect(() => {
     if (!isHomePage) return; // Only animate on homepage
@@ -134,11 +140,22 @@ const DesignCategories = ({ scrollPosition, isHomePage = false, isDocked = false
     return 'auto'; // docked state
   };
 
+  // Calculate top position based on navbar state
+  const getFloatingTop = () => {
+    if (isMobile) {
+      // Mobile: navbar ~68px when scrolled, 4px gap
+      return isNavbarScrolled ? 'calc(68px + 4px)' : '20px';
+    } else {
+      // Desktop: navbar ~64px when scrolled, 8px gap
+      return isNavbarScrolled ? 'calc(64px + 8px)' : '40px';
+    }
+  };
+
   return (
     <div 
       className={`design-categories-trigger position-${position} ${isMobile ? 'mobile' : ''}`}
       style={{
-        top: position === 'floating' ? (isMobile ? 'calc(64px + 4px)' : 'calc(80px + 8px)') : (position === 'hero' ? (isMobile ? '20px' : '40px') : 'auto'),
+        top: position === 'floating' ? getFloatingTop() : (position === 'hero' ? (isMobile ? '20px' : '40px') : 'auto'),
         position: position === 'floating' ? 'fixed' : 'absolute'
       }}
       onClick={handleClick}
