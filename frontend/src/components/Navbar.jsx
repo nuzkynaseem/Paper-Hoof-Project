@@ -24,6 +24,10 @@ const Navbar = ({ onMenuClick }) => {
     }, 100);
   };
 
+  const handleBrandReviewClick = () => {
+    navigate('/brand-review');
+  };
+
   return (
     <nav className={`navbar ${isScrolled ? 'navbar-scrolled' : ''}`}>
       <div className="navbar-content">
