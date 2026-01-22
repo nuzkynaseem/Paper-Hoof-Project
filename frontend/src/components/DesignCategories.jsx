@@ -143,11 +143,11 @@ const DesignCategories = ({ scrollPosition, isHomePage = false, isDocked = false
   // Calculate top position based on navbar state
   const getFloatingTop = () => {
     if (isMobile) {
-      // Mobile: navbar shrinks to ~68px when scrolled, add 4px gap
-      return isNavbarScrolled ? 'calc(68px + 4px)' : 'calc(80px + 4px)';
+      // Mobile: navbar shrinks to ~68px when scrolled, add 16px gap
+      return isNavbarScrolled ? 'calc(68px + 16px)' : 'calc(80px + 16px)';
     } else {
-      // Desktop: navbar shrinks to ~64px when scrolled, add 8px gap
-      return isNavbarScrolled ? 'calc(64px + 8px)' : 'calc(80px + 8px)';
+      // Desktop: navbar shrinks to ~64px when scrolled, add 32px gap
+      return isNavbarScrolled ? 'calc(64px + 32px)' : 'calc(80px + 32px)';
     }
   };
 
