@@ -143,8 +143,8 @@ const DesignCategories = ({ scrollPosition, isHomePage = false, isDocked = false
   // Calculate top position based on navbar state
   const getFloatingTop = () => {
     if (isMobile) {
-      // Mobile: navbar shrinks to ~68px when scrolled, add 20px gap
-      return isNavbarScrolled ? 'calc(68px + 20px)' : 'calc(80px + 20px)';
+      // Mobile: navbar shrinks to ~68px when scrolled, add 30px gap
+      return isNavbarScrolled ? 'calc(68px + 30px)' : 'calc(80px + 30px)';
     } else {
       // Desktop: navbar shrinks to ~64px when scrolled, add 40px gap
       return isNavbarScrolled ? 'calc(64px + 40px)' : 'calc(80px + 40px)';
