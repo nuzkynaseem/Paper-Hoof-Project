@@ -24,5 +24,7 @@ Older Branfern vars (--bg-cream, --primary-green, etc.) still in use elsewhere �
 - Placeholder email set to hello@paperhoof.com (was branfern@gmail.com) — confirm real address.
 
 ## Backlog
-- Rebrand remaining pages/sections to Paper Hoof palette (top-to-bottom refinement requested).
+- **Recent Projects redesign** (Jun 2026, verified iteration_2.json): Pentagram-style editorial grid in RecentProjects.jsx/.css using `rp-` prefixed classes (scoped to avoid clashing with Work page's `.project-*`). Asymmetric 12-col grid (7/5, 5/7, 6/6 rhythm) → 8-col tablet → single-column mobile; sharp-cornered media (border-radius 0) with varied aspect ratios (16:10, 1:1, 4:3); Wolff-Olins pill tags INSIDE image top-left; title (Inter 500, 32/26/22) + muted description (rgba(32,36,35,0.68)) below; header with thin divider; IntersectionObserver staggered fade-in (opacity/translateY, 80ms stagger); lazy-loaded images. Added `description` field to each project in mock.js.
+- Rebrand remaining surfaces: Brand Review form/page, Project Case Study page, Hamburger menu.
+- Optional: unify inner-page hero color (Saddle Green) vs homepage hero (Navy).
 - P1 image uploads, P2 full backend integration (replace mock.js).
