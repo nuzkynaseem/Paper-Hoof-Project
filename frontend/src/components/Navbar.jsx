@@ -34,7 +34,7 @@ const Navbar = ({ onMenuClick, darkHero = false }) => {
         <div className="navbar-left">
           <div className="logo-container" onClick={handleLogoClick}>
             <img
-              src={`${process.env.PUBLIC_URL}/paperhoof-logo.svg`}
+              src={`${process.env.PUBLIC_URL}/paperhoof-wordmark.svg`}
               alt="Paper Hoof"
               className="navbar-logo"
             />
