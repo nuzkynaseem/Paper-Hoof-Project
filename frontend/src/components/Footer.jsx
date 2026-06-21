@@ -101,7 +101,7 @@ const Footer = ({ showDockedRectangle = false }) => {
             {/* Vertical Divider 1 */}
             <div className="footer-divider-vertical"></div>
 
-            {/* Middle Column - Branfern Wordmark */}
+            {/* Middle Column - Paper Hoof Wordmark */}
             <div className="footer-col footer-col-middle">
               <h2 className="footer-wordmark">Paper Hoof</h2>
             </div>

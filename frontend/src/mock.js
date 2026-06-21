@@ -1,4 +1,4 @@
-// Mock data for Branfern landing page
+// Mock data for Paper Hoof landing page
 
 export const projects = [
   {
