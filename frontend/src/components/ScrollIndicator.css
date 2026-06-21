@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-3);
-  padding: var(--space-16) 0;
+  padding: 0;
   cursor: pointer;
   transition: transform 0.3s ease;
 }
@@ -17,13 +17,13 @@
   font-family: var(--font-primary);
   font-weight: 500;
   font-size: 0.95rem;
-  color: var(--black);
+  color: var(--sheep-white);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .scroll-arrow {
-  color: var(--primary-green);
+  color: var(--saddle-green);
   animation: bounce 2s ease-in-out infinite;
 }
 
@@ -38,7 +38,7 @@
 
 @media (max-width: 768px) {
   .scroll-indicator {
-    padding: var(--space-12) 0;
+    padding: 0;
   }
 
   .scroll-text {

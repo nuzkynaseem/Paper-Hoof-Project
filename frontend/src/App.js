@@ -5,7 +5,6 @@ import Navbar from "./components/Navbar";
 import HamburgerMenu from "./components/HamburgerMenu";
 import DesignCategories from "./components/DesignCategories";
 import Hero from "./components/Hero";
-import ScrollIndicator from "./components/ScrollIndicator";
 import RecentProjects from "./components/RecentProjects";
 import Footer from "./components/Footer";
 import BrandReviewForm from "./components/BrandReviewForm";
@@ -41,7 +40,6 @@ function HomePage() {
     <>
       <DesignCategories scrollPosition={scrollPosition} isHomePage={true} isDocked={isDocked} />
       <Hero />
-      <ScrollIndicator />
       <RecentProjects />
     </>
   );
@@ -93,6 +91,7 @@ function AppContent() {
     <div className="App">
       <Navbar 
         onMenuClick={handleMenuToggle}
+        isHomePage={isHomePage}
       />
       
       <Routes>

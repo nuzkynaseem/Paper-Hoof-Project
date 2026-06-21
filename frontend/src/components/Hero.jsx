@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { showreelSlides } from '../mock';
+import ScrollIndicator from './ScrollIndicator';
 import './Hero.css';
 
 const Hero = () => {
@@ -8,38 +9,40 @@ const Hero = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % showreelSlides.length);
-    }, 5000); // Change slide every 5 seconds
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <section className="hero-section">
-      <div className="showreel-carousel">
-        {showreelSlides.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`carousel-slide ${index === currentSlide ? 'active' : ''}`}
-          >
-            <img src={slide.image} alt={slide.title} className="carousel-image" />
-            <div className="carousel-overlay" />
-            <div className="carousel-content">
-              <h1 className="carousel-title">{slide.title}</h1>
-              <p className="carousel-subtitle">{slide.subtitle}</p>
+    <section className="hero-section" data-testid="hero-section">
+      <div className="hero-inner">
+        <div className="hero-content" data-testid="hero-content">
+          {showreelSlides.map((slide, index) => (
+            <div
+              key={slide.id}
+              className={`hero-slide ${index === currentSlide ? 'active' : ''}`}
+            >
+              <h1 className="hero-title">{slide.title}</h1>
+              <p className="hero-subtitle">{slide.subtitle}</p>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <div className="carousel-indicators">
-        {showreelSlides.map((_, index) => (
-          <button
-            key={index}
-            className={`indicator ${index === currentSlide ? 'active' : ''}`}
-            onClick={() => setCurrentSlide(index)}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
+        <div className="hero-bottom">
+          <div className="hero-indicators">
+            {showreelSlides.map((_, index) => (
+              <button
+                key={index}
+                className={`indicator ${index === currentSlide ? 'active' : ''}`}
+                onClick={() => setCurrentSlide(index)}
+                aria-label={`Go to slide ${index + 1}`}
+                data-testid={`hero-indicator-${index}`}
+              />
+            ))}
+          </div>
+          <ScrollIndicator />
+        </div>
       </div>
     </section>
   );

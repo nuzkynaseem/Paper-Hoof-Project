@@ -39,39 +39,32 @@
   cursor: pointer;
 }
 
-.logo-icon {
-  color: var(--primary-green);
-  animation: logoBreath 3s ease-in-out infinite;
+.navbar-logo {
+  height: 40px;
+  width: auto;
+  display: block;
+  transition: var(--transition-smooth);
 }
 
-@keyframes logoBreath {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-.logo-eye {
-  animation: logoBlink 4s ease-in-out infinite;
-}
-
-@keyframes logoBlink {
-  0%, 48%, 52%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
+@media (max-width: 1024px) {
+  .navbar-logo {
+    height: 36px;
   }
 }
 
-.logo-text {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 1.5rem;
-  color: var(--black);
-  letter-spacing: -0.02em;
+/* Hero mode: navbar sits over the navy hero (homepage, top of page) */
+.navbar-hero-mode .navbar-logo {
+  filter: brightness(0) invert(1);
+}
+
+.navbar-hero-mode .brand-review-btn,
+.navbar-hero-mode .hamburger-btn {
+  color: var(--sheep-white);
+}
+
+.navbar-hero-mode .brand-review-btn:hover,
+.navbar-hero-mode .hamburger-btn:hover {
+  color: var(--mane-orange);
 }
 
 .navbar-right {
@@ -122,8 +115,8 @@
     padding: var(--space-3) var(--space-5);
   }
 
-  .logo-text {
-    font-size: 1.25rem;
+  .navbar-logo {
+    height: 32px;
   }
 
   .brand-review-btn {

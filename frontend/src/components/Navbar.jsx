@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import './Navbar.css';
 
-const Navbar = ({ onMenuClick }) => {
+const Navbar = ({ onMenuClick, isHomePage = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
 
@@ -29,18 +29,15 @@ const Navbar = ({ onMenuClick }) => {
   };
 
   return (
-    <nav className={`navbar ${isScrolled ? 'navbar-scrolled' : ''}`}>
+    <nav className={`navbar ${isScrolled ? 'navbar-scrolled' : ''} ${isHomePage && !isScrolled ? 'navbar-hero-mode' : ''}`}>
       <div className="navbar-content">
         <div className="navbar-left">
           <div className="logo-container" onClick={handleLogoClick}>
-            <div className="logo-icon">
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <rect x="8" y="12" width="16" height="12" fill="currentColor" />
-                <path d="M12 8 L16 4 L20 8" stroke="currentColor" strokeWidth="2" />
-                <circle cx="16" cy="18" r="2" fill="var(--bg-cream)" className="logo-eye" />
-              </svg>
-            </div>
-            <span className="logo-text">Branfern</span>
+            <img
+              src={`${process.env.PUBLIC_URL}/paperhoof-logo.svg`}
+              alt="Paper Hoof"
+              className="navbar-logo"
+            />
           </div>
         </div>
         <div className="navbar-right">

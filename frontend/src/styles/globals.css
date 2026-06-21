@@ -7,6 +7,13 @@
   --black: #121212;
   --grey: #6B6868;
   --white: #FFFFFF;
+
+  /* Paper Hoof Brand Palette */
+  --sheep-white: #FFFDF7;
+  --horse-black: #202423;
+  --mane-orange: #E34C18;
+  --saddle-green: #01360A;
+  --hero-navy: #0D2E4A;
   
   /* Spacing System (4px base) */
   --space-1: 4px;
