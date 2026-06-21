@@ -193,9 +193,9 @@
   font-size: 1.125rem;
   padding: var(--space-5) var(--space-12);
   background: transparent;
-  border: 2px solid var(--primary-green);
+  border: 2px solid var(--mane-orange);
   border-radius: var(--radius-md);
-  color: var(--primary-green);
+  color: var(--mane-orange);
   text-decoration: none;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -203,10 +203,10 @@
 }
 
 .contact-cta-button:hover {
-  background: rgba(18, 53, 36, 0.05);
-  color: var(--black);
+  background: var(--mane-orange);
+  color: var(--sheep-white);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(18, 53, 36, 0.1);
+  box-shadow: 0 4px 16px rgba(227, 76, 24, 0.2);
 }
 
 /* Mobile Responsive */

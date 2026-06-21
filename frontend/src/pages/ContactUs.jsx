@@ -13,8 +13,8 @@ const ContactUs = () => {
             <div className="hero-contact-details">
               <div className="contact-detail-item">
                 <Mail size={20} className="contact-icon" />
-                <a href="mailto:branfern@gmail.com" className="contact-link">
-                  branfern@gmail.com
+                <a href="mailto:hello@paperhoof.com" className="contact-link">
+                  hello@paperhoof.com
                 </a>
               </div>
               <div className="contact-detail-item">

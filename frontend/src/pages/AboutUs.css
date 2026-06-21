@@ -89,8 +89,8 @@
   height: 600px;
   border-radius: var(--radius-md);
   overflow: hidden;
-  background: linear-gradient(135deg, #1a3d2e, #123524);
-  box-shadow: 0 8px 32px rgba(18, 53, 36, 0.12);
+  background: linear-gradient(135deg, #0a2f12, #01360A);
+  box-shadow: 0 8px 32px rgba(1, 54, 10, 0.12);
 }
 
 .showreel-content {
@@ -271,7 +271,7 @@
 
 .card-bullet {
   display: inline-block;
-  color: var(--primary-green);
+  color: var(--mane-orange);
   font-size: 1.5rem;
   margin-right: var(--space-2);
   line-height: 1;
@@ -343,7 +343,7 @@
 }
 
 .dot.active {
-  background: var(--primary-green);
+  background: var(--mane-orange);
   width: 24px;
   border-radius: var(--radius-full);
 }
@@ -406,7 +406,7 @@
   left: 0;
   right: 0;
   height: 0;
-  background: rgba(18, 53, 36, 0.95);
+  background: rgba(1, 54, 10, 0.95);
   display: flex;
   align-items: center;
   justify-content: center;

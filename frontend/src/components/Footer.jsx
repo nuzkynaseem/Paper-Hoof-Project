@@ -90,11 +90,11 @@ const Footer = ({ showDockedRectangle = false }) => {
             {/* Left Column - Oversized Brand Mark */}
             <div className="footer-col footer-col-left">
               <div className="footer-brand-mark">
-                <svg viewBox="0 0 400 400" fill="none" className="brand-mark-svg">
-                  <rect x="80" y="140" width="240" height="180" fill="currentColor" />
-                  <path d="M140 100 L200 40 L260 100" stroke="currentColor" strokeWidth="24" />
-                  <circle cx="200" cy="230" r="30" fill="var(--bg-cream)" />
-                </svg>
+                <img
+                  src={`${process.env.PUBLIC_URL}/paperhoof-logo.svg`}
+                  alt="Paper Hoof"
+                  className="brand-mark-svg"
+                />
               </div>
             </div>
 
@@ -103,7 +103,7 @@ const Footer = ({ showDockedRectangle = false }) => {
 
             {/* Middle Column - Branfern Wordmark */}
             <div className="footer-col footer-col-middle">
-              <h2 className="footer-wordmark">Branfern</h2>
+              <h2 className="footer-wordmark">Paper Hoof</h2>
             </div>
 
             {/* Vertical Divider 2 */}
@@ -131,8 +131,8 @@ const Footer = ({ showDockedRectangle = false }) => {
 
               <div className="footer-contact-section">
                 <h3 className="footer-contact-heading">Contact Us</h3>
-                <a href="mailto:branfern@gmail.com" className="footer-contact-link">
-                  branfern@gmail.com
+                <a href="mailto:hello@paperhoof.com" className="footer-contact-link">
+                  hello@paperhoof.com
                 </a>
               </div>
 

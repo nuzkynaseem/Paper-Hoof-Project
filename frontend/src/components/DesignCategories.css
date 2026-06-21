@@ -205,9 +205,9 @@
 
 .category-item:hover,
 .category-item.active {
-  background: var(--primary-green);
-  color: var(--white);
-  border-color: var(--primary-green);
+  background: var(--mane-orange);
+  color: var(--sheep-white);
+  border-color: var(--mane-orange);
 }
 
 .category-item .plus {
@@ -404,12 +404,12 @@
 }
 
 .expanded-title .bullet {
-  color: var(--primary-green);
+  color: var(--mane-orange);
   font-weight: 700;
 }
 
 .expanded-title .arrow-icon-title {
-  color: var(--primary-green);
+  color: var(--mane-orange);
 }
 
 .categories-grid {
@@ -440,9 +440,9 @@
 
 .category-btn:hover,
 .category-btn.active {
-  background: var(--primary-green);
-  color: var(--white);
-  border-color: var(--primary-green);
+  background: var(--mane-orange);
+  color: var(--sheep-white);
+  border-color: var(--mane-orange);
 }
 
 .preview-container {

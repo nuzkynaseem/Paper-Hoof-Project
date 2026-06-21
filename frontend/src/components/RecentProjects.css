@@ -62,7 +62,7 @@
 
 .project-tag {
   padding: var(--space-2) var(--space-3);
-  background: rgba(240, 233, 223, 0.85);
+  background: rgba(255, 253, 247, 0.85);
   backdrop-filter: blur(5.5px);
   -webkit-backdrop-filter: blur(5.5px);
   border: 1px solid var(--bg-cream);

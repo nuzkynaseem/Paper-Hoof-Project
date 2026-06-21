@@ -91,7 +91,7 @@ function AppContent() {
     <div className="App">
       <Navbar 
         onMenuClick={handleMenuToggle}
-        isHomePage={isHomePage}
+        darkHero={isHomePage}
       />
       
       <Routes>

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import './Navbar.css';
 
-const Navbar = ({ onMenuClick, isHomePage = false }) => {
+const Navbar = ({ onMenuClick, darkHero = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ const Navbar = ({ onMenuClick, isHomePage = false }) => {
   };
 
   return (
-    <nav className={`navbar ${isScrolled ? 'navbar-scrolled' : ''} ${isHomePage && !isScrolled ? 'navbar-hero-mode' : ''}`}>
+    <nav className={`navbar ${isScrolled ? 'navbar-scrolled' : ''} ${darkHero && !isScrolled ? 'navbar-hero-mode' : ''}`}>
       <div className="navbar-content">
         <div className="navbar-left">
           <div className="logo-container" onClick={handleLogoClick}>

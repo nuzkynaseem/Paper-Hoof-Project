@@ -15,7 +15,7 @@ const ProjectCaseStudy = () => {
     location: 'Mawanella, Sri Lanka',
     tags: ['BRANDING', 'IDENTITY', 'UI/UX'],
     shortDescription: 'A complete rebrand for Burger Hot, reimagining the fast-food experience through considered design, cohesive visual systems, and thoughtful customer touchpoints.',
-    fullDescription: `Burger Hot approached Branfern with a clear challenge: their brand had grown organically over the years, but lacked cohesion. The visual identity felt dated, the customer experience was inconsistent across channels, and their positioning no longer reflected their values of quality, sustainability, and community.
+    fullDescription: `Burger Hot approached Paper Hoof with a clear challenge: their brand had grown organically over the years, but lacked cohesion. The visual identity felt dated, the customer experience was inconsistent across channels, and their positioning no longer reflected their values of quality, sustainability, and community.
 
 Our work began with deep research. We conducted stakeholder interviews, customer surveys, and competitive analysis. We mapped the entire customer journey, from discovery to loyalty. What emerged was a clear insight: Burger Hot wasn't just selling burgers—they were creating moments of connection.
 

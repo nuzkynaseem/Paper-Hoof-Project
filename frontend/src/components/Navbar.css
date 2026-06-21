@@ -19,7 +19,7 @@
 
 .navbar-scrolled .navbar-content {
   max-width: 80%;
-  background: rgba(240, 233, 223, 0.85);
+  background: rgba(255, 253, 247, 0.85);
   backdrop-filter: blur(12px);
   border: 2px solid var(--bg-cream);
   border-radius: var(--radius-xl);

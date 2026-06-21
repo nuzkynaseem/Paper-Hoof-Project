@@ -21,7 +21,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, rgba(18, 53, 36, 0.6) 0%, rgba(18, 53, 36, 0) 70%);
+  background: linear-gradient(90deg, rgba(1, 54, 10, 0.6) 0%, rgba(1, 54, 10, 0) 70%);
   pointer-events: none;
 }
 
@@ -194,7 +194,7 @@
 
 .project-tag {
   padding: var(--space-2) var(--space-3);
-  background: rgba(240, 233, 223, 0.95);
+  background: rgba(255, 253, 247, 0.95);
   backdrop-filter: blur(8px);
   border: 2px solid var(--bg-cream);
   border-radius: var(--radius-sm);

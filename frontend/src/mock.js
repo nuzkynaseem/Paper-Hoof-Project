@@ -60,7 +60,7 @@ export const showreelSlides = [
   },
   {
     id: 3,
-    title: 'BRANFERN',
+    title: 'PAPER HOOF',
     subtitle: 'editorial design',
     image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1400&h=583&fit=crop'
   }

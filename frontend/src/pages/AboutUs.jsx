@@ -70,7 +70,7 @@ const AboutUs = () => {
       <section className="about-hero">
         <div className="hero-container">
           <div className="hero-left">
-            <span className="hero-eyebrow">About Branfern</span>
+            <span className="hero-eyebrow">About Paper Hoof</span>
             <h1 className="hero-title">We design the systems that power your brand.</h1>
           </div>
           <div className="hero-right">
@@ -86,7 +86,7 @@ const AboutUs = () => {
         <div className="showreel-container">
           <div className="showreel-frame">
             <div className="showreel-content">
-              <span className="showreel-placeholder">BRANFERN SHOWREEL</span>
+              <span className="showreel-placeholder">PAPER HOOF SHOWREEL</span>
             </div>
           </div>
         </div>
@@ -260,7 +260,7 @@ const AboutUs = () => {
       <section className="team-section">
         <div className="team-container">
           <span className="section-eyebrow">The Team</span>
-          <h2 className="section-heading">The Branfern Collective</h2>
+          <h2 className="section-heading">The Paper Hoof Collective</h2>
           <p className="team-description">
             We're a small, considered team of designers, strategists, and makers based in Sri Lanka. We work with brands that value thoughtful design and are committed to building something meaningful.
           </p>

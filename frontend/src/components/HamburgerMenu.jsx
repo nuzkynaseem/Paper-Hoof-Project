@@ -60,8 +60,8 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
 
           <div className="menu-section">
             <h3 className="menu-section-title">Email</h3>
-            <a href="mailto:branfern@gmail.com" className="menu-contact-item">
-              branfern@gmail.com
+            <a href="mailto:hello@paperhoof.com" className="menu-contact-item">
+              hello@paperhoof.com
             </a>
           </div>
 

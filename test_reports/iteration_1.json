@@ -1,0 +1,83 @@
+{
+  "summary": "Frontend-only regression smoke test after 'Branfern' -> 'Paper Hoof' rebrand and global CSS token remap. Tested all routes (/, /about, /work, /work/:id, /contact, /brand-review), homepage hero + carousel, We Design expansion modal with hover preview, navbar logo navigation + scroll-pill behavior, About page pillar carousel (prev/next), Work grid -> case study -> 'About the project' drawer, Contact email + CTA, Footer wordmark/email/nav/scroll-up, and hamburger menu open + navigation. All flows functional. No visible 'Branfern' text anywhere in UI. Zero console errors on every route.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "verified_checks": {
+    "homepage": {
+      "hero_section_present": true,
+      "rotating_titles_BURROWED_CREATIVE_PAPER_HOOF": true,
+      "we_design_button_top_left": "'We Design • Everything' present",
+      "paperhoof_logo_in_navbar": true,
+      "carousel_indicator_dots_0_1_2": true,
+      "navy_hero_color": "Hero Navy #0D2E4A (visible in screenshot)",
+      "scroll_down_arrow_bottom": true
+    },
+    "design_categories_modal": {
+      "trigger_opens_modal": true,
+      "category_buttons_count": 12,
+      "hover_sets_active_class_orange": true,
+      "preview_image_shown_on_hover": "Confirmed: hovering SPORTS shows burger image and orange highlight",
+      "close_X_button_closes_modal": true
+    },
+    "navbar": {
+      "logo_click_returns_home_and_scrolls_top": true,
+      "navbar_scrolled_class_added_on_scroll": "class becomes 'navbar navbar-scrolled' (glass pill mode)"
+    },
+    "about_page": {
+      "url_loads": "/about loaded",
+      "eyebrow_About_Paper_Hoof": true,
+      "PAPER_HOOF_SHOWREEL_placeholder": true,
+      "pillar_carousel_next_works": "track transform moved from 0% to -100%",
+      "pillar_carousel_prev_present": true,
+      "deep_green_hero": "Saddle Green #01360A visible"
+    },
+    "work_page": {
+      "project_grid_count": 6,
+      "click_navigates_to_case_study": "/work/burger-hot",
+      "sticky_about_button_opens_drawer": true,
+      "drawer_open_class_applied": true
+    },
+    "contact_page": {
+      "email_hello_at_paperhoof": true,
+      "get_in_touch_CTA": true,
+      "green_hero": true
+    },
+    "brand_review_page": {"loads_without_crash": true},
+    "footer": {
+      "paper_hoof_wordmark": true,
+      "email_hello_at_paperhoof": true,
+      "horse_brand_mark_image": true,
+      "nav_links_order": ["HOME", "BRAND REVIEW", "ABOUT", "WORK", "CONTACT"],
+      "nav_link_navigation": "ABOUT link navigates to /about",
+      "scroll_up_button_works": "scrollY returns to 0"
+    },
+    "hamburger_menu": {
+      "trigger_opens_overlay": true,
+      "menu_nav_items": ["Work", "Brand Review", "About Us", "Contact Us"],
+      "menu_link_navigation_works": "About Us -> /about"
+    },
+    "branfern_text_in_UI": "ABSENT on all tested routes (homepage, about, work, work/burger-hot, contact, brand-review, footer)",
+    "console_errors": "0 across all routes"
+  },
+  "test_report_links": ["/app/test_reports/iteration_1.json"],
+  "action_items": [
+    "Minor cleanup (non-blocking, code-only, not visible to users): the comment '// Mock data for Branfern landing page' at /app/frontend/src/mock.js:1 and '/* Branfern Design System */' at /app/frontend/src/styles/globals.css:1 and '{/* Middle Column - Branfern Wordmark */}' in /app/frontend/src/components/Footer.jsx still reference the old brand. These are source-code comments only; they do not render in the UI. Optional to update for consistency."
+  ],
+  "critical_code_review_comments": [
+    "Rebrand executed cleanly: no leftover visible 'Branfern' strings; all rendered text and assets use 'Paper Hoof'.",
+    "Color tokens (Sheep White / Horse Black / Mane Orange / Saddle Green / Hero Navy) render as expected in hero, modal active state (orange #E34C18 on SPORTS), and green about/contact heroes.",
+    "DesignCategories.jsx uses onMouseEnter via React synthetic event; works correctly with real mouse hover (verified by orange highlight + dynamic preview image swap)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped per request)", "frontend": "100%"},
+  "test_credentials": "N/A - no auth",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All routes are working with zero console errors. Selectors that worked: .design-categories-trigger, .category-btn (and .category-btn.active for hover state), .preview-label, .navbar.navbar-scrolled, .work-project-card (NOT .project-card), .sticky-about-button, .project-drawer.open, .carousel-btn (6 total on /about), .hamburger-btn -> .hamburger-menu-overlay -> .menu-nav-item, .footer-nav-link, .footer-scroll-up. Hamburger nav items are 4 (Work/Brand Review/About Us/Contact Us). Footer nav items are 5 (HOME/BRAND REVIEW/ABOUT/WORK/CONTACT). data-testid present for hero-section, hero-content, hero-indicator-0/1/2.",
+  "rca of the issue": "N/A - no issues found"
+}
