@@ -5,43 +5,49 @@ export const projects = [
     id: 1,
     name: 'Burger Hot',
     category: 'Food Chain',
+    description: 'A bold rebrand for a fast-casual chain — an appetite-forward identity spanning packaging and the ordering experience.',
     tags: ['BRANDING', 'IDENTITY', 'UI/UX'],
-    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&h=600&fit=crop'
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=1200&h=900&fit=crop'
   },
   {
     id: 2,
     name: 'Odera',
     category: 'Supermarket',
+    description: 'A retail identity system built for clarity across thousands of everyday touchpoints.',
     tags: ['BRANDING', 'IDENTITY'],
-    image: 'https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=800&h=600&fit=crop'
+    image: 'https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=1000&h=1000&fit=crop'
   },
   {
     id: 3,
     name: 'Yaloo',
     category: 'Tourism',
+    description: 'Destination branding and digital presence for an emerging travel brand.',
     tags: ['BRANDING', 'DIGITAL PRESENCE'],
-    image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=600&fit=crop'
+    image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1000&h=1000&fit=crop'
   },
   {
     id: 4,
     name: 'Woodland Publishing',
     category: 'Publishing',
+    description: 'An editorial identity and book-design language for an independent publisher.',
     tags: ['BRANDING', 'IDENTITY'],
-    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=600&fit=crop'
+    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1200&h=900&fit=crop'
   },
   {
     id: 5,
     name: 'Burrowed',
     category: 'Magazine',
+    description: 'Art direction and digital experience for an independent literary magazine.',
     tags: ['BRANDING', 'IDENTITY', 'DIGITAL PRESENCE'],
-    image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&h=600&fit=crop'
+    image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=1000&h=750&fit=crop'
   },
   {
     id: 6,
     name: 'DHCH',
     category: 'Institution',
+    description: 'A considered identity system for a cultural institution.',
     tags: ['BRANDING', 'SYSTEM'],
-    image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800&h=600&fit=crop'
+    image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1000&h=750&fit=crop'
   }
 ];
 
