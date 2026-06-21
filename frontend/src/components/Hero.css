@@ -55,7 +55,7 @@
 }
 
 .hero-subtitle {
-  font-family: var(--font-heading);
+  font-family: var(--font-primary);
   font-weight: 400;
   font-size: clamp(1.25rem, 3vw, 2rem);
   font-style: italic;
