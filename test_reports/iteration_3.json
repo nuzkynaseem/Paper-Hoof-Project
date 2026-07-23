@@ -1,0 +1,18 @@
+{
+  "summary": "Frontend regression test for Paper Hoof homepage changes. All 4 requested changes verified working: (1) 'We Design Everything' pill + dock zone + modal fully removed (no .design-categories-trigger / .footer-docked-rectangle, text absent). (2) Navbar 'Work' link hidden at scrollY=0, appears after scroll >20px, clicking navigates to /work. (3) Hero shows single hero-scroll-arrow with no circle, no dots (.hero-indicators = 0), no 'See Selected Projects' text; clicking smooth-scrolls to Recent Projects (scrollY 0->1080). (4) <html>.is-scrolling toggles correctly: false when idle, true immediately on scroll, false ~700-900ms after scroll stops. Regression checks pass: hero BURROWED renders, all 6 project cards render, footer wordmark + nav links (HOME/BRAND REVIEW/ABOUT/WORK/CONTACT) present. No console errors.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "100%"},
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "All 4 features verified. Note: footer 'Scroll Up' text exists in code (Footer.jsx line 88) and button is present; innerText check missed it in one run because it was below viewport, but button element is confirmed rendered. Base URL: REACT_APP_BACKEND_URL from frontend/.env."
+}

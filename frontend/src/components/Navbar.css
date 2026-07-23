@@ -57,12 +57,14 @@
 }
 
 .navbar-hero-mode .brand-review-btn,
-.navbar-hero-mode .hamburger-btn {
+.navbar-hero-mode .hamburger-btn,
+.navbar-hero-mode .nav-work-btn {
   color: var(--sheep-white);
 }
 
 .navbar-hero-mode .brand-review-btn:hover,
-.navbar-hero-mode .hamburger-btn:hover {
+.navbar-hero-mode .hamburger-btn:hover,
+.navbar-hero-mode .nav-work-btn:hover {
   color: var(--mane-orange);
 }
 
@@ -70,6 +72,34 @@
   display: flex;
   align-items: center;
   gap: var(--space-6);
+}
+
+.nav-work-btn {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--black);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  padding: var(--space-2) var(--space-4);
+  animation: navWorkFade 0.35s ease-out;
+}
+
+.nav-work-btn:hover {
+  color: var(--primary-green);
+}
+
+@keyframes navWorkFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .brand-review-btn {

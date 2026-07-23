@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import HamburgerMenu from "./components/HamburgerMenu";
-import DesignCategories from "./components/DesignCategories";
 import Hero from "./components/Hero";
 import RecentProjects from "./components/RecentProjects";
 import Footer from "./components/Footer";
@@ -15,30 +14,8 @@ import Work from "./pages/Work";
 import ProjectCaseStudy from "./pages/ProjectCaseStudy";
 
 function HomePage() {
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const [isDocked, setIsDocked] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const pos = window.scrollY;
-      setScrollPosition(pos);
-      
-      // Check if we should dock
-      const footer = document.querySelector('.footer');
-      const footerTop = footer?.offsetTop || 99999;
-      const viewportHeight = window.innerHeight;
-      const scrollThreshold = footerTop - viewportHeight + 100;
-      
-      setIsDocked(pos >= scrollThreshold);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
     <>
-      <DesignCategories scrollPosition={scrollPosition} isHomePage={true} isDocked={isDocked} />
       <Hero />
       <RecentProjects />
     </>
@@ -48,7 +25,6 @@ function HomePage() {
 function AppContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isBrandReviewOpen, setIsBrandReviewOpen] = useState(false);
-  const [scrollPosition, setScrollPosition] = useState(0);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
 
@@ -57,13 +33,21 @@ function AppContent() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [location.pathname]);
 
+  // Show the custom scrollbar only while the user is actively scrolling
   useEffect(() => {
+    let timeoutId;
     const handleScroll = () => {
-      setScrollPosition(window.scrollY);
+      document.documentElement.classList.add('is-scrolling');
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        document.documentElement.classList.remove('is-scrolling');
+      }, 700);
     };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   const handleMenuToggle = () => {
@@ -103,7 +87,7 @@ function AppContent() {
         <Route path="/work/:projectId" element={<ProjectCaseStudy />} />
       </Routes>
       
-      <Footer showDockedRectangle={!isHomePage || (isHomePage && scrollPosition > 1500)} />
+      <Footer />
       
       <HamburgerMenu 
         isOpen={isMenuOpen} 

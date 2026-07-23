@@ -30,17 +30,6 @@ const Hero = () => {
         </div>
 
         <div className="hero-bottom">
-          <div className="hero-indicators">
-            {showreelSlides.map((_, index) => (
-              <button
-                key={index}
-                className={`indicator ${index === currentSlide ? 'active' : ''}`}
-                onClick={() => setCurrentSlide(index)}
-                aria-label={`Go to slide ${index + 1}`}
-                data-testid={`hero-indicator-${index}`}
-              />
-            ))}
-          </div>
           <ScrollIndicator />
         </div>
       </div>

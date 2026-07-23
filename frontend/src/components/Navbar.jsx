@@ -5,11 +5,13 @@ import './Navbar.css';
 
 const Navbar = ({ onMenuClick, darkHero = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 100);
+      setHasScrolled(window.scrollY > 20);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -41,6 +43,11 @@ const Navbar = ({ onMenuClick, darkHero = false }) => {
           </div>
         </div>
         <div className="navbar-right">
+          {hasScrolled && (
+            <button className="nav-work-btn" onClick={() => navigate('/work')} data-testid="navbar-work-link">
+              Work
+            </button>
+          )}
           <button className="brand-review-btn" onClick={handleBrandReviewClick}>
             Brand Review
           </button>
