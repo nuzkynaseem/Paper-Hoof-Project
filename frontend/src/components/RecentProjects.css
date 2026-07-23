@@ -3,76 +3,42 @@
   background: var(--bg-cream);
 }
 
-/* Editorial header */
-.rp-header {
-  border-bottom: 1px solid rgba(32, 36, 35, 0.08);
-  padding-bottom: var(--space-5);
-  margin-bottom: 48px;
-}
-
-.rp-section-title {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  text-transform: uppercase;
-  letter-spacing: -0.01em;
-  color: var(--horse-black);
-  margin: 0;
-}
-
-/* 12-column editorial grid */
-.rp-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  column-gap: 48px;
-  row-gap: 48px;
-  align-items: start;
-}
-
-.rp-span-7 { grid-column: span 7; }
-.rp-span-6 { grid-column: span 6; }
-.rp-span-5 { grid-column: span 5; }
-
-/* Card */
-.rp-card {
+/* Featured project card */
+.featured-card {
   cursor: pointer;
   opacity: 0;
   transform: translateY(24px);
-  transition: opacity 500ms ease-out, transform 500ms ease-out;
+  transition: opacity 600ms ease-out, transform 600ms ease-out;
 }
 
-.rp-card.is-visible {
+.featured-card.is-visible {
   opacity: 1;
   transform: none;
 }
 
-/* Media — focal point, sharp geometry */
-.rp-media {
+.featured-media {
   position: relative;
   width: 100%;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: 0;
   background: #ECE6DB;
 }
-
-.rp-wide .rp-media { aspect-ratio: 16 / 10; }
-.rp-square .rp-media { aspect-ratio: 1 / 1; }
-.rp-classic .rp-media { aspect-ratio: 4 / 3; }
 
 .rp-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 400ms ease-out, filter 400ms ease-out;
+  transition: transform 500ms ease-out, filter 500ms ease-out;
 }
 
-.rp-card:hover .rp-image {
-  transform: scale(1.015);
+.featured-card:hover .rp-image {
+  transform: scale(1.02);
   filter: brightness(1.03);
 }
 
-/* Tags — Wolff Olins style, inside the image */
+/* Category tags — inside top-left */
 .rp-tags {
   position: absolute;
   top: 16px;
@@ -100,74 +66,75 @@
   font-weight: 500;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  transition: background 200ms ease, opacity 200ms ease;
 }
 
-.rp-tag:hover {
-  background: rgba(255, 253, 247, 1);
-}
-
-/* Metadata — quiet and refined, below the image */
-.rp-info {
-  margin-top: 16px;
-}
-
-.rp-title {
+/* Featured Work badge — top-right corner of the frame */
+.featured-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--mane-orange);
+  color: var(--sheep-white);
   font-family: var(--font-primary);
-  font-weight: 500;
-  font-size: 32px;
-  line-height: 1.1;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(227, 76, 24, 0.25);
+}
+
+/* Metadata below the frame */
+.featured-info {
+  margin-top: 24px;
+}
+
+.featured-title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--horse-black);
   margin: 0;
 }
 
-.rp-desc {
+.featured-desc {
   font-family: var(--font-primary);
   font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.55;
+  font-size: 1.125rem;
+  line-height: 1.6;
   color: rgba(32, 36, 35, 0.68);
-  margin: 8px 0 0 0;
-  max-width: 90%;
+  margin-top: 12px;
+  max-width: 640px;
 }
 
-/* Tablet — 8 columns, simplified asymmetry */
-@media (max-width: 1024px) {
-  .rp-grid {
-    grid-template-columns: repeat(8, 1fr);
-    column-gap: 32px;
-    row-gap: 32px;
-  }
-
-  .rp-span-7 { grid-column: span 8; }
-  .rp-span-6 { grid-column: span 4; }
-  .rp-span-5 { grid-column: span 4; }
-
-  .rp-title { font-size: 26px; }
-}
-
-/* Mobile — single-column stack */
 @media (max-width: 768px) {
-  .rp-grid {
-    grid-template-columns: 1fr;
-    column-gap: 0;
-    row-gap: 24px;
+  .featured-media {
+    aspect-ratio: 4 / 3;
   }
-
-  .rp-span-7,
-  .rp-span-6,
-  .rp-span-5 { grid-column: 1 / -1; }
-
-  .rp-title { font-size: 22px; }
-  .rp-desc { max-width: 100%; }
+  .featured-info {
+    margin-top: 20px;
+  }
+  .featured-desc {
+    font-size: 1rem;
+    max-width: 100%;
+  }
 }
 
-/* Respect reduced-motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  .rp-card {
+  .featured-card {
     opacity: 1;
     transform: none;
     transition: none;
   }
-  .rp-image { transition: none; }
+  .rp-image {
+    transition: none;
+  }
 }

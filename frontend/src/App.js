@@ -4,6 +4,7 @@ import "./App.css";
 import Navbar from "./components/Navbar";
 import HamburgerMenu from "./components/HamburgerMenu";
 import Hero from "./components/Hero";
+import IntroReveal from "./components/IntroReveal";
 import RecentProjects from "./components/RecentProjects";
 import Footer from "./components/Footer";
 import BrandReviewForm from "./components/BrandReviewForm";
@@ -17,6 +18,7 @@ function HomePage() {
   return (
     <>
       <Hero />
+      <IntroReveal />
       <RecentProjects />
     </>
   );

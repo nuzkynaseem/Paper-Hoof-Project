@@ -3,21 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { projects } from '../mock';
 import './RecentProjects.css';
 
-const LAYOUT = [
-  { span: 'rp-span-7', ratio: 'rp-wide' },
-  { span: 'rp-span-5', ratio: 'rp-square' },
-  { span: 'rp-span-5', ratio: 'rp-square' },
-  { span: 'rp-span-7', ratio: 'rp-wide' },
-  { span: 'rp-span-6', ratio: 'rp-classic' },
-  { span: 'rp-span-6', ratio: 'rp-classic' },
-];
-
 const RecentProjects = () => {
   const navigate = useNavigate();
-  const gridRef = useRef(null);
+  const cardRef = useRef(null);
+  const featured = projects[0];
 
   useEffect(() => {
-    const cards = gridRef.current ? gridRef.current.querySelectorAll('.rp-card') : [];
+    const el = cardRef.current;
+    if (!el) return;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -27,57 +20,46 @@ const RecentProjects = () => {
           }
         });
       },
-      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+      { threshold: 0.15 }
     );
-    cards.forEach((card) => observer.observe(card));
+    observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
-  const handleProjectClick = (name) => {
-    navigate(`/work/${name.toLowerCase().replace(/ /g, '-')}`);
+  const handleClick = () => {
+    navigate(`/work/${featured.name.toLowerCase().replace(/ /g, '-')}`);
   };
 
   return (
     <section id="recent-projects" className="recent-projects-section">
       <div className="container">
-        <div className="rp-header">
-          <h2 className="rp-section-title" data-testid="recent-projects-title">Recent Projects</h2>
-        </div>
+        <article
+          className="featured-card"
+          ref={cardRef}
+          onClick={handleClick}
+          data-testid={`project-card-${featured.id}`}
+        >
+          <div className="featured-media">
+            <img
+              src={featured.image}
+              alt={featured.name}
+              className="rp-image"
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="rp-tags">
+              {featured.tags.map((tag, i) => (
+                <span key={i} className="rp-tag">{tag}</span>
+              ))}
+            </div>
+            <span className="featured-badge" data-testid="featured-work-badge">Featured Work</span>
+          </div>
 
-        <div className="rp-grid" ref={gridRef}>
-          {projects.map((project, index) => {
-            const layout = LAYOUT[index % LAYOUT.length];
-            return (
-              <article
-                key={project.id}
-                className={`rp-card ${layout.span} ${layout.ratio}`}
-                style={{ transitionDelay: `${(index % LAYOUT.length) * 80}ms` }}
-                onClick={() => handleProjectClick(project.name)}
-                data-testid={`project-card-${project.id}`}
-              >
-                <div className="rp-media">
-                  <img
-                    src={project.image}
-                    alt={project.name}
-                    className="rp-image"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <div className="rp-tags">
-                    {project.tags.map((tag, i) => (
-                      <span key={i} className="rp-tag">{tag}</span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="rp-info">
-                  <h3 className="rp-title">{project.name}</h3>
-                  <p className="rp-desc">{project.description}</p>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+          <div className="featured-info">
+            <h3 className="featured-title">{featured.name}</h3>
+            <p className="featured-desc">{featured.description}</p>
+          </div>
+        </article>
       </div>
     </section>
   );
