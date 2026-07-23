@@ -1,5 +1,8 @@
 // Mock data for Paper Hoof landing page
 
+export const slugify = (s) =>
+  s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
 export const projects = [
   {
     id: 1,

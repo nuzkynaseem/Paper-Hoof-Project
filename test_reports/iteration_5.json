@@ -1,0 +1,18 @@
+{
+  "summary": "Frontend-only verification of new ProjectSidebar on /work/:slug. All acceptance criteria pass: 6 round icons render with correct data-testids, burger-hot active by default. On hover, sidebar width transitions 72 -> 300px; thumbs morph to 260x150 rectangles; labels reach opacity 1. .sidebar-track has overflow-y auto. Clicking sidebar-item-yaloo navigates to /work/yaloo, hero title becomes 'Yaloo', and yaloo item gains .active class. About-the-project button toggles drawer open/close and shows drawer title. Prev/Next navigation works. On 390px viewport the sidebar is display:none. No console errors.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Tags count observed = 2 for Yaloo (mock has 2 tags: BRANDING, DIGITAL PRESENCE) — matches data; no issue.",
+    "ProjectSidebar useEffect dependency only [] but adds listeners once; updateBlob is recalled via useLayoutEffect on activeSlug/expanded — OK.",
+    "Consider adding data-testid on drawer for future assertions."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a", "frontend": "100%"},
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Case-study left sidebar verified end-to-end (hover expand, blob-active class, click-to-navigate, mobile hidden, about drawer). Base URL from frontend/.env."
+}

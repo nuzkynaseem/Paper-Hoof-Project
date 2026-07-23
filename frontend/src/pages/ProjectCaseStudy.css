@@ -2,6 +2,7 @@
   min-height: 100vh;
   background: var(--bg-cream);
   padding-top: 80px;
+  padding-left: 72px;
   position: relative;
 }
 
@@ -296,6 +297,7 @@
 @media (max-width: 768px) {
   .case-study-page {
     padding-top: 64px;
+    padding-left: 0;
   }
 
   .case-study-hero {
