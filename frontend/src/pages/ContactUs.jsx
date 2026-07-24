@@ -1,5 +1,6 @@
 import React from 'react';
 import { Instagram, Music, MessageCircle, Linkedin, Mail, MapPin } from 'lucide-react';
+import ReadyToMove from '../components/ReadyToMove';
 import './ContactUs.css';
 
 const ContactUs = () => {
@@ -52,21 +53,8 @@ const ContactUs = () => {
         </div>
       </section>
 
-      {/* Main Section with Marquee */}
-      <section className="contact-main">
-        <div className="marquee-container">
-          <div className="marquee">
-            <span className="marquee-text">Ready to move with us • Ready to move with us • Ready to move with us • Ready to move with us • Ready to move with us • Ready to move with us • </span>
-            <span className="marquee-text">Ready to move with us • Ready to move with us • Ready to move with us • Ready to move with us • Ready to move with us • Ready to move with us • </span>
-          </div>
-        </div>
-
-        <div className="cta-container">
-          <a href="/brand-review" className="contact-cta-button">
-            Get in Touch
-          </a>
-        </div>
-      </section>
+      {/* Ready to Move CTA band */}
+      <ReadyToMove />
     </div>
   );
 };

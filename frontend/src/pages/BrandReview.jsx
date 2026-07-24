@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Calendar } from '../components/ui/calendar';
+import ReadyToMove from '../components/ReadyToMove';
 import './BrandReview.css';
 
 const BrandReview = () => {
@@ -399,6 +400,9 @@ const BrandReview = () => {
           </form>
         </div>
       </section>
+
+      {/* Ready to Move CTA band */}
+      <ReadyToMove />
     </div>
   );
 };

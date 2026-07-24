@@ -313,40 +313,40 @@
   font-weight: 600;
   font-size: 1rem;
   padding: var(--space-4) var(--space-8);
-  border-radius: var(--radius-sm);
+  border-radius: 999px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 2px solid var(--primary-green);
+  border: 2px solid var(--mane-orange);
 }
 
 .btn-back {
   background: transparent;
-  color: var(--primary-green);
+  color: var(--mane-orange);
 }
 
 .btn-back:hover {
-  background: rgba(18, 53, 36, 0.05);
+  background: rgba(227, 76, 24, 0.06);
 }
 
 .btn-next {
   background: transparent;
-  color: var(--primary-green);
+  color: var(--mane-orange);
 }
 
 .btn-next:hover {
-  background: rgba(18, 53, 36, 0.05);
+  background: rgba(227, 76, 24, 0.06);
 }
 
 .btn-submit {
-  background: var(--primary-green);
-  color: var(--white);
+  background: var(--mane-orange);
+  color: var(--sheep-white);
 }
 
 .btn-submit:hover {
-  background: var(--black);
-  border-color: var(--black);
+  background: var(--horse-black);
+  border-color: var(--horse-black);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(18, 53, 36, 0.2);
+  box-shadow: 0 4px 16px rgba(227, 76, 24, 0.25);
 }
 
 /* Booking Section */

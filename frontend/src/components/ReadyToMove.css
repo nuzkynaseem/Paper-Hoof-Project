@@ -1,0 +1,82 @@
+.ready-band {
+  background: var(--horse-black);
+  padding: 72px 0 64px;
+  overflow: hidden;
+  position: relative;
+}
+
+.ready-band-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.ready-band-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: rbScroll 28s linear infinite;
+}
+
+.rb-phrase {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 9vw, 7rem);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+  color: rgba(255, 253, 247, 0.9);
+  padding-right: 0.15em;
+}
+
+.rb-orange {
+  color: var(--mane-orange);
+}
+
+.rb-yellow {
+  color: #E8B84B;
+}
+
+@keyframes rbScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ready-band-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  position: relative;
+  z-index: 2;
+}
+
+.ready-contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 1.05rem;
+  color: var(--sheep-white);
+  background: transparent;
+  border: 1px solid rgba(255, 253, 247, 0.4);
+  border-radius: 999px;
+  padding: 14px 30px;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+
+.ready-contact-btn:hover {
+  background: var(--mane-orange);
+  border-color: var(--mane-orange);
+  color: var(--sheep-white);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ready-band-track {
+    animation: none;
+  }
+}

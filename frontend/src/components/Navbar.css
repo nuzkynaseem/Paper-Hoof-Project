@@ -21,7 +21,7 @@
   max-width: 80%;
   background: var(--sheep-white);
   border: 1px solid rgba(32, 36, 35, 0.12);
-  border-radius: var(--radius-lg);
+  border-radius: 999px;
   padding: var(--space-4) var(--space-8);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
 }

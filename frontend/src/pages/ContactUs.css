@@ -194,7 +194,7 @@
   padding: var(--space-5) var(--space-12);
   background: transparent;
   border: 2px solid var(--mane-orange);
-  border-radius: var(--radius-md);
+  border-radius: 999px;
   color: var(--mane-orange);
   text-decoration: none;
   cursor: pointer;
