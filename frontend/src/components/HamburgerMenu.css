@@ -40,7 +40,7 @@
 }
 
 .menu-close-btn:hover {
-  color: var(--primary-green);
+  color: var(--mane-orange);
 }
 
 .menu-content {
@@ -79,7 +79,7 @@
 }
 
 .menu-nav-item:hover {
-  color: var(--primary-green);
+  color: var(--mane-orange);
 }
 
 .menu-right {
@@ -124,7 +124,7 @@
 }
 
 .menu-social-item:hover {
-  color: var(--primary-green);
+  color: var(--mane-orange);
 }
 
 .menu-contact-item {
@@ -137,7 +137,7 @@
 }
 
 .menu-contact-item:hover {
-  color: var(--primary-green);
+  color: var(--mane-orange);
 }
 
 .menu-location-item {
