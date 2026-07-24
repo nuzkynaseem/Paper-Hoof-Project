@@ -1,0 +1,33 @@
+.more-works-section {
+  padding: 0 0 var(--space-24);
+  background: var(--bg-cream);
+}
+
+.more-works-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 32px;
+}
+
+.more-works-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--horse-black);
+  background: transparent;
+  border: 1px solid rgba(32, 36, 35, 0.2);
+  border-radius: 999px;
+  padding: 12px 22px;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+
+.more-works-btn:hover {
+  background: var(--mane-orange);
+  border-color: var(--mane-orange);
+  color: var(--sheep-white);
+  transform: translateY(-2px);
+}

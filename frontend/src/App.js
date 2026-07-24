@@ -6,6 +6,7 @@ import HamburgerMenu from "./components/HamburgerMenu";
 import Hero from "./components/Hero";
 import IntroReveal from "./components/IntroReveal";
 import RecentProjects from "./components/RecentProjects";
+import MoreWorks from "./components/MoreWorks";
 import Footer from "./components/Footer";
 import BrandReviewForm from "./components/BrandReviewForm";
 import BrandReview from "./pages/BrandReview";
@@ -20,6 +21,7 @@ function HomePage() {
       <Hero />
       <IntroReveal />
       <RecentProjects />
+      <MoreWorks />
     </>
   );
 }
