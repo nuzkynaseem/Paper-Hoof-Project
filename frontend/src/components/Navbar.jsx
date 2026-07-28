@@ -91,15 +91,24 @@ const Navbar = ({ onMenuClick, isMenuOpen = false, darkHero = false }) => {
           </button>
           <button
             id="menuToggle"
-            className={`hamburger-btn ${isMenuOpen ? 'open' : ''}`}
+            className="hamburger-btn"
             onClick={onMenuClick}
             aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={isMenuOpen}
-            aria-controls="nav-overlay"
+            aria-controls="nav"
           >
-            <svg width="22" height="22" viewBox="0 0 20 20" fill="none" className="hamburger-svg">
-              <line className="bar bar-top" x1="3" y1="7" x2="17" y2="7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-              <line className="bar bar-bot" x1="3" y1="13" x2="17" y2="13" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line className="bar bar-top" x1="3" y1="7" x2="17" y2="7" />
+              <line className="bar bar-bot" x1="3" y1="13" x2="17" y2="13" />
             </svg>
           </button>
         </div>
