@@ -307,45 +307,52 @@
 
 /* Direct 4 Social Links Grid inside Panel 2 */
 .panel-socials-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  width: 100%;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 8px !important;
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .panel-social-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #FFFFFF;
-  text-decoration: none;
-  font-family: var(--font-primary);
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 14px !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #FFFFFF !important;
+  text-decoration: none !important;
+  font-family: var(--font-primary) !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .panel-social-link:hover {
-  background: var(--mane-orange);
-  border-color: var(--mane-orange);
-  color: #FFFFFF;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(227, 76, 24, 0.3);
+  background: var(--mane-orange) !important;
+  border-color: var(--mane-orange) !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 14px rgba(227, 76, 24, 0.35) !important;
 }
 
-.panel-social-link .social-arrow {
-  margin-left: auto;
-  opacity: 0.6;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+.panel-social-link .panel-social-arrow {
+  margin-left: auto !important;
+  opacity: 0.6 !important;
+  transition: opacity 0.2s ease, transform 0.2s ease !important;
+  color: #FFFFFF !important;
 }
 
-.panel-social-link:hover .social-arrow {
-  opacity: 1;
-  transform: translate(2px, -2px);
+.panel-social-link:hover .panel-social-arrow {
+  opacity: 1 !important;
+  transform: translate(2px, -2px) !important;
 }
 
 /* Mobile Responsiveness (Stacked Vertically, Height Fits Viewport) */

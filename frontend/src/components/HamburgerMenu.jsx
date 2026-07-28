@@ -249,7 +249,7 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
                 >
                   <Instagram size={16} />
                   <span>Instagram</span>
-                  <ArrowUpRight size={14} className="social-arrow" />
+                  <ArrowUpRight size={14} className="panel-social-arrow" />
                 </a>
                 <a
                   href="https://tiktok.com"
@@ -260,7 +260,7 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
                 >
                   <Music size={16} />
                   <span>TikTok</span>
-                  <ArrowUpRight size={14} className="social-arrow" />
+                  <ArrowUpRight size={14} className="panel-social-arrow" />
                 </a>
                 <a
                   href="https://whatsapp.com"
@@ -271,7 +271,7 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
                 >
                   <MessageCircle size={16} />
                   <span>WhatsApp</span>
-                  <ArrowUpRight size={14} className="social-arrow" />
+                  <ArrowUpRight size={14} className="panel-social-arrow" />
                 </a>
                 <a
                   href="https://linkedin.com"
@@ -282,7 +282,7 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
                 >
                   <Linkedin size={16} />
                   <span>LinkedIn</span>
-                  <ArrowUpRight size={14} className="social-arrow" />
+                  <ArrowUpRight size={14} className="panel-social-arrow" />
                 </a>
               </div>
             </div>
