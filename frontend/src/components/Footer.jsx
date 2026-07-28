@@ -1,80 +1,159 @@
-import React, { useEffect, useRef } from 'react';
-import { Instagram, Music, MessageCircle, Linkedin } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowUpRight, Instagram, Music, MessageCircle, Linkedin, Share2 } from 'lucide-react';
+import GravityCanvas from './GravityCanvas';
 import './Footer.css';
 
 const Footer = () => {
-  const footerRef = useRef(null);
+  const [isSocialsOpen, setIsSocialsOpen] = useState(false);
+  const socialsRef = useRef(null);
 
+  // Close tooltip on touch / click outside (Mobile & Desktop fallback)
   useEffect(() => {
-    const el = footerRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            el.classList.add('revealed');
-            observer.disconnect();
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+    if (!isSocialsOpen) return;
+
+    const handleTouchOrClickOutside = (event) => {
+      if (socialsRef.current && !socialsRef.current.contains(event.target)) {
+        setIsSocialsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleTouchOrClickOutside);
+    document.addEventListener('touchstart', handleTouchOrClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleTouchOrClickOutside);
+      document.removeEventListener('touchstart', handleTouchOrClickOutside);
+    };
+  }, [isSocialsOpen]);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
-    <footer className="footer" ref={footerRef} data-testid="site-footer">
-      <div className="footer-main">
-        <div className="footer-container">
-          {/* Left — large black horse */}
-          <div className="footer-col footer-col-left reveal-col">
-            <img
-              src={`${process.env.PUBLIC_URL}/paperhoof-horse.svg`}
-              alt="Paper Hoof"
-              className="footer-horse"
-            />
+    <footer className="compact-footer" data-testid="site-footer">
+      <div className="compact-footer-inner">
+        {/* Top Header: Live Availability & Socials Tooltip Pill */}
+        <div className="compact-top-bar">
+          <div className="status-badge">
+            <span className="status-dot"></span>
+            <span className="status-text">AVAILABLE FOR SELECT PROJECTS 2026</span>
           </div>
 
-          <div className="footer-divider-vertical"></div>
+          {/* Socials Unfurling Tooltip Pill */}
+          <div
+            className="socials-pill-wrapper"
+            ref={socialsRef}
+            onMouseEnter={() => setIsSocialsOpen(true)}
+            onMouseLeave={() => setIsSocialsOpen(false)}
+          >
+            <button
+              type="button"
+              className={`socials-pill-btn ${isSocialsOpen ? 'active' : ''}`}
+              onClick={() => setIsSocialsOpen(!isSocialsOpen)}
+              aria-expanded={isSocialsOpen}
+              aria-label="Toggle Socials menu"
+              data-testid="socials-pill-btn"
+            >
+              <Share2 size={16} />
+              <span>Socials</span>
+              <span className="pill-badge-count">4</span>
+            </button>
 
-          {/* Middle — stacked wordmark */}
-          <div className="footer-col footer-col-middle reveal-col">
-            <h2 className="footer-wordmark">Paper<br />Hoof</h2>
-          </div>
-
-          <div className="footer-divider-vertical"></div>
-
-          {/* Right — contact */}
-          <div className="footer-col footer-col-right reveal-col">
-            <div className="footer-contact-section">
-              <h3 className="footer-contact-heading">Get in Touch</h3>
-              <div className="footer-social-icons">
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="Instagram">
-                  <Instagram size={22} />
+            {/* Unfurling Tooltip Container */}
+            <div
+              className={`socials-tooltip-container ${isSocialsOpen ? 'unfurled' : ''}`}
+              role="tooltip"
+              data-testid="socials-tooltip"
+            >
+              <div className="tooltip-header">
+                <span>CONNECT WITH US</span>
+              </div>
+              <div className="tooltip-links">
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tooltip-link-item"
+                  aria-label="Instagram"
+                >
+                  <Instagram size={18} />
+                  <span>Instagram</span>
+                  <ArrowUpRight size={14} className="link-arrow" />
                 </a>
-                <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="TikTok">
-                  <Music size={22} />
+                <a
+                  href="https://tiktok.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tooltip-link-item"
+                  aria-label="TikTok"
+                >
+                  <Music size={18} />
+                  <span>TikTok</span>
+                  <ArrowUpRight size={14} className="link-arrow" />
                 </a>
-                <a href="https://whatsapp.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="WhatsApp">
-                  <MessageCircle size={22} />
+                <a
+                  href="https://whatsapp.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tooltip-link-item"
+                  aria-label="WhatsApp"
+                >
+                  <MessageCircle size={18} />
+                  <span>WhatsApp</span>
+                  <ArrowUpRight size={14} className="link-arrow" />
                 </a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="LinkedIn">
-                  <Linkedin size={22} />
+                <a
+                  href="https://linkedin.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tooltip-link-item"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin size={18} />
+                  <span>LinkedIn</span>
+                  <ArrowUpRight size={14} className="link-arrow" />
                 </a>
               </div>
             </div>
-
-            <div className="footer-contact-section">
-              <h3 className="footer-contact-heading">Contact Us</h3>
-              <a href="mailto:hello@paperhoof.com" className="footer-contact-link">hello@paperhoof.com</a>
-            </div>
-
-            <div className="footer-contact-section">
-              <h3 className="footer-contact-heading">Location</h3>
-              <p className="footer-contact-text">Mawanella, Sri Lanka</p>
-            </div>
           </div>
+        </div>
+
+        {/* GSAP + Matter.js Gravity Shapes Playground — Between Status Note & LET'S TALK BRANDING */}
+        <GravityCanvas />
+
+        {/* Middle Section: Email Statement */}
+        <div className="compact-middle-block">
+          <div className="email-cta-row">
+            <h3 className="compact-headline">LET'S TALK BRANDING</h3>
+            <a
+              href="mailto:hello@paperhoof.com"
+              className="compact-email-link"
+              aria-label="Email hello@paperhoof.com"
+            >
+              <span>hello@paperhoof.com</span>
+              <ArrowUpRight size={24} />
+            </a>
+          </div>
+        </div>
+
+        {/* Bottom Utility Bar */}
+        <div className="compact-bottom-bar">
+          <div className="copyright-info">
+            © {new Date().getFullYear()} Paper Hoof Studio. All rights reserved.
+          </div>
+
+          <div className="brand-stamp">PAPER HOOF</div>
+
+          <button
+            type="button"
+            className="scroll-top-btn"
+            onClick={scrollToTop}
+            aria-label="Back to top"
+          >
+            <span>BACK TO TOP</span>
+            <ArrowUpRight size={16} />
+          </button>
         </div>
       </div>
     </footer>

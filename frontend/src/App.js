@@ -64,12 +64,6 @@ function AppContent() {
     document.body.style.overflow = 'auto';
   };
 
-  const handleBrandReviewOpen = () => {
-    setIsBrandReviewOpen(true);
-    setIsMenuOpen(false);
-    document.body.style.overflow = 'hidden';
-  };
-
   const handleBrandReviewClose = () => {
     setIsBrandReviewOpen(false);
     document.body.style.overflow = 'auto';
@@ -77,20 +71,27 @@ function AppContent() {
 
   return (
     <div className="App">
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+
       <Navbar 
         onMenuClick={handleMenuToggle}
+        isMenuOpen={isMenuOpen}
         darkHero={isHomePage}
       />
       
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/brand-review" element={<BrandReview />} />
-        <Route path="/contact" element={<ContactUs />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="/work" element={<Work />} />
-        <Route path="/work/:projectId" element={<ProjectCaseStudy />} />
-      </Routes>
-      
+      <main id="main-content" tabIndex="-1">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/brand-review" element={<BrandReview />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/work" element={<Work />} />
+          <Route path="/work/:projectId" element={<ProjectCaseStudy />} />
+        </Routes>
+      </main>
+
       <Footer />
       
       <HamburgerMenu 

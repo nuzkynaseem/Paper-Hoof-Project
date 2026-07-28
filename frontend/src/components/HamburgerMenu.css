@@ -29,13 +29,16 @@
   right: var(--space-10);
   background: transparent;
   border: none;
-  color: var(--black);
+  color: var(--horse-black);
   cursor: pointer;
-  padding: var(--space-2);
+  padding: 8px;
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, background-color 0.2s ease;
   z-index: 10;
 }
 
@@ -68,18 +71,22 @@
 .menu-nav-item {
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: clamp(2rem, 5vw, 4rem);
-  color: var(--grey);
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  color: var(--horse-black);
   text-align: left;
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: color 0.3s ease;
-  padding: var(--space-2) 0;
+  transition: color 0.3s ease, transform 0.2s ease;
+  padding: 10px 0;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
 }
 
 .menu-nav-item:hover {
   color: var(--mane-orange);
+  transform: translateX(6px);
 }
 
 .menu-right {
@@ -97,11 +104,11 @@
 
 .menu-section-title {
   font-family: var(--font-primary);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.875rem;
-  color: var(--grey);
+  color: rgba(32, 36, 35, 0.85);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   margin-bottom: var(--space-2);
 }
 
@@ -116,11 +123,13 @@
   align-items: center;
   gap: var(--space-3);
   font-family: var(--font-primary);
-  font-weight: 400;
-  font-size: 1rem;
-  color: var(--grey);
+  font-weight: 500;
+  font-size: 1.05rem;
+  color: var(--horse-black);
   text-decoration: none;
   transition: color 0.3s ease;
+  min-height: 44px;
+  padding: 4px 0;
 }
 
 .menu-social-item:hover {
@@ -129,11 +138,14 @@
 
 .menu-contact-item {
   font-family: var(--font-primary);
-  font-weight: 400;
-  font-size: 1rem;
-  color: var(--grey);
+  font-weight: 500;
+  font-size: 1.05rem;
+  color: var(--horse-black);
   text-decoration: none;
   transition: color 0.3s ease;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .menu-contact-item:hover {
@@ -144,7 +156,8 @@
   font-family: var(--font-primary);
   font-weight: 400;
   font-size: 1rem;
-  color: var(--grey);
+  color: rgba(32, 36, 35, 0.88);
+  margin: 0;
 }
 
 @media (max-width: 1024px) {
@@ -164,14 +177,31 @@
 
 @media (max-width: 768px) {
   .menu-content {
-    padding: var(--space-16) var(--space-5);
+    padding: 80px var(--space-5) var(--space-10);
   }
 
   .menu-close-btn {
-    right: var(--space-5);
+    top: var(--space-4);
+    right: var(--space-4);
   }
 
   .menu-nav-item {
-    font-size: 2rem;
+    font-size: 2.25rem;
+    padding: 8px 0;
   }
+}
+
+/* Socials Tooltip Pill inside Hamburger Menu */
+.menu-socials-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.menu-socials-wrapper .socials-tooltip-container {
+  top: calc(100% + 8px);
+  left: 0;
+  right: auto;
+  transform-origin: top left;
+  z-index: 100;
 }

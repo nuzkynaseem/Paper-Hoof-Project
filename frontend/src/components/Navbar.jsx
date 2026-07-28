@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import './Navbar.css';
 
-const Navbar = ({ onMenuClick, darkHero = false }) => {
+const Navbar = ({ onMenuClick, isMenuOpen = false, darkHero = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const navigate = useNavigate();
@@ -20,10 +20,8 @@ const Navbar = ({ onMenuClick, darkHero = false }) => {
       } else {
         setIsScrolled(true);
         if (currentY > lastY + 5) {
-          // Scrolling down -> hide
           setIsVisible(false);
         } else if (currentY < lastY - 5) {
-          // Scrolling up -> show
           setIsVisible(true);
         }
       }
@@ -42,6 +40,13 @@ const Navbar = ({ onMenuClick, darkHero = false }) => {
     }, 100);
   };
 
+  const handleLogoKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleLogoClick();
+    }
+  };
+
   const handleBrandReviewClick = () => {
     navigate('/brand-review');
   };
@@ -51,11 +56,19 @@ const Navbar = ({ onMenuClick, darkHero = false }) => {
       className={`navbar ${isScrolled ? 'navbar-scrolled' : ''} ${!isVisible ? 'navbar-hidden' : ''} ${
         darkHero && !isScrolled ? 'navbar-hero-mode' : ''
       }`}
+      aria-label="Main navigation"
       data-testid="site-navbar"
     >
       <div className="navbar-content">
         <div className="navbar-left">
-          <div className="logo-container" onClick={handleLogoClick}>
+          <div
+            className="logo-container"
+            onClick={handleLogoClick}
+            onKeyDown={handleLogoKeyDown}
+            role="button"
+            tabIndex={0}
+            aria-label="Paper Hoof homepage"
+          >
             <img
               src={`${process.env.PUBLIC_URL}/paperhoof-wordmark.svg`}
               alt="Paper Hoof"
@@ -76,8 +89,14 @@ const Navbar = ({ onMenuClick, darkHero = false }) => {
           <button className="brand-review-btn" onClick={handleBrandReviewClick}>
             Brand Review
           </button>
-          <button className="hamburger-btn" onClick={onMenuClick} aria-label="Open menu">
-            <Menu size={24} />
+          <button
+            className="hamburger-btn"
+            onClick={onMenuClick}
+            aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={isMenuOpen}
+            aria-controls="hamburger-menu"
+          >
+            <Menu size={24} aria-hidden="true" />
           </button>
         </div>
       </div>

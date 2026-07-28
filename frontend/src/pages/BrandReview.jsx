@@ -1,12 +1,63 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { ChevronLeft, ChevronRight, ArrowLeft, ArrowRight, CheckCircle2, Calendar as CalendarIcon, Clock, Mail, Check } from 'lucide-react';
 import { Calendar } from '../components/ui/calendar';
 import ReadyToMove from '../components/ReadyToMove';
+import { DraggableCardContainer, DraggableCardBody } from '../components/ui/draggable-card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
 import './BrandReview.css';
+
+const brandCards = [
+  {
+    title: "Nordic Light",
+    tag: "Brand Identity",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop",
+    className: "top-8 left-[3%] md:left-[8%] rotate-[-8deg]"
+  },
+  {
+    title: "Aesop Organics",
+    tag: "Packaging & Audit",
+    image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=600&auto=format&fit=crop",
+    className: "top-48 left-[1%] md:left-[5%] rotate-[7deg]"
+  },
+  {
+    title: "Lumen Living",
+    tag: "Visual System",
+    image: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80&w=600&auto=format&fit=crop",
+    className: "top-8 right-[3%] md:right-[8%] rotate-[10deg]"
+  },
+  {
+    title: "Maison Kith",
+    tag: "Digital Experience",
+    image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=600&auto=format&fit=crop",
+    className: "top-52 right-[1%] md:right-[5%] rotate-[-6deg]"
+  },
+  {
+    title: "Aura Creative",
+    tag: "Full Rebrand",
+    image: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=600&auto=format&fit=crop",
+    className: "bottom-6 left-[14%] md:left-[20%] rotate-[-5deg]"
+  },
+  {
+    title: "Bare Essence",
+    tag: "Strategy & Positioning",
+    image: "https://images.unsplash.com/photo-1526947425960-945c6e72858f?q=80&w=600&auto=format&fit=crop",
+    className: "bottom-6 right-[14%] md:right-[20%] rotate-[8deg]"
+  }
+];
 
 const BrandReview = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  const initialFormData = {
     service: '',
     budget: '',
     hearAbout: '',
@@ -20,7 +71,67 @@ const BrandReview = () => {
     date: null,
     timeSlot: '',
     notes: ''
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
+
+  // Parallax float for background text (reduced by 75% for subtle floating effect)
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { damping: 25, stiffness: 120 };
+  const bgTextX = useSpring(useTransform(mouseX, [-0.5, 0.5], [28, -28]), springConfig);
+  const bgTextY = useSpring(useTransform(mouseY, [-0.5, 0.5], [9, -9]), springConfig);
+
+  const handleHeroMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const normX = (e.clientX - rect.left) / rect.width - 0.5;
+    const normY = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(normX);
+    mouseY.set(normY);
+  };
+
+  const handleHeroMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
+  // Calendar Boundaries: Current Date up to 6 Months in the Future
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const maxSelectableDate = new Date();
+  maxSelectableDate.setMonth(maxSelectableDate.getMonth() + 6);
+  maxSelectableDate.setHours(23, 59, 59, 999);
+
+  const isDateDisabled = (date) => {
+    return date < today || date > maxSelectableDate;
+  };
+
+  const isPrevMonthDisabled = () => {
+    const prev = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
+    const startOfCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    return prev < startOfCurrentMonth;
+  };
+
+  const isNextMonthDisabled = () => {
+    const next = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
+    const startOfMaxMonth = new Date(maxSelectableDate.getFullYear(), maxSelectableDate.getMonth(), 1);
+    return next > startOfMaxMonth;
+  };
+
+  const handlePrevMonth = () => {
+    if (!isPrevMonthDisabled()) {
+      setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (!isNextMonthDisabled()) {
+      setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+    }
+  };
 
   const serviceOptions = [
     'Brand Strategy',
@@ -81,323 +192,475 @@ const BrandReview = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Handle submission
-    alert('Thank you for booking a Brand Review session. We will contact you shortly.');
+    setIsSubmitted(true);
+  };
+
+  const handleResetFlow = () => {
+    setFormData(initialFormData);
+    setIsSubmitted(false);
+    setCurrentStep(1);
   };
 
   return (
     <div className="brand-review-page">
-      {/* Hero Section */}
-      <section className="brand-review-hero">
-        <div className="hero-container">
-          <div className="hero-left">
-            <h1 className="hero-title">Brand Review</h1>
-            <p className="hero-description">
-              Our Brand Review is a <strong>120-minute</strong> strategic session where we step back, assess, and understand your brand as a whole, its story, structure, presence, and potential. Rather than surface-level feedback, we offer considered direction rooted in design thinking, systems, and long-term brand health.
+      {/* Redesigned Hero Section (White background) */}
+      <section
+        className="brand-review-hero"
+        onMouseMove={handleHeroMouseMove}
+        onMouseLeave={handleHeroMouseLeave}
+      >
+        <DraggableCardContainer className="hero-draggable-container">
+          {/* Background Text: 120 MINUTES (Pinned to Middle, 50% Opacity, Floating Parallax Effect) */}
+          <div className="hero-bg-text-wrapper">
+            <motion.div
+              className="hero-bg-text"
+              aria-hidden="true"
+              style={{
+                x: bgTextX,
+                y: bgTextY,
+              }}
+            >
+              120 MINUTES
+            </motion.div>
+          </div>
+
+          {/* Foreground Text: Brand Review & Description with Glass Backdrop Blur */}
+          <div className="hero-center-content">
+            <h1 className="brand-review-hero-title">Brand Review</h1>
+            <p className="brand-review-hero-description">
+              Our Brand Review is a <strong>120-minute</strong> strategic session where we assess, analyze, and align your brand's core story, identity, and long-term potential.
             </p>
           </div>
-          <div className="hero-right">
-            <div className="hero-time-display">
-              <span className="time-number">120</span>
-              <span className="time-unit">MINUTES</span>
-            </div>
-          </div>
-        </div>
+
+          {/* Movable Brand Cards in Background */}
+          {brandCards.map((item) => (
+            <DraggableCardBody key={item.title} className={item.className}>
+              <div className="brand-card-img-wrapper">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="pointer-events-none relative z-10 h-40 w-40 md:h-48 md:w-48 rounded-xl object-cover"
+                />
+              </div>
+              <div className="brand-card-footer">
+                <h3 className="brand-card-title">{item.title}</h3>
+                <span className="brand-card-tag">{item.tag}</span>
+              </div>
+            </DraggableCardBody>
+          ))}
+        </DraggableCardContainer>
       </section>
 
-      {/* Main Form Section */}
+      {/* Main Form & Booking Section */}
       <section className="brand-review-form-section">
         <div className="form-container">
-          {/* Progress Indicator */}
-          <div className="progress-indicator">
-            <span className="progress-text">Step {currentStep} of 3</span>
-          </div>
-
-          <form onSubmit={handleSubmit} className="brand-review-form">
-            {/* Step 1: Service Context */}
-            {currentStep === 1 && (
-              <div className="form-step">
-                <div className="form-field">
-                  <label className="field-label">
-                    Select Service
-                    <span className="label-arrow">▸</span>
-                  </label>
-                  <select
-                    name="service"
-                    value={formData.service}
-                    onChange={handleInputChange}
-                    className="field-select"
-                    required
-                  >
-                    <option value="">Choose the service from dropdown</option>
-                    {serviceOptions.map((option, index) => (
-                      <option key={index} value={option}>{option}</option>
-                    ))}
-                  </select>
+          {!isSubmitted ? (
+            <>
+              {/* Stepper Header */}
+              <div className="stepper-header">
+                <div className="stepper-info">
+                  <span className="stepper-badge">SESSION BOOKING</span>
+                  <h2 className="stepper-title">Reserve Your Brand Review</h2>
                 </div>
-
-                <div className="form-field">
-                  <label className="field-label">
-                    What's Your Budget
-                    <span className="label-arrow">▸</span>
-                  </label>
-                  <select
-                    name="budget"
-                    value={formData.budget}
-                    onChange={handleInputChange}
-                    className="field-select"
-                    required
+                
+                <div className="stepper-progress-bar">
+                  <div
+                    className={`step-pill ${currentStep >= 1 ? 'active' : ''}`}
+                    onClick={() => currentStep > 1 && setCurrentStep(1)}
                   >
-                    <option value="">Choose your budget from dropdown</option>
-                    {budgetOptions.map((option, index) => (
-                      <option key={index} value={option}>{option}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-field">
-                  <label className="field-label">
-                    How Did You Hear Us
-                    <span className="label-arrow">▸</span>
-                  </label>
-                  <select
-                    name="hearAbout"
-                    value={formData.hearAbout}
-                    onChange={handleInputChange}
-                    className="field-select"
-                    required
+                    <span className="step-num">01</span>
+                    <span className="step-label">Service</span>
+                  </div>
+                  <div className="step-divider" />
+                  <div
+                    className={`step-pill ${currentStep >= 2 ? 'active' : ''}`}
+                    onClick={() => currentStep > 2 && setCurrentStep(2)}
                   >
-                    <option value="">Choose from dropdown</option>
-                    {hearAboutOptions.map((option, index) => (
-                      <option key={index} value={option}>{option}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-field">
-                  <label className="field-label">
-                    Who Referred Us
-                    <span className="label-arrow">▸</span>
-                  </label>
-                  <select
-                    name="referrer"
-                    value={formData.referrer}
-                    onChange={handleInputChange}
-                    className="field-select"
-                    required
-                  >
-                    <option value="">Choose the person from dropdown</option>
-                    {referrerOptions.map((option, index) => (
-                      <option key={index} value={option}>{option}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-actions">
-                  <button type="button" onClick={handleNext} className="btn-next">
-                    Next
-                  </button>
+                    <span className="step-num">02</span>
+                    <span className="step-label">Details</span>
+                  </div>
+                  <div className="step-divider" />
+                  <div className={`step-pill ${currentStep >= 3 ? 'active' : ''}`}>
+                    <span className="step-num">03</span>
+                    <span className="step-label">Schedule</span>
+                  </div>
                 </div>
               </div>
-            )}
 
-            {/* Step 2: Personal Information */}
-            {currentStep === 2 && (
-              <div className="form-step">
-                <div className="form-grid">
-                  <div className="form-field">
-                    <label className="field-label">
-                      First Name
-                      <span className="label-arrow">▸</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      className="field-input"
-                      placeholder="Type your first name here"
-                      required
-                    />
-                  </div>
+              <form onSubmit={handleSubmit} className="brand-review-form">
+                {/* Step 1: Service Context */}
+                {currentStep === 1 && (
+                  <div className="form-step">
+                    <div className="form-field">
+                      <label className="field-label">
+                        Select Service
+                        <span className="label-arrow">▸</span>
+                      </label>
+                      <Select
+                        value={formData.service}
+                        onValueChange={(val) => setFormData(prev => ({ ...prev, service: val }))}
+                      >
+                        <SelectTrigger className="custom-select-trigger">
+                          <SelectValue placeholder="Choose the service from dropdown" />
+                        </SelectTrigger>
+                        <SelectContent className="custom-select-content">
+                          {serviceOptions.map((option, index) => (
+                            <SelectItem key={index} value={option} className="custom-select-item">
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <div className="form-field">
-                    <label className="field-label">
-                      Last Name
-                      <span className="label-arrow">▸</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      className="field-input"
-                      placeholder="Type your last name here"
-                      required
-                    />
-                  </div>
+                    <div className="form-field">
+                      <label className="field-label">
+                        What's Your Budget
+                        <span className="label-arrow">▸</span>
+                      </label>
+                      <Select
+                        value={formData.budget}
+                        onValueChange={(val) => setFormData(prev => ({ ...prev, budget: val }))}
+                      >
+                        <SelectTrigger className="custom-select-trigger">
+                          <SelectValue placeholder="Choose your budget from dropdown" />
+                        </SelectTrigger>
+                        <SelectContent className="custom-select-content">
+                          {budgetOptions.map((option, index) => (
+                            <SelectItem key={index} value={option} className="custom-select-item">
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <div className="form-field">
-                    <label className="field-label">
-                      Email
-                      <span className="label-arrow">▸</span>
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="field-input"
-                      placeholder="Type your email here"
-                      required
-                    />
-                  </div>
+                    <div className="form-field">
+                      <label className="field-label">
+                        How Did You Hear Us
+                        <span className="label-arrow">▸</span>
+                      </label>
+                      <Select
+                        value={formData.hearAbout}
+                        onValueChange={(val) => setFormData(prev => ({ ...prev, hearAbout: val }))}
+                      >
+                        <SelectTrigger className="custom-select-trigger">
+                          <SelectValue placeholder="Choose from dropdown" />
+                        </SelectTrigger>
+                        <SelectContent className="custom-select-content">
+                          {hearAboutOptions.map((option, index) => (
+                            <SelectItem key={index} value={option} className="custom-select-item">
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <div className="form-field">
-                    <label className="field-label">
-                      Phone
-                      <span className="label-arrow">▸</span>
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="field-input"
-                      placeholder="Type your phone number here"
-                      required
-                    />
-                  </div>
+                    <div className="form-field">
+                      <label className="field-label">
+                        Who Referred Us
+                        <span className="label-arrow">▸</span>
+                      </label>
+                      <Select
+                        value={formData.referrer}
+                        onValueChange={(val) => setFormData(prev => ({ ...prev, referrer: val }))}
+                      >
+                        <SelectTrigger className="custom-select-trigger">
+                          <SelectValue placeholder="Choose the person from dropdown" />
+                        </SelectTrigger>
+                        <SelectContent className="custom-select-content">
+                          {referrerOptions.map((option, index) => (
+                            <SelectItem key={index} value={option} className="custom-select-item">
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <div className="form-field">
-                    <label className="field-label">
-                      Company Name
-                      <span className="label-arrow">▸</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="company"
-                      value={formData.company}
-                      onChange={handleInputChange}
-                      className="field-input"
-                      placeholder="Type your company name here"
-                      required
-                    />
-                  </div>
-
-                  <div className="form-field">
-                    <label className="field-label">
-                      Instagram ID
-                      <span className="label-arrow">▸</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="instagram"
-                      value={formData.instagram}
-                      onChange={handleInputChange}
-                      className="field-input"
-                      placeholder="Type your Instagram username"
-                    />
-                  </div>
-                </div>
-
-                <div className="form-actions">
-                  <button type="button" onClick={handleBack} className="btn-back">
-                    Back
-                  </button>
-                  <button type="button" onClick={handleNext} className="btn-next">
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Step 3: Slot Booking */}
-            {currentStep === 3 && (
-              <div className="form-step">
-                <div className="booking-section">
-                  <div className="form-field">
-                    <label className="field-label-dropdown">
-                      Reserve a Date
-                      <ChevronRight size={16} className="dropdown-arrow" />
-                    </label>
-                    <div className="calendar-container">
-                      <div className="calendar-header">
-                        <button type="button" className="calendar-nav-btn">
-                          <ChevronLeft size={20} />
-                        </button>
-                        <span className="calendar-month">2026 December</span>
-                        <button type="button" className="calendar-nav-btn">
-                          <ChevronRight size={20} />
-                        </button>
-                      </div>
-                      <Calendar
-                        mode="single"
-                        selected={formData.date}
-                        onSelect={(date) => setFormData(prev => ({ ...prev, date }))}
-                        disabled={(date) => date < new Date()}
-                        className="brand-calendar"
-                      />
-                      <div className="calendar-timezone">
-                        Time zone: IST (GMT +5:30)
-                      </div>
+                    <div className="form-actions">
+                      <button type="button" onClick={handleNext} className="btn-next">
+                        <span>Next Step</span>
+                        <ArrowRight size={18} />
+                      </button>
                     </div>
                   </div>
+                )}
 
-                  {formData.date && (
-                    <>
-                      <div className="selected-date-display">
-                        {formData.date.toLocaleDateString('en-US', { 
-                          weekday: 'long', 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
-                        })}
+                {/* Step 2: Personal Information */}
+                {currentStep === 2 && (
+                  <div className="form-step">
+                    <div className="form-grid">
+                      <div className="form-field">
+                        <label className="field-label">
+                          First Name
+                          <span className="label-arrow">▸</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          className="field-input"
+                          placeholder="Type your first name"
+                          required
+                        />
                       </div>
 
-                      <div className="time-slots">
-                        {timeSlots.map((slot, index) => (
-                          <button
-                            key={index}
-                            type="button"
-                            className={`time-slot-btn ${formData.timeSlot === slot ? 'selected' : ''}`}
-                            onClick={() => setFormData(prev => ({ ...prev, timeSlot: slot }))}
-                          >
-                            {slot}
-                          </button>
-                        ))}
+                      <div className="form-field">
+                        <label className="field-label">
+                          Last Name
+                          <span className="label-arrow">▸</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={handleInputChange}
+                          className="field-input"
+                          placeholder="Type your last name"
+                          required
+                        />
                       </div>
-                    </>
-                  )}
-                </div>
 
-                <div className="form-field">
-                  <label className="field-label-dropdown">
-                    Anything you like us to know
-                    <ChevronRight size={16} className="dropdown-arrow" />
-                  </label>
-                  <textarea
-                    name="notes"
-                    value={formData.notes}
-                    onChange={handleInputChange}
-                    className="field-textarea"
-                    placeholder="Type here"
-                    rows="4"
-                  />
-                </div>
+                      <div className="form-field">
+                        <label className="field-label">
+                          Email
+                          <span className="label-arrow">▸</span>
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          className="field-input"
+                          placeholder="name@company.com"
+                          required
+                        />
+                      </div>
 
-                <div className="form-actions">
-                  <button type="button" onClick={handleBack} className="btn-back">
-                    Back
-                  </button>
-                  <button type="submit" className="btn-submit">
-                    Submit
-                  </button>
-                </div>
+                      <div className="form-field">
+                        <label className="field-label">
+                          Phone
+                          <span className="label-arrow">▸</span>
+                        </label>
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          className="field-input"
+                          placeholder="+1 (555) 000-0000"
+                          required
+                        />
+                      </div>
+
+                      <div className="form-field">
+                        <label className="field-label">
+                          Company Name
+                          <span className="label-arrow">▸</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="company"
+                          value={formData.company}
+                          onChange={handleInputChange}
+                          className="field-input"
+                          placeholder="Your brand / business name"
+                          required
+                        />
+                      </div>
+
+                      <div className="form-field">
+                        <label className="field-label">
+                          Instagram ID
+                          <span className="label-arrow">▸</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="instagram"
+                          value={formData.instagram}
+                          onChange={handleInputChange}
+                          className="field-input"
+                          placeholder="@yourhandle"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-actions">
+                      <button type="button" onClick={handleBack} className="btn-back">
+                        <ArrowLeft size={18} />
+                        <span>Back</span>
+                      </button>
+                      <button type="button" onClick={handleNext} className="btn-next">
+                        <span>Next Step</span>
+                        <ArrowRight size={18} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 3: Slot Booking */}
+                {currentStep === 3 && (
+                  <div className="form-step">
+                    <div className="booking-section">
+                      <div className="form-field calendar-field-wrapper">
+                        <label className="field-label-dropdown">
+                          Reserve a Date
+                          <span className="label-arrow">▸</span>
+                        </label>
+                        <div className="calendar-container">
+                          {/* Calendar Header: Month Nav on Left, Year Heading Pinned to Right */}
+                          <div className="calendar-custom-header">
+                            <div className="calendar-month-nav">
+                              <button
+                                type="button"
+                                className="calendar-nav-btn"
+                                onClick={handlePrevMonth}
+                                disabled={isPrevMonthDisabled()}
+                                aria-label="Previous month"
+                              >
+                                <ChevronLeft size={20} />
+                              </button>
+                              <span className="calendar-month-name">
+                                {currentMonth.toLocaleDateString('en-US', { month: 'long' })}
+                              </span>
+                              <button
+                                type="button"
+                                className="calendar-nav-btn"
+                                onClick={handleNextMonth}
+                                disabled={isNextMonthDisabled()}
+                                aria-label="Next month"
+                              >
+                                <ChevronRight size={20} />
+                              </button>
+                            </div>
+
+                            {/* Year Heading Pinned to Right Side of Calendar */}
+                            <div className="calendar-year-heading">
+                              <span className="year-label">YEAR</span>
+                              <span className="year-number">{currentMonth.getFullYear()}</span>
+                            </div>
+                          </div>
+
+                          <Calendar
+                            mode="single"
+                            month={currentMonth}
+                            onMonthChange={setCurrentMonth}
+                            selected={formData.date}
+                            onSelect={(date) => setFormData(prev => ({ ...prev, date }))}
+                            disabled={isDateDisabled}
+                            className="brand-calendar"
+                            classNames={{
+                              caption_label: "hidden",
+                              nav: "hidden",
+                              caption: "flex justify-center relative items-center h-0 overflow-hidden"
+                            }}
+                          />
+                          <div className="calendar-timezone">
+                            Time zone: IST (GMT +5:30)
+                          </div>
+                        </div>
+                      </div>
+
+                      {formData.date && (
+                        <>
+                          <div className="selected-date-display">
+                            Selected: {formData.date.toLocaleDateString('en-US', { 
+                              weekday: 'long', 
+                              year: 'numeric', 
+                              month: 'long', 
+                              day: 'numeric' 
+                            })}
+                          </div>
+
+                          <div className="time-slots">
+                            {timeSlots.map((slot, index) => (
+                              <button
+                                key={index}
+                                type="button"
+                                className={`time-slot-btn ${formData.timeSlot === slot ? 'selected' : ''}`}
+                                onClick={() => setFormData(prev => ({ ...prev, timeSlot: slot }))}
+                              >
+                                {slot}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    <div className="form-field">
+                      <label className="field-label-dropdown">
+                        Anything you like us to know
+                        <span className="label-arrow">▸</span>
+                      </label>
+                      <textarea
+                        name="notes"
+                        value={formData.notes}
+                        onChange={handleInputChange}
+                        className="field-textarea"
+                        placeholder="Type additional details or notes here..."
+                        rows="4"
+                      />
+                    </div>
+
+                    <div className="form-actions">
+                      <button type="button" onClick={handleBack} className="btn-back">
+                        <ArrowLeft size={18} />
+                        <span>Back</span>
+                      </button>
+                      <button type="submit" className="btn-submit">
+                        <span>Submit Booking</span>
+                        <Check size={18} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </form>
+            </>
+          ) : (
+            /* Booking Confirmation / Success Screen */
+            <div className="brand-review-form booking-success-screen">
+              <div className="success-icon-ring">
+                <CheckCircle2 size={44} />
               </div>
-            )}
-          </form>
+              <h2 className="success-title">Booking Submitted!</h2>
+              <p className="success-message">
+                Thank you for requesting a Brand Review session. We have received your booking details and our team will get back to you through email within <strong>48 hours</strong>.
+              </p>
+
+              <div className="booking-summary-card">
+                <div className="summary-row">
+                  <span className="summary-label">Service:</span>
+                  <span className="summary-value">{formData.service || "Brand Review"}</span>
+                </div>
+                <div className="summary-row">
+                  <span className="summary-label">Date & Time:</span>
+                  <span className="summary-value">
+                    {formData.date
+                      ? `${formData.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} (${formData.timeSlot || 'Slot Pending'})`
+                      : 'Slot Pending'}
+                  </span>
+                </div>
+                <div className="summary-row">
+                  <span className="summary-label">Email:</span>
+                  <span className="summary-value">{formData.email || "Confidential"}</span>
+                </div>
+                {formData.company && (
+                  <div className="summary-row">
+                    <span className="summary-label">Company:</span>
+                    <span className="summary-value">{formData.company}</span>
+                  </div>
+                )}
+              </div>
+
+              <button type="button" onClick={handleResetFlow} className="btn-done">
+                <span>Done</span>
+              </button>
+            </div>
+          )}
         </div>
       </section>
 

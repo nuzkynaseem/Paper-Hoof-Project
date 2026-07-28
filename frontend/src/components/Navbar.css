@@ -46,6 +46,9 @@
   align-items: center;
   gap: var(--space-3);
   cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: 8px;
 }
 
 .navbar-logo {
@@ -94,6 +97,9 @@
   cursor: pointer;
   transition: color 0.3s ease;
   padding: var(--space-2) var(--space-4);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   animation: navWorkFade 0.35s ease-out;
 }
 
@@ -122,6 +128,9 @@
   cursor: pointer;
   transition: color 0.3s ease;
   padding: var(--space-2) var(--space-4);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .brand-review-btn:hover {
@@ -133,17 +142,21 @@
   border: none;
   color: var(--horse-black);
   cursor: pointer;
-  padding: var(--space-2);
+  padding: 10px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, background-color 0.2s ease;
 }
 
 .hamburger-btn:hover {
   color: var(--mane-orange);
 }
 
+/* Mobile: Only Logo & Hamburger Button in Navbar */
 @media (max-width: 768px) {
   .navbar {
     padding: var(--space-4) var(--space-5);
@@ -151,15 +164,20 @@
 
   .navbar-scrolled .navbar-content {
     max-width: calc(100% - 32px);
-    padding: 10px 20px;
+    padding: 8px 16px;
+  }
+
+  .navbar-right .nav-work-btn,
+  .navbar-right .brand-review-btn {
+    display: none !important;
+  }
+
+  .navbar-right {
+    gap: 0;
   }
 
   .navbar-logo {
     height: 32px;
-  }
-
-  .brand-review-btn {
-    font-size: 0.875rem;
   }
 }
 

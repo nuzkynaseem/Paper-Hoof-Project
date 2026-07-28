@@ -3,3 +3,12 @@
   background: var(--bg-cream);
   position: relative;
 }
+
+/* Sticky curtain reveal for main content and footer (yuhsinlin.com style) */
+#main-content {
+  position: relative;
+  z-index: 2;
+  background: var(--bg-cream);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+  min-height: 100vh;
+}

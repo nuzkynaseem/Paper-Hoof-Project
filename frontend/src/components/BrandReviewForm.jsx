@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Calendar } from './ui/calendar';
 import { timeSlots } from '../mock';
@@ -17,12 +17,23 @@ const BrandReviewForm = ({ isOpen, onClose }) => {
 
   const [selectedDate, setSelectedDate] = useState(null);
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // This will be replaced with actual API call
     console.log('Form submitted:', formData);
     alert('Thank you! Your brand review request has been submitted. We will contact you soon.');
     onClose();
@@ -44,14 +55,18 @@ const BrandReviewForm = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="brand-review-overlay">
+    <div className="brand-review-overlay" role="dialog" aria-modal="true" aria-labelledby="brand-review-title">
       <div className="brand-review-modal">
-        <button className="modal-close-btn" onClick={onClose}>
-          <X size={24} />
+        <button
+          className="modal-close-btn"
+          onClick={onClose}
+          aria-label="Close brand review modal"
+        >
+          <X size={24} aria-hidden="true" />
         </button>
 
         <div className="modal-header">
-          <h2 className="modal-title">Brand Review</h2>
+          <h2 id="brand-review-title" className="modal-title">Brand Review</h2>
           <p className="modal-subtitle">Let's discuss your brand. Schedule a meeting with us.</p>
         </div>
 
