@@ -1,201 +1,283 @@
+/* Overlay Container */
 .hamburger-menu-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--bg-cream);
-  z-index: 10000;
+  z-index: 99999;
   display: flex;
-  flex-direction: column;
-  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow-y: auto;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 32px;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.menu-close-btn {
+/* Semi-transparent Dark Backdrop */
+.nav-bg {
   position: absolute;
-  top: var(--space-6);
-  right: var(--space-10);
-  background: transparent;
-  border: none;
-  color: var(--horse-black);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(14, 16, 15, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1;
+  opacity: 0;
   cursor: pointer;
-  padding: 8px;
-  min-width: 48px;
-  min-height: 48px;
+}
+
+/* Panels Grid / Container */
+.nav-panels-container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 24px;
+  max-width: 960px;
+  width: 100%;
+  max-height: calc(100vh - 64px);
+  margin-left: auto;
+}
+
+/* Floating SVG Toggle Close Button */
+.menu-close-floating-btn {
+  position: absolute;
+  top: -20px;
+  right: 12px;
+  z-index: 10;
+  background: var(--horse-black);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.3s ease, background-color 0.2s ease;
-  z-index: 10;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease, background 0.3s ease;
 }
 
-.menu-close-btn:hover {
-  color: var(--mane-orange);
+.menu-close-floating-btn:hover {
+  background: var(--mane-orange);
+  transform: scale(1.08);
 }
 
-.menu-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-20);
-  padding: var(--space-24) var(--space-10);
-  max-width: 1400px;
-  margin: auto;
-  width: 100%;
+.hamburger-svg {
+  width: 24px;
+  height: 24px;
 }
 
-.menu-left {
-  display: flex;
-  align-items: center;
-}
-
-.menu-nav {
+/* Individual Panel (Card Block matching design system) */
+.nav-panel {
+  background: #141716;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  padding: 44px 38px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-  width: 100%;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.2);
+  transform: translateX(110%);
+  will-change: transform, opacity;
+  overflow-y: auto;
 }
 
-.menu-nav-item {
+/* Panel 1: Primary Navigation Links */
+.nav-panel-primary {
+  flex: 1.2;
+  min-width: 380px;
+}
+
+/* Panel 2: Second Block — Socials, Email & Contact */
+.nav-panel-secondary {
+  flex: 1;
+  min-width: 320px;
+  background: #1B1E1C;
+}
+
+/* Panel Header */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 36px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.panel-badge {
+  font-family: var(--font-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--mane-orange);
+  text-transform: uppercase;
+}
+
+.panel-brand-wordmark {
   font-family: var(--font-heading);
-  font-weight: 600;
-  font-size: clamp(2.25rem, 5vw, 4rem);
-  color: var(--horse-black);
-  text-align: left;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: color 0.3s ease, transform 0.2s ease;
-  padding: 10px 0;
-  min-height: 48px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Primary Nav Links List */
+.menu-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.nav-item {
   display: flex;
   align-items: center;
+  gap: 16px;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 14px 20px;
+  border-radius: 16px;
+  color: #FFFFFF;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.menu-nav-item:hover {
-  color: var(--mane-orange);
+.nav-item-num {
+  font-family: var(--font-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.3s ease;
+}
+
+.nav-item-label {
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+  font-weight: 600;
+  flex: 1;
+  color: #FFFFFF;
+  transition: color 0.3s ease;
+}
+
+.nav-item-arrow {
+  color: rgba(255, 255, 255, 0.3);
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+  background: rgba(227, 76, 24, 0.12);
+  border-color: rgba(227, 76, 24, 0.3);
   transform: translateX(6px);
 }
 
-.menu-right {
+.nav-item:hover .nav-item-num,
+.nav-item:hover .nav-item-label {
+  color: #FFFFFF;
+}
+
+.nav-item:hover .nav-item-arrow {
+  opacity: 1;
+  color: var(--mane-orange);
+  transform: translateX(0);
+}
+
+.panel-footer-note {
+  font-family: var(--font-primary);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 24px;
+}
+
+/* Secondary Panel Content */
+.nav-secondary-content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-12);
-  justify-content: center;
+  gap: 32px;
+  flex: 1;
 }
 
 .menu-section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: 12px;
 }
 
 .menu-section-title {
   font-family: var(--font-primary);
+  font-size: 0.72rem;
   font-weight: 700;
-  font-size: 0.875rem;
-  color: rgba(32, 36, 35, 0.85);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: var(--space-2);
-}
-
-.menu-social-links {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.menu-social-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  font-family: var(--font-primary);
-  font-weight: 500;
-  font-size: 1.05rem;
-  color: var(--horse-black);
-  text-decoration: none;
-  transition: color 0.3s ease;
-  min-height: 44px;
-  padding: 4px 0;
-}
-
-.menu-social-item:hover {
-  color: var(--mane-orange);
-}
-
-.menu-contact-item {
-  font-family: var(--font-primary);
-  font-weight: 500;
-  font-size: 1.05rem;
-  color: var(--horse-black);
-  text-decoration: none;
-  transition: color 0.3s ease;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-}
-
-.menu-contact-item:hover {
-  color: var(--mane-orange);
-}
-
-.menu-location-item {
-  font-family: var(--font-primary);
-  font-weight: 400;
-  font-size: 1rem;
-  color: rgba(32, 36, 35, 0.88);
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.45);
   margin: 0;
 }
 
-@media (max-width: 1024px) {
-  .menu-content {
-    grid-template-columns: 1fr;
-    gap: var(--space-16);
-  }
-
-  .menu-left {
-    order: 1;
-  }
-
-  .menu-right {
-    order: 2;
-  }
+.menu-contact-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 500;
+  color: #FFFFFF;
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
-@media (max-width: 768px) {
-  .menu-content {
-    padding: 80px var(--space-5) var(--space-10);
-  }
-
-  .menu-close-btn {
-    top: var(--space-4);
-    right: var(--space-4);
-  }
-
-  .menu-nav-item {
-    font-size: 2.25rem;
-    padding: 8px 0;
-  }
+.menu-contact-email:hover {
+  color: var(--mane-orange);
 }
 
-/* Socials Tooltip Pill inside Hamburger Menu */
+.menu-location-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.menu-cta-wrapper {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.menu-cta-btn {
+  width: 100%;
+  height: 52px;
+  border-radius: 999px;
+  background: var(--mane-orange);
+  color: #FFFFFF;
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(227, 76, 24, 0.3);
+  transition: all 0.3s ease;
+}
+
+.menu-cta-btn:hover {
+  background: #FFFFFF;
+  color: var(--horse-black);
+  transform: translateY(-2px);
+}
+
+/* Socials Tooltip Pill inside Panel 2 */
 .menu-socials-wrapper {
   position: relative;
   display: inline-block;
-  margin-top: 4px;
 }
 
 .menu-socials-wrapper .socials-tooltip-container {
@@ -204,4 +286,39 @@
   right: auto;
   transform-origin: top left;
   z-index: 100;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 900px) {
+  .hamburger-menu-overlay {
+    padding: 16px;
+    align-items: flex-start;
+  }
+
+  .nav-panels-container {
+    flex-direction: column;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    gap: 16px;
+    margin-top: 50px;
+  }
+
+  .menu-close-floating-btn {
+    top: -50px;
+    right: 8px;
+  }
+
+  .nav-panel {
+    min-width: 100% !important;
+    padding: 32px 24px;
+    border-radius: 24px;
+  }
+
+  .nav-panel-primary {
+    flex: auto;
+  }
+
+  .nav-panel-secondary {
+    flex: auto;
+  }
 }
