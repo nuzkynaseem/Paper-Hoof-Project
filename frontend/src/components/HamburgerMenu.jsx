@@ -15,6 +15,11 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
   const enterEndTimeRef = useRef(0);
   const isClosingRef = useRef(false);
 
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   // Initialize GSAP Animation Timeline
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -28,7 +33,7 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
           if (isClosingRef.current) {
             isClosingRef.current = false;
             gsap.set("#nav-overlay", { visibility: "hidden", pointerEvents: "none" });
-            onClose();
+            onCloseRef.current();
           }
         }
       });
