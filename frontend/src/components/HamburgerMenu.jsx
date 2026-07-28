@@ -58,18 +58,18 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
         )
 
         .fromTo(".bar-top",
-          { attr: { x1: 3, y1: 7, x2: 17, y2: 7 } },
+          { attr: { x1: 3, y1: 10, x2: 17, y2: 10 } },
           {
-            attr: { x1: 5, y1: 5, x2: 15, y2: 15 },
+            attr: { x1: 4, y1: 4, x2: 16, y2: 16 },
             duration: 0.35,
             ease: "back.out(1.4)"
           },
           0.06
         )
         .fromTo(".bar-bot",
-          { attr: { x1: 3, y1: 13, x2: 17, y2: 13 } },
+          { attr: { x1: 10, y1: 3, x2: 10, y2: 17 } },
           {
-            attr: { x1: 15, y1: 5, x2: 5, y2: 15 },
+            attr: { x1: 16, y1: 4, x2: 4, y2: 16 },
             duration: 0.35,
             ease: "back.out(1.4)"
           },
@@ -91,13 +91,13 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
       // ═══ EXIT — panels fall down with stagger, bottom first ═══
       tl
         .to(".bar-top", {
-          attr: { x1: 3, y1: 7, x2: 17, y2: 7 },
-          duration: 0.2,
+          attr: { x1: 3, y1: 10, x2: 17, y2: 10 },
+          duration: 0.25,
           ease: "power3.in"
         }, "<")
         .to(".bar-bot", {
-          attr: { x1: 3, y1: 13, x2: 17, y2: 13 },
-          duration: 0.2,
+          attr: { x1: 10, y1: 3, x2: 10, y2: 17 },
+          duration: 0.25,
           ease: "power3.in"
         }, "<")
 
@@ -164,25 +164,6 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
-
-  // Touch & Click Outside listener for Social Tooltip
-  useEffect(() => {
-    if (!isSocialsOpen) return;
-
-    const handleTouchOrClickOutside = (event) => {
-      if (socialsRef.current && !socialsRef.current.contains(event.target)) {
-        setIsSocialsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleTouchOrClickOutside);
-    document.addEventListener('touchstart', handleTouchOrClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleTouchOrClickOutside);
-      document.removeEventListener('touchstart', handleTouchOrClickOutside);
-    };
-  }, [isSocialsOpen]);
 
   const handleNavClick = (path) => {
     navigate(path);
@@ -254,83 +235,55 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
           </div>
 
           <div className="secondary-panel-content">
-            {/* Social Pill Tooltip */}
+            {/* Direct 4 Social Links Grid */}
             <div className="nav-item secondary-section">
               <span className="section-small-title">SOCIAL PRESENCE</span>
               
-              <div
-                className="socials-pill-wrapper menu-socials-wrapper"
-                ref={socialsRef}
-                onMouseEnter={() => setIsSocialsOpen(true)}
-                onMouseLeave={() => setIsSocialsOpen(false)}
-              >
-                <button
-                  type="button"
-                  className={`socials-pill-btn ${isSocialsOpen ? 'active' : ''}`}
-                  onClick={() => setIsSocialsOpen(!isSocialsOpen)}
-                  aria-expanded={isSocialsOpen}
-                  aria-label="Toggle Socials menu"
+              <div className="panel-socials-grid">
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="panel-social-link"
+                  aria-label="Instagram"
                 >
-                  <Share2 size={16} />
-                  <span>Socials</span>
-                  <span className="pill-badge-count">4</span>
-                </button>
-
-                {/* Unfurling Tooltip Container */}
-                <div
-                  className={`socials-tooltip-container ${isSocialsOpen ? 'unfurled' : ''}`}
-                  role="tooltip"
+                  <Instagram size={16} />
+                  <span>Instagram</span>
+                  <ArrowUpRight size={14} className="social-arrow" />
+                </a>
+                <a
+                  href="https://tiktok.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="panel-social-link"
+                  aria-label="TikTok"
                 >
-                  <div className="tooltip-header">
-                    <span>CONNECT WITH US</span>
-                  </div>
-                  <div className="tooltip-links">
-                    <a
-                      href="https://instagram.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="tooltip-link-item"
-                      aria-label="Instagram"
-                    >
-                      <Instagram size={18} />
-                      <span>Instagram</span>
-                      <ArrowUpRight size={14} className="link-arrow" />
-                    </a>
-                    <a
-                      href="https://tiktok.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="tooltip-link-item"
-                      aria-label="TikTok"
-                    >
-                      <Music size={18} />
-                      <span>TikTok</span>
-                      <ArrowUpRight size={14} className="link-arrow" />
-                    </a>
-                    <a
-                      href="https://whatsapp.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="tooltip-link-item"
-                      aria-label="WhatsApp"
-                    >
-                      <MessageCircle size={18} />
-                      <span>WhatsApp</span>
-                      <ArrowUpRight size={14} className="link-arrow" />
-                    </a>
-                    <a
-                      href="https://linkedin.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="tooltip-link-item"
-                      aria-label="LinkedIn"
-                    >
-                      <Linkedin size={18} />
-                      <span>LinkedIn</span>
-                      <ArrowUpRight size={14} className="link-arrow" />
-                    </a>
-                  </div>
-                </div>
+                  <Music size={16} />
+                  <span>TikTok</span>
+                  <ArrowUpRight size={14} className="social-arrow" />
+                </a>
+                <a
+                  href="https://whatsapp.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="panel-social-link"
+                  aria-label="WhatsApp"
+                >
+                  <MessageCircle size={16} />
+                  <span>WhatsApp</span>
+                  <ArrowUpRight size={14} className="social-arrow" />
+                </a>
+                <a
+                  href="https://linkedin.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="panel-social-link"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin size={16} />
+                  <span>LinkedIn</span>
+                  <ArrowUpRight size={14} className="social-arrow" />
+                </a>
               </div>
             </div>
 

@@ -107,8 +107,8 @@ const Navbar = ({ onMenuClick, isMenuOpen = false, darkHero = false }) => {
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <line className="bar bar-top" x1="3" y1="7" x2="17" y2="7" />
-              <line className="bar bar-bot" x1="3" y1="13" x2="17" y2="13" />
+              <line className="bar bar-top" x1="3" y1="10" x2="17" y2="10" />
+              <line className="bar bar-bot" x1="10" y1="3" x2="10" y2="17" />
             </svg>
           </button>
         </div>
