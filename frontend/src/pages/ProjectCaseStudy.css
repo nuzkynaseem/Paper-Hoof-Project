@@ -1,8 +1,12 @@
 .case-study-page {
+  width: 100%;
   min-height: 100vh;
   background: var(--bg-cream);
   padding-top: 100px;
-  position: relative;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box;
   overflow-x: hidden;
 }
 
@@ -12,12 +16,9 @@
   padding: 0 24px;
 }
 
-.case-study-container.no-padding-container {
-  padding: 0;
-}
-
 /* 1: Title Section (No eyebrow title) */
 .case-study-title-section {
+  width: 100%;
   padding: 16px 0 28px;
 }
 
@@ -32,30 +33,18 @@
   text-transform: uppercase;
 }
 
-/* 2: Hero Page Section (Full Viewport Width 100vw Edge-to-Edge like FutureBrand screenshot) */
+/* 2: Hero Page Section (Fills full viewport width 100%, Edge-to-Edge) */
 .case-study-hero-section {
-  position: relative;
-  width: 100vw;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  margin-bottom: 64px;
-}
-
-.case-study-hero-image-wrapper {
-  width: 100vw;
-  border-radius: 0;
-  overflow: hidden;
-  box-shadow: none;
-  background-color: #ECE6DB;
+  width: 100%;
+  margin: 0 0 64px 0;
+  padding: 0;
 }
 
 .case-study-hero-image {
-  width: 100vw;
+  width: 100%;
   height: auto;
-  min-height: 75vh;
-  max-height: 92vh;
+  min-height: 70vh;
+  max-height: 90vh;
   object-fit: cover;
   display: block;
   border-radius: 0;
@@ -63,8 +52,9 @@
 
 /* 3: Description Section (Right-Half Side Layout with Read More / Read Less, No dividing line) */
 .case-study-overview-section {
+  width: 100%;
   padding: 20px 0 64px;
-  border-bottom: none !important; /* No dividing line after description */
+  border-bottom: none !important;
   margin-bottom: 32px;
 }
 
@@ -187,36 +177,23 @@
   transform: rotate(180deg);
 }
 
-/* 4 & 5: Full-Width Presentation Media Showcase (100vw Edge-to-Edge like FutureBrand screenshot) */
+/* 4: Full-Width Presentation Media Showcase (Edge-to-Edge 100%) */
 .case-study-presentation-section {
-  position: relative;
-  width: 100vw;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  padding: 0 0 60px;
+  width: 100%;
+  margin: 0 0 60px 0;
+  padding: 0;
 }
 
 .presentation-media-stack {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 100vw;
-}
-
-.presentation-media-item {
-  width: 100vw;
-  border-radius: 0;
-  overflow: hidden;
-  box-shadow: none;
-  background-color: #ECE6DB;
+  width: 100%;
 }
 
 .presentation-long-image {
-  width: 100vw;
+  width: 100%;
   height: auto;
-  min-height: 60vh;
   display: block;
   object-fit: cover;
   border-radius: 0;
@@ -253,9 +230,5 @@
 
   .presentation-media-stack {
     gap: 16px;
-  }
-
-  .presentation-long-image {
-    min-height: 40vh;
   }
 }

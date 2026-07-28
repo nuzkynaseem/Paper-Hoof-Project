@@ -42,16 +42,12 @@ const ProjectCaseStudy = () => {
         </div>
       </header>
 
-      {/* 2: Hero Page (Fills main container width, no side padding) */}
+      {/* 2: Hero Page Showcase Image (Full Viewport Width 100%, Edge-to-Edge) */}
       <section className="case-study-hero-section">
-        <div className="case-study-container no-padding-container">
-          <div className="case-study-hero-image-wrapper">
-            <img src={project.image} alt={project.name} className="case-study-hero-image" />
-          </div>
-        </div>
+        <img src={project.image} alt={project.name} className="case-study-hero-image" />
       </section>
 
-      {/* 3: Description Section (Right Half Side with Read More / Read Less, No dividing line) */}
+      {/* 3: Description Section (Right-Half Side with Read More / Read Less, No dividing line) */}
       <section className="case-study-overview-section">
         <div className="case-study-container overview-grid">
           <div className="overview-left-meta">
@@ -93,20 +89,17 @@ const ProjectCaseStudy = () => {
         </div>
       </section>
 
-      {/* 4: Full-Width Long Presentation Media Showcase (Manual Studio Style, No slides/deck, No "Presentation Deck" title) */}
+      {/* 4: Full-Width Presentation Media Showcase (Edge-to-Edge 100%) */}
       <section className="case-study-presentation-section">
-        <div className="case-study-container no-padding-container">
-          <div className="presentation-media-stack">
-            {presentationImages.map((imgUrl, index) => (
-              <div key={index} className="presentation-media-item">
-                <img
-                  src={imgUrl}
-                  alt={`${project.name} Showcase ${index + 1}`}
-                  className="presentation-long-image"
-                />
-              </div>
-            ))}
-          </div>
+        <div className="presentation-media-stack">
+          {presentationImages.map((imgUrl, index) => (
+            <img
+              key={index}
+              src={imgUrl}
+              alt={`${project.name} Showcase ${index + 1}`}
+              className="presentation-long-image"
+            />
+          ))}
         </div>
       </section>
 
