@@ -51,11 +51,13 @@ const Navbar = ({ onMenuClick, isMenuOpen = false, darkHero = false }) => {
     navigate('/brand-review');
   };
 
+  const showNavbar = isVisible || isMenuOpen;
+
   return (
     <nav
-      className={`navbar ${isScrolled ? 'navbar-scrolled' : ''} ${!isVisible ? 'navbar-hidden' : ''} ${
+      className={`navbar ${isScrolled ? 'navbar-scrolled' : ''} ${!showNavbar ? 'navbar-hidden' : ''} ${
         darkHero && !isScrolled ? 'navbar-hero-mode' : ''
-      }`}
+      } ${isMenuOpen ? 'navbar-menu-open' : ''}`}
       aria-label="Main navigation"
       data-testid="site-navbar"
     >

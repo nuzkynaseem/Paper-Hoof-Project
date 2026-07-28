@@ -21,7 +21,14 @@
   align-items: center;
   max-width: 100%;
   margin: 0 auto;
-  transition: max-width 350ms ease, background-color 300ms ease, backdrop-filter 300ms ease, padding 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
+  transition: max-width 450ms cubic-bezier(0.16, 1, 0.3, 1), 
+              background-color 400ms ease, 
+              -webkit-backdrop-filter 400ms ease, 
+              backdrop-filter 400ms ease, 
+              padding 400ms cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 400ms ease, 
+              border-radius 450ms cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 400ms ease;
 }
 
 /* Scrolled state: 90% opacity + Glassmorphism */
@@ -34,6 +41,18 @@
   border-radius: 999px;
   padding: 12px 28px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* When Hamburger Menu is Open: Expand back to standard top navbar size! */
+.navbar-menu-open.navbar-scrolled .navbar-content {
+  max-width: 100%;
+  background: transparent;
+  -webkit-backdrop-filter: blur(0px);
+  backdrop-filter: blur(0px);
+  border-color: transparent;
+  border-radius: 0px;
+  padding: 0px;
+  box-shadow: none;
 }
 
 .navbar-left {
