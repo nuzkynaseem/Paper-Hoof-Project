@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import { projects, slugify } from '../mock';
-import ProjectSlideDeck from '../components/ProjectSlideDeck';
 import MacDockNavigation from '../components/MacDockNavigation';
 import './ProjectCaseStudy.css';
 
@@ -25,26 +24,34 @@ const ProjectCaseStudy = () => {
     }
   };
 
+  const presentationImages = project.images && project.images.length > 0
+    ? project.images
+    : [
+        project.image,
+        'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1600&h=1200&fit=crop',
+        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&h=1200&fit=crop',
+        'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=1600&h=1200&fit=crop'
+      ];
+
   return (
     <div className="case-study-page">
-      {/* 1: Title Section */}
+      {/* 1: Title Section (No eyebrow title) */}
       <header className="case-study-title-section">
         <div className="case-study-container">
-          <span className="case-study-category-badge">{project.category}</span>
           <h1 className="case-study-main-title">{project.name}</h1>
         </div>
       </header>
 
-      {/* 2: Hero Page (Full Showcase Media) */}
+      {/* 2: Hero Page (Fills main container width, no side padding) */}
       <section className="case-study-hero-section">
-        <div className="case-study-container">
+        <div className="case-study-container no-padding-container">
           <div className="case-study-hero-image-wrapper">
             <img src={project.image} alt={project.name} className="case-study-hero-image" />
           </div>
         </div>
       </section>
 
-      {/* 3: Description Section (Right Half Side with Read More / Read Less Expandable Toggle) */}
+      {/* 3: Description Section (Right Half Side with Read More / Read Less, No dividing line) */}
       <section className="case-study-overview-section">
         <div className="case-study-container overview-grid">
           <div className="overview-left-meta">
@@ -86,13 +93,20 @@ const ProjectCaseStudy = () => {
         </div>
       </section>
 
-      {/* 4: Complete Immersive Presentation Slide Deck */}
-      <section className="case-study-deck-section">
-        <div className="case-study-container">
-          <div className="deck-section-header">
-            <span className="deck-section-label">PRESENTATION DECK</span>
+      {/* 4: Full-Width Long Presentation Media Showcase (Manual Studio Style, No slides/deck, No "Presentation Deck" title) */}
+      <section className="case-study-presentation-section">
+        <div className="case-study-container no-padding-container">
+          <div className="presentation-media-stack">
+            {presentationImages.map((imgUrl, index) => (
+              <div key={index} className="presentation-media-item">
+                <img
+                  src={imgUrl}
+                  alt={`${project.name} Showcase ${index + 1}`}
+                  className="presentation-long-image"
+                />
+              </div>
+            ))}
           </div>
-          <ProjectSlideDeck project={project} />
         </div>
       </section>
 

@@ -11,19 +11,13 @@
   padding: 0 24px;
 }
 
-/* 1: Title Section */
-.case-study-title-section {
-  padding: 20px 0 24px;
+.case-study-container.no-padding-container {
+  padding: 0; /* Fills main container width seamlessly with no side padding */
 }
 
-.case-study-category-badge {
-  font-family: var(--font-primary);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--mane-orange);
-  text-transform: uppercase;
-  display: block;
+/* 1: Title Section (No eyebrow title) */
+.case-study-title-section {
+  padding: 16px 0 24px;
 }
 
 .case-study-main-title {
@@ -31,20 +25,21 @@
   font-size: clamp(3rem, 6.5vw, 5.5rem);
   font-weight: 700;
   color: var(--horse-black);
-  margin: 8px 0 0;
+  margin: 0;
   line-height: 1.02;
   letter-spacing: -0.01em;
   text-transform: uppercase;
 }
 
-/* 2: Hero Page Section */
+/* 2: Hero Page Section (Fills main container width, no side padding) */
 .case-study-hero-section {
   margin-bottom: 64px;
+  width: 100%;
 }
 
 .case-study-hero-image-wrapper {
   width: 100%;
-  border-radius: 24px;
+  border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
   background-color: #ECE6DB;
@@ -53,16 +48,16 @@
 .case-study-hero-image {
   width: 100%;
   height: auto;
-  max-height: 760px;
+  max-height: 780px;
   object-fit: cover;
   display: block;
 }
 
-/* 3: Description Section (Right Half Side Layout with Read More / Read Less) */
+/* 3: Description Section (Right-Half Side Layout with Read More / Read Less, No dividing line) */
 .case-study-overview-section {
-  padding: 20px 0 72px;
-  border-bottom: 1px solid rgba(32, 36, 35, 0.08);
-  margin-bottom: 64px;
+  padding: 20px 0 64px;
+  border-bottom: none !important; /* No dividing line after description */
+  margin-bottom: 32px;
 }
 
 .overview-grid {
@@ -184,22 +179,32 @@
   transform: rotate(180deg);
 }
 
-/* 4: Complete Immersive Presentation Slide Deck Section */
-.case-study-deck-section {
-  padding: 10px 0 60px;
+/* 4 & 5: Full-Width Long Presentation Media Showcase (Manual Studio Style) */
+.case-study-presentation-section {
+  padding: 20px 0 60px;
+  width: 100%;
 }
 
-.deck-section-header {
-  margin-bottom: 16px;
+.presentation-media-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
 }
 
-.deck-section-label {
-  font-family: var(--font-primary);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: rgba(32, 36, 35, 0.45);
-  text-transform: uppercase;
+.presentation-media-item {
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+  background-color: #ECE6DB;
+}
+
+.presentation-long-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
 }
 
 /* Mobile Responsiveness */
@@ -212,11 +217,16 @@
     padding: 0 16px;
   }
 
+  .case-study-container.no-padding-container {
+    padding: 0 16px;
+  }
+
   .case-study-hero-section {
     margin-bottom: 40px;
   }
 
-  .case-study-hero-image-wrapper {
+  .case-study-hero-image-wrapper,
+  .presentation-media-item {
     border-radius: 16px;
   }
 
@@ -226,7 +236,11 @@
   }
 
   .case-study-overview-section {
-    padding: 10px 0 48px;
-    margin-bottom: 40px;
+    padding: 10px 0 36px;
+    margin-bottom: 32px;
+  }
+
+  .presentation-media-stack {
+    gap: 20px;
   }
 }
