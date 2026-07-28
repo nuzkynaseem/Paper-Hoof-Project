@@ -3,6 +3,7 @@
   background: var(--bg-cream);
   padding-top: 100px;
   position: relative;
+  overflow-x: hidden;
 }
 
 .case-study-container {
@@ -12,12 +13,12 @@
 }
 
 .case-study-container.no-padding-container {
-  padding: 0; /* Fills main container width seamlessly with no side padding */
+  padding: 0;
 }
 
 /* 1: Title Section (No eyebrow title) */
 .case-study-title-section {
-  padding: 16px 0 24px;
+  padding: 16px 0 28px;
 }
 
 .case-study-main-title {
@@ -31,26 +32,33 @@
   text-transform: uppercase;
 }
 
-/* 2: Hero Page Section (Fills main container width, no side padding) */
+/* 2: Hero Page Section (Full Viewport Width 100vw Edge-to-Edge like FutureBrand screenshot) */
 .case-study-hero-section {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
   margin-bottom: 64px;
-  width: 100%;
 }
 
 .case-study-hero-image-wrapper {
-  width: 100%;
-  border-radius: 20px;
+  width: 100vw;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+  box-shadow: none;
   background-color: #ECE6DB;
 }
 
 .case-study-hero-image {
-  width: 100%;
+  width: 100vw;
   height: auto;
-  max-height: 780px;
+  min-height: 75vh;
+  max-height: 92vh;
   object-fit: cover;
   display: block;
+  border-radius: 0;
 }
 
 /* 3: Description Section (Right-Half Side Layout with Read More / Read Less, No dividing line) */
@@ -179,32 +187,39 @@
   transform: rotate(180deg);
 }
 
-/* 4 & 5: Full-Width Long Presentation Media Showcase (Manual Studio Style) */
+/* 4 & 5: Full-Width Presentation Media Showcase (100vw Edge-to-Edge like FutureBrand screenshot) */
 .case-study-presentation-section {
-  padding: 20px 0 60px;
-  width: 100%;
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  padding: 0 0 60px;
 }
 
 .presentation-media-stack {
   display: flex;
   flex-direction: column;
-  gap: 32px;
-  width: 100%;
+  gap: 24px;
+  width: 100vw;
 }
 
 .presentation-media-item {
-  width: 100%;
-  border-radius: 20px;
+  width: 100vw;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+  box-shadow: none;
   background-color: #ECE6DB;
 }
 
 .presentation-long-image {
-  width: 100%;
+  width: 100vw;
   height: auto;
+  min-height: 60vh;
   display: block;
   object-fit: cover;
+  border-radius: 0;
 }
 
 /* Mobile Responsiveness */
@@ -217,17 +232,13 @@
     padding: 0 16px;
   }
 
-  .case-study-container.no-padding-container {
-    padding: 0 16px;
+  .case-study-hero-section,
+  .case-study-presentation-section {
+    margin-bottom: 32px;
   }
 
-  .case-study-hero-section {
-    margin-bottom: 40px;
-  }
-
-  .case-study-hero-image-wrapper,
-  .presentation-media-item {
-    border-radius: 16px;
+  .case-study-hero-image {
+    min-height: 50vh;
   }
 
   .overview-grid {
@@ -237,10 +248,14 @@
 
   .case-study-overview-section {
     padding: 10px 0 36px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
   }
 
   .presentation-media-stack {
-    gap: 20px;
+    gap: 16px;
+  }
+
+  .presentation-long-image {
+    min-height: 40vh;
   }
 }
