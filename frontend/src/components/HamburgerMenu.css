@@ -198,10 +198,16 @@
   gap: 20px;
 }
 
-.secondary-section {
+.secondary-section,
+.nav-item.secondary-section {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .section-small-title {
