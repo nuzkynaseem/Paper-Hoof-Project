@@ -2,49 +2,69 @@ import React, { useEffect, useRef, useState } from 'react';
 import './IntroReveal.css';
 
 const TEXT =
-  "We are here to design for you, that's what makes us distinctive, since we started to work we loved everyone who came across us";
+  "We are here to design for you, that's what makes us distinctive. Since we started to work, we loved everyone who came across us.";
 
 const IntroReveal = () => {
-  const sectionRef = useRef(null);
+  const textRef = useRef(null);
   const [progress, setProgress] = useState(0);
   const words = TEXT.split(' ');
 
   useEffect(() => {
-    let raf = null;
-    const compute = () => {
-      const el = sectionRef.current;
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        const total = rect.height - window.innerHeight;
-        const scrolled = Math.min(Math.max(-rect.top, 0), total);
-        setProgress(total > 0 ? scrolled / total : 0);
-      }
-      raf = null;
+    let rafId = null;
+
+    const handleScroll = () => {
+      const el = textRef.current;
+      if (!el) return;
+
+      const rect = el.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+
+      // Start reveal when element is at 85% of viewport height
+      // Finish reveal when element is at 25% of viewport height
+      const start = windowHeight * 0.85;
+      const end = windowHeight * 0.25;
+
+      const current = rect.top;
+      const total = start - end;
+      const rawProgress = (start - current) / total;
+      const clampedProgress = Math.min(Math.max(rawProgress, 0), 1);
+
+      setProgress(clampedProgress);
+      rafId = null;
     };
+
     const onScroll = () => {
-      if (raf == null) raf = requestAnimationFrame(compute);
+      if (!rafId) {
+        rafId = requestAnimationFrame(handleScroll);
+      }
     };
+
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll, { passive: true });
-    compute();
+    handleScroll();
+
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
-      if (raf) cancelAnimationFrame(raf);
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
 
-  // Reveal words progressively as the user scrolls through the section
-  const active = progress * (words.length + 3);
+  const activeIndex = progress * (words.length + 1);
 
   return (
-    <section className="intro-reveal" ref={sectionRef} data-testid="intro-reveal">
-      <div className="intro-reveal-sticky">
-        <p className="intro-reveal-text">
+    <section className="intro-reveal-section" data-testid="intro-reveal">
+      <div className="intro-container">
+        <p className="intro-reveal-statement" ref={textRef}>
           {words.map((word, i) => {
-            const opacity = Math.min(1, Math.max(0.12, active - i));
+            const wordOpacity = Math.min(1, Math.max(0.18, activeIndex - i));
+            const isRevealed = wordOpacity > 0.8;
             return (
-              <span key={i} className="intro-word" style={{ opacity }}>
+              <span
+                key={i}
+                className={`intro-word ${isRevealed ? 'is-revealed' : ''}`}
+                style={{ opacity: wordOpacity }}
+              >
                 {word}{' '}
               </span>
             );

@@ -1,12 +1,29 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { projects } from '../mock';
+import { ContainerScroll } from './ui/container-scroll-animation';
 import './RecentProjects.css';
 
 const RecentProjects = () => {
   const navigate = useNavigate();
   const cardRef = useRef(null);
   const featured = projects[0];
+  const slideImages = featured.images || [featured.image];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Auto-play slider timer
+  useEffect(() => {
+    if (slideImages.length <= 1 || isPaused) return;
+
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slideImages.length);
+    }, 3500);
+
+    return () => clearInterval(timer);
+  }, [slideImages.length, isPaused]);
 
   useEffect(() => {
     const el = cardRef.current;
@@ -30,36 +47,117 @@ const RecentProjects = () => {
     navigate(`/work/${featured.name.toLowerCase().replace(/ /g, '-')}`);
   };
 
-  return (
-    <section id="recent-projects" className="recent-projects-section">
-      <div className="container">
-        <article
-          className="featured-card"
-          ref={cardRef}
-          onClick={handleClick}
-          data-testid={`project-card-${featured.id}`}
-        >
-          <div className="featured-media">
-            <img
-              src={featured.image}
-              alt={featured.name}
-              className="rp-image"
-              loading="lazy"
-              decoding="async"
-            />
-            <div className="rp-tags">
-              {featured.tags.map((tag, i) => (
-                <span key={i} className="rp-tag">{tag}</span>
-              ))}
-            </div>
-            <span className="featured-badge" data-testid="featured-work-badge">Featured Work</span>
-          </div>
+  const handlePrevSlide = (e) => {
+    e.stopPropagation();
+    setCurrentSlide((prev) => (prev - 1 + slideImages.length) % slideImages.length);
+  };
 
-          <div className="featured-info">
-            <h3 className="featured-title">{featured.name}</h3>
-            <p className="featured-desc">{featured.description}</p>
-          </div>
-        </article>
+  const handleNextSlide = (e) => {
+    e.stopPropagation();
+    setCurrentSlide((prev) => (prev + 1) % slideImages.length);
+  };
+
+  const handleDotClick = (e, index) => {
+    e.stopPropagation();
+    setCurrentSlide(index);
+  };
+
+  const titleComponent = (
+    <div className="featured-side-info">
+      <div className="featured-section-label">
+        <span className="label-dot"></span>
+        FEATURED WORK
+      </div>
+      <h2 className="featured-side-title">{featured.name}</h2>
+      <p className="featured-side-desc">{featured.description}</p>
+      
+      <div className="featured-side-tags">
+        {featured.tags.map((tag, i) => (
+          <span key={i} className="featured-side-tag">{tag}</span>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        className="featured-side-cta"
+        onClick={handleClick}
+        data-testid="featured-view-btn"
+      >
+        <span>Explore Case Study</span>
+        <ArrowUpRight size={18} />
+      </button>
+    </div>
+  );
+
+  return (
+    <section id="recent-projects" className="recent-projects-section" ref={cardRef}>
+      <div className="container">
+        <ContainerScroll titleComponent={titleComponent}>
+          <article
+            className="featured-scroll-card"
+            onClick={handleClick}
+            data-testid={`project-card-${featured.id}`}
+          >
+            <div
+              className="featured-media"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
+              {slideImages.map((imgSrc, idx) => (
+                <img
+                  key={idx}
+                  src={imgSrc}
+                  alt={`${featured.name} slide ${idx + 1}`}
+                  className={`rp-image ${idx === currentSlide ? 'active' : ''}`}
+                  loading={idx === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
+              ))}
+
+              {/* Corner-wrapping Featured Work Banner */}
+              <div className="featured-corner-banner" data-testid="featured-work-badge">
+                <span>Featured Work</span>
+              </div>
+
+              {/* Slider Controls */}
+              {slideImages.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    className="slider-arrow slider-arrow-prev"
+                    onClick={handlePrevSlide}
+                    aria-label="Previous slide"
+                    data-testid="slider-prev-btn"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  <button
+                    type="button"
+                    className="slider-arrow slider-arrow-next"
+                    onClick={handleNextSlide}
+                    aria-label="Next slide"
+                    data-testid="slider-next-btn"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+
+                  <div className="slider-dots" data-testid="slider-dots">
+                    {slideImages.map((_, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        className={`slider-dot ${idx === currentSlide ? 'active' : ''}`}
+                        onClick={(e) => handleDotClick(e, idx)}
+                        aria-label={`Go to slide ${idx + 1}`}
+                        data-testid={`slider-dot-${idx}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </article>
+        </ContainerScroll>
       </div>
     </section>
   );

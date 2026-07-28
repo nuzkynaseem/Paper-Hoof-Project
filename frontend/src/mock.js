@@ -10,7 +10,13 @@ export const projects = [
     category: 'Food Chain',
     description: 'A bold rebrand for a fast-casual chain — an appetite-forward identity spanning packaging and the ordering experience.',
     tags: ['BRANDING', 'IDENTITY', 'UI/UX'],
-    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=1200&h=900&fit=crop'
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=1200&h=900&fit=crop',
+    images: [
+      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=1200&h=900&fit=crop',
+      'https://images.unsplash.com/photo-1550547660-d9450f859349?w=1200&h=900&fit=crop',
+      'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=1200&h=900&fit=crop',
+      'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=1200&h=900&fit=crop'
+    ]
   },
   {
     id: 2,

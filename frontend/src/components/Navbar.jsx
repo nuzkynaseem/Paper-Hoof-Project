@@ -5,22 +5,38 @@ import './Navbar.css';
 
 const Navbar = ({ onMenuClick, darkHero = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
+    let lastY = window.scrollY;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-      setHasScrolled(window.scrollY > 20);
+      const currentY = window.scrollY;
+
+      if (currentY <= 20) {
+        setIsVisible(true);
+        setIsScrolled(false);
+      } else {
+        setIsScrolled(true);
+        if (currentY > lastY + 5) {
+          // Scrolling down -> hide
+          setIsVisible(false);
+        } else if (currentY < lastY - 5) {
+          // Scrolling up -> show
+          setIsVisible(true);
+        }
+      }
+
+      lastY = currentY;
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleLogoClick = () => {
     navigate('/');
-    // Scroll to top of homepage
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
@@ -31,7 +47,12 @@ const Navbar = ({ onMenuClick, darkHero = false }) => {
   };
 
   return (
-    <nav className={`navbar ${isScrolled ? 'navbar-scrolled' : ''} ${darkHero && !isScrolled ? 'navbar-hero-mode' : ''}`}>
+    <nav
+      className={`navbar ${isScrolled ? 'navbar-scrolled' : ''} ${!isVisible ? 'navbar-hidden' : ''} ${
+        darkHero && !isScrolled ? 'navbar-hero-mode' : ''
+      }`}
+      data-testid="site-navbar"
+    >
       <div className="navbar-content">
         <div className="navbar-left">
           <div className="logo-container" onClick={handleLogoClick}>
@@ -43,15 +64,19 @@ const Navbar = ({ onMenuClick, darkHero = false }) => {
           </div>
         </div>
         <div className="navbar-right">
-          {hasScrolled && (
-            <button className="nav-work-btn" onClick={() => navigate('/work')} data-testid="navbar-work-link">
+          {isScrolled && (
+            <button
+              className="nav-work-btn"
+              onClick={() => navigate('/work')}
+              data-testid="navbar-work-link"
+            >
               Work
             </button>
           )}
           <button className="brand-review-btn" onClick={handleBrandReviewClick}>
             Brand Review
           </button>
-          <button className="hamburger-btn" onClick={onMenuClick}>
+          <button className="hamburger-btn" onClick={onMenuClick} aria-label="Open menu">
             <Menu size={24} />
           </button>
         </div>
