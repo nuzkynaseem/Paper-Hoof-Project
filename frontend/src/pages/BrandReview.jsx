@@ -52,6 +52,53 @@ const brandCards = [
   }
 ];
 
+const BrandTiltCardItem = ({ item }) => {
+  const cardRef = React.useRef(null);
+
+  const handleMouseMove = (e) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    const MAX_TILT = 9;
+    el.style.transform = `perspective(900px) rotateX(${(-py * MAX_TILT).toFixed(2)}deg) rotateY(${(px * MAX_TILT).toFixed(2)}deg) scale(1.04)`;
+  };
+
+  const handleMouseLeave = () => {
+    const el = cardRef.current;
+    if (el) {
+      el.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) scale(1)';
+    }
+  };
+
+  return (
+    <DraggableCardBody key={item.title} className={item.className}>
+      <div
+        ref={cardRef}
+        className="brand-tilt-wrapper"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className="brand-card-img-wrapper">
+          <img
+            src={item.image}
+            alt={item.title}
+            className="brand-card-img"
+          />
+          <div className="brand-card-overlay-tag">
+            <span>{item.tag}</span>
+          </div>
+        </div>
+        <div className="brand-card-footer">
+          <h3 className="brand-card-title">{item.title}</h3>
+          <span className="brand-card-category">{item.tag}</span>
+        </div>
+      </div>
+    </DraggableCardBody>
+  );
+};
+
 const BrandReview = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -232,21 +279,9 @@ const BrandReview = () => {
             </p>
           </div>
 
-          {/* Movable Brand Cards in Background */}
+          {/* Movable Brand Cards in Background with Homepage Tilt Animation */}
           {brandCards.map((item) => (
-            <DraggableCardBody key={item.title} className={item.className}>
-              <div className="brand-card-img-wrapper">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="pointer-events-none relative z-10 h-40 w-40 md:h-48 md:w-48 rounded-xl object-cover"
-                />
-              </div>
-              <div className="brand-card-footer">
-                <h3 className="brand-card-title">{item.title}</h3>
-                <span className="brand-card-tag">{item.tag}</span>
-              </div>
-            </DraggableCardBody>
+            <BrandTiltCardItem key={item.title} item={item} />
           ))}
         </DraggableCardContainer>
       </section>

@@ -98,31 +98,96 @@
   font-weight: 700;
 }
 
-/* Brand Card Styling inside Draggable Container */
+/* Homepage Cohesive Tilt & Elevate Animation for Movable Hero Cards */
+.brand-tilt-wrapper {
+  position: relative;
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #FFFFFF;
+  transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(1);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+  will-change: transform;
+}
+
 .brand-card-img-wrapper {
+  position: relative;
+  width: 100%;
   overflow: hidden;
   border-radius: 12px;
+  background-color: #ECE6DB;
+}
+
+.brand-card-img {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  border-radius: 12px;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (min-width: 768px) {
+  .brand-card-img {
+    width: 210px;
+    height: 210px;
+  }
+}
+
+.brand-tilt-wrapper:hover .brand-card-img {
+  transform: scale(1.06);
+}
+
+.brand-card-overlay-tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.brand-card-overlay-tag span {
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 253, 247, 0.92);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(32, 36, 35, 0.08);
+  color: var(--horse-black);
+  font-family: var(--font-primary);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.brand-card-footer {
+  padding: 10px 4px 2px;
+  text-align: left;
 }
 
 .brand-card-title {
-  margin-top: 10px;
-  text-align: center;
   font-family: var(--font-heading);
-  font-size: 1rem;
   font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--horse-black);
+  margin: 0 0 2px;
 }
 
-.brand-card-tag {
+.brand-card-category {
   display: block;
-  text-align: center;
   font-family: var(--font-primary);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: rgba(32, 36, 35, 0.6);
-  text-transform: uppercase;
-  margin-top: 2px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(32, 36, 35, 0.65);
 }
 
 
