@@ -361,6 +361,70 @@
   transform: translate(2px, -2px) !important;
 }
 
+/* Right Column for Panel 2 & Brand Block */
+.nav-panel-column-secondary {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  min-width: 280px;
+  height: auto;
+}
+
+/* Panel 3: Brand Wordmark Block (Separate Block Below Connect & Reach) */
+.nav-panel-brand {
+  background: var(--horse-black);
+  color: #FFFFFF;
+  padding: 24px 28px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.brand-block-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+}
+
+.brand-block-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.brand-block-logo {
+  height: 30px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.nav-panel-brand:hover .brand-block-logo {
+  transform: scale(1.03);
+  opacity: 1;
+}
+
+.brand-block-tagline {
+  font-family: var(--font-primary);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+}
+
 /* Mobile Responsiveness (Stacked Vertically, Height Fits Viewport) */
 @media (max-width: 768px) {
   #nav {
@@ -386,12 +450,22 @@
     height: fit-content;
   }
 
+  .nav-panel-column-secondary {
+    min-width: 100%;
+    gap: 12px;
+  }
+
   .nav-panel-primary,
-  .nav-panel-secondary {
+  .nav-panel-secondary,
+  .nav-panel-brand {
     min-width: 100%;
     border-radius: 22px;
     padding: 20px 20px;
     height: fit-content;
+  }
+
+  .brand-block-logo {
+    height: 24px;
   }
 
   .panel-badge {

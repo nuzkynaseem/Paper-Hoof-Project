@@ -226,102 +226,122 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
           </nav>
         </div>
 
-        {/* Block 2 / Panel 2: Secondary / Socials & Connect Block */}
-        <div className="nav-panel nav-panel-secondary">
-          <div className="panel-badge light">
-            <span className="badge-dot light" />
-            <span className="badge-text light">CONNECT & REACH</span>
-            <span className="badge-num light">02</span>
-          </div>
-
-          <div className="secondary-panel-content">
-            {/* Direct 4 Social Links Grid */}
-            <div className="nav-item secondary-section">
-              <span className="section-small-title">SOCIAL PRESENCE</span>
-              
-              <div className="panel-socials-grid">
-                <a
-                  href="https://instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="panel-social-link"
-                  aria-label="Instagram"
-                >
-                  <Instagram size={16} />
-                  <span>Instagram</span>
-                  <ArrowUpRight size={14} className="panel-social-arrow" />
-                </a>
-                <a
-                  href="https://tiktok.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="panel-social-link"
-                  aria-label="TikTok"
-                >
-                  <Music size={16} />
-                  <span>TikTok</span>
-                  <ArrowUpRight size={14} className="panel-social-arrow" />
-                </a>
-                <a
-                  href="https://whatsapp.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="panel-social-link"
-                  aria-label="WhatsApp"
-                >
-                  <MessageCircle size={16} />
-                  <span>WhatsApp</span>
-                  <ArrowUpRight size={14} className="panel-social-arrow" />
-                </a>
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="panel-social-link"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin size={16} />
-                  <span>LinkedIn</span>
-                  <ArrowUpRight size={14} className="panel-social-arrow" />
-                </a>
-              </div>
+        {/* Right Column: Panel 2 (Secondary) & Panel 3 (Brand Wordmark Block) */}
+        <div className="nav-panel-column-secondary">
+          {/* Block 2 / Panel 2: Secondary / Socials & Connect Block */}
+          <div className="nav-panel nav-panel-secondary">
+            <div className="panel-badge light">
+              <span className="badge-dot light" />
+              <span className="badge-text light">CONNECT & REACH</span>
+              <span className="badge-num light">02</span>
             </div>
 
-            {/* Email Contact Block (.nav-login for staggered entrance) */}
-            <div className="nav-login secondary-section">
-              <span className="section-small-title">DIRECT INQUIRIES</span>
-              <div className="email-box" onClick={handleCopyEmail}>
-                <a href="mailto:hello@paperhoof.com" onClick={(e) => e.stopPropagation()} className="email-link">
-                  hello@paperhoof.com
-                </a>
+            <div className="secondary-panel-content">
+              {/* Direct 4 Social Links Grid */}
+              <div className="nav-item secondary-section">
+                <span className="section-small-title">SOCIAL PRESENCE</span>
+                
+                <div className="panel-socials-grid">
+                  <a
+                    href="https://instagram.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="panel-social-link"
+                    aria-label="Instagram"
+                  >
+                    <Instagram size={16} />
+                    <span>Instagram</span>
+                    <ArrowUpRight size={14} className="panel-social-arrow" />
+                  </a>
+                  <a
+                    href="https://tiktok.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="panel-social-link"
+                    aria-label="TikTok"
+                  >
+                    <Music size={16} />
+                    <span>TikTok</span>
+                    <ArrowUpRight size={14} className="panel-social-arrow" />
+                  </a>
+                  <a
+                    href="https://whatsapp.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="panel-social-link"
+                    aria-label="WhatsApp"
+                  >
+                    <MessageCircle size={16} />
+                    <span>WhatsApp</span>
+                    <ArrowUpRight size={14} className="panel-social-arrow" />
+                  </a>
+                  <a
+                    href="https://linkedin.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="panel-social-link"
+                    aria-label="LinkedIn"
+                  >
+                    <Linkedin size={16} />
+                    <span>LinkedIn</span>
+                    <ArrowUpRight size={14} className="panel-social-arrow" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Email Contact Block (.nav-login for staggered entrance) */}
+              <div className="nav-login secondary-section">
+                <span className="section-small-title">DIRECT INQUIRIES</span>
+                <div className="email-box" onClick={handleCopyEmail}>
+                  <a href="mailto:hello@paperhoof.com" onClick={(e) => e.stopPropagation()} className="email-link">
+                    hello@paperhoof.com
+                  </a>
+                  <button
+                    type="button"
+                    className="email-copy-btn"
+                    onClick={handleCopyEmail}
+                    title="Copy Email"
+                  >
+                    {copiedEmail ? <Check size={16} className="text-green" /> : <Copy size={16} />}
+                  </button>
+                </div>
+                {copiedEmail && <span className="copied-toast">Email copied to clipboard!</span>}
+              </div>
+
+              {/* Location & CTAs (.nav-login) */}
+              <div className="nav-login secondary-section">
+                <span className="section-small-title">STUDIO LOCATION</span>
+                <p className="location-text">Mawanella, Sri Lanka</p>
+              </div>
+
+              {/* Brand Review CTA Action (.nav-login) */}
+              <div className="nav-login cta-action-wrapper">
                 <button
                   type="button"
-                  className="email-copy-btn"
-                  onClick={handleCopyEmail}
-                  title="Copy Email"
+                  className="panel-cta-btn"
+                  onClick={() => handleNavClick('/brand-review')}
                 >
-                  {copiedEmail ? <Check size={16} className="text-green" /> : <Copy size={16} />}
+                  <Calendar size={18} />
+                  <span>Reserve 120-Min Review</span>
                 </button>
               </div>
-              {copiedEmail && <span className="copied-toast">Email copied to clipboard!</span>}
             </div>
+          </div>
 
-            {/* Location & CTAs (.nav-login) */}
-            <div className="nav-login secondary-section">
-              <span className="section-small-title">STUDIO LOCATION</span>
-              <p className="location-text">Mawanella, Sri Lanka</p>
+          {/* Block 3 / Panel 3: Brand Wordmark Block (Separate Block Below Connect & Reach) */}
+          <div className="nav-panel nav-panel-brand">
+            <div className="brand-block-badge">
+              <span className="badge-dot light" />
+              <span className="badge-text light">PAPER HOOF STUDIO</span>
+              <span className="badge-num light">03</span>
             </div>
-
-            {/* Brand Review CTA Action (.nav-login) */}
-            <div className="nav-login cta-action-wrapper">
-              <button
-                type="button"
-                className="panel-cta-btn"
-                onClick={() => handleNavClick('/brand-review')}
-              >
-                <Calendar size={18} />
-                <span>Reserve 120-Min Review</span>
-              </button>
+            <div className="brand-block-content">
+              <img
+                src={`${process.env.PUBLIC_URL}/paperhoof-wordmark.svg`}
+                alt="Paper Hoof"
+                className="brand-block-logo"
+              />
+              <span className="brand-block-tagline">CRAFTING BOLD DIGITAL EXPERIENCES</span>
             </div>
           </div>
         </div>
