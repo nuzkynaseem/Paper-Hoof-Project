@@ -1,4 +1,82 @@
-/* Paper Hoof Design System */
+/* Paper Hoof Custom Typography Definitions */
+
+/* Body Font: Catalogue */
+@font-face {
+  font-family: 'Catalogue';
+  src: url('/fonts/CatalogueLLTrialTT-Regular.ttf') format('truetype'),
+       url('/fonts/CatalogueLLTrial-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Catalogue';
+  src: url('/fonts/CatalogueLLTrialTT-Bold.ttf') format('truetype'),
+       url('/fonts/CatalogueLLTrial-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Catalogue';
+  src: url('/fonts/CatalogueLLTrialTT-Light.ttf') format('truetype'),
+       url('/fonts/CatalogueLLTrial-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Catalogue';
+  src: url('/fonts/CatalogueLLTrialTT-Italic.ttf') format('truetype'),
+       url('/fonts/CatalogueLLTrial-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Heading & Display Font: Svatopluk */
+@font-face {
+  font-family: 'Svatopluk';
+  src: url('/fonts/Svatopluk-Regular-iF67d6f0d9954ce.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Svatopluk';
+  src: url('/fonts/Svatopluk-Medium-iF67d6f0d9a273f.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Svatopluk';
+  src: url('/fonts/Svatopluk-SemiBold-iF67d6f0d9afd52.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Svatopluk';
+  src: url('/fonts/Svatopluk-Bold-iF67d6f0d9b5f70.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Svatopluk';
+  src: url('/fonts/Svatopluk-Black-iF67d6f0d9c2423.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   /* Core Colors — Paper Hoof */
@@ -37,11 +115,12 @@
   --radius-xl: 32px;
   --radius-full: 9999px;
   
-  /* Typography */
-  --font-primary: 'Overpass', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-heading: 'Anton', 'Overpass', sans-serif;
-  --font-display: 'Anton', 'Overpass', sans-serif;
-  --font-interface: 'Overpass', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Paper Hoof Typography Tokens */
+  --font-primary: 'Catalogue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Catalogue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: 'Svatopluk', 'Catalogue', sans-serif;
+  --font-display: 'Svatopluk', 'Catalogue', sans-serif;
+  --font-interface: 'Catalogue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   
   /* Transitions */
   --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -144,7 +223,7 @@ body {
   }
 }
 
-/* Custom glassmorphism scrollbar — hidden until the user scrolls */
+/* Custom glassmorphism scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -161,13 +240,11 @@ body {
   transition: background-color 0.3s ease;
 }
 
-/* Firefox: hidden by default */
 html {
   scrollbar-width: none;
   scrollbar-color: transparent transparent;
 }
 
-/* Visible only while actively scrolling */
 html.is-scrolling {
   scrollbar-width: thin;
   scrollbar-color: rgba(32, 36, 35, 0.28) transparent;
