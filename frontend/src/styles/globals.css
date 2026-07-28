@@ -1,43 +1,23 @@
-/* Paper Hoof Custom Typography Definitions */
+/* Unified Typography System — Svatopluk Font Family (WCAG AA Compliant) */
 
-/* Body Font: Catalogue */
+/* Svatopluk Light (300) */
 @font-face {
-  font-family: 'Catalogue';
-  src: url('../assets/fonts/CatalogueLLTrialTT-Regular.ttf') format('truetype'),
-       url('../assets/fonts/CatalogueLLTrial-Regular.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Catalogue';
-  src: url('../assets/fonts/CatalogueLLTrialTT-Bold.ttf') format('truetype'),
-       url('../assets/fonts/CatalogueLLTrial-Bold.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Catalogue';
-  src: url('../assets/fonts/CatalogueLLTrialTT-Light.ttf') format('truetype'),
-       url('../assets/fonts/CatalogueLLTrial-Light.otf') format('opentype');
+  font-family: 'Svatopluk';
+  src: url('../assets/fonts/Svatopluk-Light-iF67d6f0d98142b.otf') format('opentype');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Catalogue';
-  src: url('../assets/fonts/CatalogueLLTrialTT-Italic.ttf') format('truetype'),
-       url('../assets/fonts/CatalogueLLTrial-Italic.otf') format('opentype');
-  font-weight: 400;
+  font-family: 'Svatopluk';
+  src: url('../assets/fonts/Svatopluk-LightItalic-iF67d6f0d98e9d2.otf') format('opentype');
+  font-weight: 300;
   font-style: italic;
   font-display: swap;
 }
 
-/* Heading & Display Font: Svatopluk */
+/* Svatopluk Regular (400) */
 @font-face {
   font-family: 'Svatopluk';
   src: url('../assets/fonts/Svatopluk-Regular-iF67d6f0d9954ce.otf') format('opentype');
@@ -48,12 +28,30 @@
 
 @font-face {
   font-family: 'Svatopluk';
+  src: url('../assets/fonts/Svatopluk-RegularItalic-iF67d6f0d99be16.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Svatopluk Medium (500) */
+@font-face {
+  font-family: 'Svatopluk';
   src: url('../assets/fonts/Svatopluk-Medium-iF67d6f0d9a273f.otf') format('opentype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Svatopluk';
+  src: url('../assets/fonts/Svatopluk-MediumItalic-iF67d6f0d9a9acb.otf') format('opentype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Svatopluk SemiBold (600) */
 @font-face {
   font-family: 'Svatopluk';
   src: url('../assets/fonts/Svatopluk-SemiBold-iF67d6f0d9afd52.otf') format('opentype');
@@ -64,6 +62,15 @@
 
 @font-face {
   font-family: 'Svatopluk';
+  src: url('../assets/fonts/Svatopluk-SemiBoldItalic-iF67d6f0d9bc165.otf') format('opentype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Svatopluk Bold (700) */
+@font-face {
+  font-family: 'Svatopluk';
   src: url('../assets/fonts/Svatopluk-Bold-iF67d6f0d9b5f70.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
@@ -72,18 +79,35 @@
 
 @font-face {
   font-family: 'Svatopluk';
+  src: url('../assets/fonts/Svatopluk-BoldItalic-iF67d6f0d9cb39f.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Svatopluk Black (800) */
+@font-face {
+  font-family: 'Svatopluk';
   src: url('../assets/fonts/Svatopluk-Black-iF67d6f0d9c2423.otf') format('opentype');
   font-weight: 800;
   font-style: normal;
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Svatopluk';
+  src: url('../assets/fonts/Svatopluk-BlackItalic-iF67d6f0d9d18e0.otf') format('opentype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root {
-  /* Core Colors — Paper Hoof */
+  /* Core Colors — Paper Hoof (WCAG AA Compliant High Contrast Palette) */
   --bg-cream: #FFFDF7;
   --primary-green: #01360A;
   --black: #202423;
-  --grey: #6B6868;
+  --grey: #595656;
   --white: #FFFFFF;
 
   /* Paper Hoof Brand Palette */
@@ -115,12 +139,12 @@
   --radius-xl: 32px;
   --radius-full: 9999px;
   
-  /* Paper Hoof Typography Tokens */
-  --font-primary: 'Catalogue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-body: 'Catalogue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-heading: 'Svatopluk', 'Catalogue', sans-serif;
-  --font-display: 'Svatopluk', 'Catalogue', sans-serif;
-  --font-interface: 'Catalogue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Unified Svatopluk Typography Tokens */
+  --font-primary: 'Svatopluk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Svatopluk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: 'Svatopluk', sans-serif;
+  --font-display: 'Svatopluk', sans-serif;
+  --font-interface: 'Svatopluk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   
   /* Transitions */
   --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -139,6 +163,9 @@ html {
 
 body {
   font-family: var(--font-primary);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
   background-color: var(--bg-cream);
   color: var(--black);
   -webkit-font-smoothing: antialiased;
@@ -146,60 +173,74 @@ body {
   overflow-x: hidden;
 }
 
-/* Typography Scale */
+/* Typography Scale — WCAG Compliant Hierarchy */
 .text-display {
-  font-family: var(--font-heading);
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 800;
   font-size: clamp(3rem, 8vw, 6rem);
-  line-height: 0.9;
+  line-height: 1.02;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
+  color: var(--horse-black);
 }
 
 .text-h1 {
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: clamp(2rem, 5vw, 4rem);
-  line-height: 1;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  line-height: 1.05;
   text-transform: uppercase;
+  color: var(--horse-black);
 }
 
 .text-h2 {
   font-family: var(--font-heading);
   font-weight: 600;
   font-size: clamp(1.5rem, 3vw, 2.5rem);
-  line-height: 1.1;
+  line-height: 1.15;
+  color: var(--horse-black);
 }
 
 .text-h3 {
   font-family: var(--font-primary);
   font-weight: 600;
   font-size: clamp(1.25rem, 2vw, 1.75rem);
-  line-height: 1.2;
+  line-height: 1.25;
+  color: var(--horse-black);
 }
 
 .text-body-lg {
+  font-family: var(--font-body);
   font-size: 1.125rem;
-  line-height: 1.6;
+  line-height: 1.65;
   font-weight: 400;
+  color: var(--horse-black);
 }
 
 .text-body {
+  font-family: var(--font-body);
   font-size: 1rem;
-  line-height: 1.5;
+  line-height: 1.6;
   font-weight: 400;
+  color: var(--horse-black);
 }
 
 .text-small {
+  font-family: var(--font-body);
   font-size: 0.875rem;
-  line-height: 1.4;
+  line-height: 1.5;
+  font-weight: 400;
+  color: rgba(32, 36, 35, 0.85); /* High contrast for WCAG AA */
 }
 
 .text-caption {
+  font-family: var(--font-interface);
   font-size: 0.75rem;
-  line-height: 1.3;
+  line-height: 1.4;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  color: rgba(32, 36, 35, 0.75);
 }
 
 /* Utility Classes */
