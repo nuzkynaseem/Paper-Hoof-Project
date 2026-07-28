@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import './ReadyToMove.css';
 
-const ReadyToMove = () => {
+const ReadyToMove = ({ buttonText = "Give a brand review", buttonLink = "/brand-review" }) => {
   const navigate = useNavigate();
 
   const phrase = (
@@ -22,10 +22,10 @@ const ReadyToMove = () => {
       <div className="ready-band-cta">
         <button
           className="ready-contact-btn"
-          onClick={() => navigate('/brand-review')}
+          onClick={() => navigate(buttonLink)}
           data-testid="ready-contact-btn"
         >
-          Contact Us <ArrowRight size={18} />
+          {buttonText} <ArrowRight size={18} />
         </button>
       </div>
     </section>

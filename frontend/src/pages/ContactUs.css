@@ -2,7 +2,7 @@
 .contact-us-page {
   min-height: 100vh;
   background: var(--bg-cream);
-  padding-top: 100px;
+  padding-top: 130px;
   position: relative;
 }
 
@@ -12,46 +12,9 @@
   padding: 0 24px;
 }
 
-/* Hero Title Section */
-.contact-title-hero {
-  padding: 24px 0 40px;
-}
-
-.contact-badge {
-  font-family: var(--font-primary);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: var(--mane-orange);
-  text-transform: uppercase;
-  display: block;
-  margin-bottom: 8px;
-}
-
-.contact-main-headline {
-  font-family: var(--font-heading);
-  font-size: clamp(3.5rem, 8vw, 6.5rem);
-  font-weight: 800;
-  color: var(--horse-black);
-  margin: 0 0 16px;
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
-}
-
-.contact-sub-headline {
-  font-family: var(--font-primary);
-  font-size: clamp(1.1rem, 1.8vw, 1.35rem);
-  font-weight: 400;
-  line-height: 1.6;
-  color: rgba(32, 36, 35, 0.85);
-  margin: 0;
-  max-width: 680px;
-}
-
 /* Main Interactive Hover Section */
 .contact-interactive-section {
-  padding: 20px 0 100px;
+  padding: 20px 0 120px;
 }
 
 .contact-split-grid {
@@ -71,7 +34,7 @@
 .contact-nav-title-btn {
   background: transparent;
   border: none;
-  padding: 16px 0;
+  padding: 20px 0;
   margin: 0;
   text-align: left;
   cursor: pointer;
@@ -425,7 +388,7 @@
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .contact-us-page {
-    padding-top: 80px;
+    padding-top: 90px;
   }
 
   .contact-container {

@@ -33,17 +33,6 @@ const ContactUs = () => {
 
   return (
     <div className="contact-us-page">
-      {/* Hero Title Section */}
-      <section className="contact-title-hero">
-        <div className="contact-container">
-          <span className="contact-badge">GET IN TOUCH & CONNECT</span>
-          <h1 className="contact-main-headline">SAY HELLO.</h1>
-          <p className="contact-sub-headline">
-            Whether you're exploring a rebrand, seeking strategic direction, or simply curious about working together, we're here to listen.
-          </p>
-        </div>
-      </section>
-
       {/* Main Interactive Hover Section */}
       <section className="contact-interactive-section">
         <div className="contact-container contact-split-grid">
@@ -166,8 +155,8 @@ const ContactUs = () => {
         </div>
       </section>
 
-      {/* Ready to Move CTA band */}
-      <ReadyToMove />
+      {/* Ready to Move CTA band (Button says 'Give a brand review' -> leads to /brand-review) */}
+      <ReadyToMove buttonText="Give a brand review" buttonLink="/brand-review" />
     </div>
   );
 };
