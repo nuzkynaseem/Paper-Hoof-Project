@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { X, Plus } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { projects, slugify } from '../mock';
 import ProjectSlideDeck from '../components/ProjectSlideDeck';
 import MacDockNavigation from '../components/MacDockNavigation';
@@ -9,7 +9,7 @@ import './ProjectCaseStudy.css';
 const ProjectCaseStudy = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const projectList = projects.map((p) => ({ ...p, slug: slugify(p.name) }));
   const currentIndex = Math.max(
@@ -18,80 +18,85 @@ const ProjectCaseStudy = () => {
   );
   const project = projectList[currentIndex];
 
-  const fullDescription = `${project.name} partnered with Paper Hoof to sharpen a brand that had grown faster than its identity could keep up. We began with research — stakeholder interviews, audience mapping, and a close look at the ${project.category.toLowerCase()} landscape they operate in.
-
-From that foundation we built a cohesive visual system: a considered logo, typography, colour, and layout language designed to scale calmly across every touchpoint. Each decision was made to reinforce the story rather than decorate it.
-
-We then rolled the system out end to end — from core identity to digital presence — crafting a seamless, confident experience that feels unmistakably ${project.name}.`;
-
   const handleSelect = (p) => {
     if (p.slug !== project.slug) {
-      setIsDrawerOpen(false);
+      setIsExpanded(false);
       navigate(`/work/${p.slug}`);
     }
   };
 
   return (
     <div className="case-study-page">
-      {/* Immersive JKR Global Style Slide Deck at Top (Replaces old text title/location header) */}
-      <section className="case-study-slide-deck-section">
-        <ProjectSlideDeck project={project} />
+      {/* 1: Title Section */}
+      <header className="case-study-title-section">
+        <div className="case-study-container">
+          <span className="case-study-category-badge">{project.category}</span>
+          <h1 className="case-study-main-title">{project.name}</h1>
+        </div>
+      </header>
+
+      {/* 2: Hero Page (Full Showcase Media) */}
+      <section className="case-study-hero-section">
+        <div className="case-study-container">
+          <div className="case-study-hero-image-wrapper">
+            <img src={project.image} alt={project.name} className="case-study-hero-image" />
+          </div>
+        </div>
       </section>
 
-      {/* Sticky About Button */}
-      <button
-        className="sticky-about-button"
-        onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-        data-testid="about-project-button"
-      >
-        <span>About the project</span>
-        {isDrawerOpen ? <X size={20} /> : <Plus size={20} />}
-      </button>
+      {/* 3: Description Section (Right Half Side with Read More / Read Less Expandable Toggle) */}
+      <section className="case-study-overview-section">
+        <div className="case-study-container overview-grid">
+          <div className="overview-left-meta">
+            <span className="overview-section-label">OVERVIEW</span>
+            <div className="overview-tags-list">
+              {project.tags.map((tag, index) => (
+                <span key={index} className="overview-tag-pill">{tag}</span>
+              ))}
+            </div>
+          </div>
 
-      {/* Left Drawer */}
-      <div className={`project-drawer ${isDrawerOpen ? 'open' : ''}`}>
-        <div className="drawer-content">
-          <h3 className="drawer-title">About {project.name}</h3>
-          <div className="drawer-text">
-            {fullDescription.split('\n\n').map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
+          <div className="overview-right-content">
+            <p className="overview-lead-paragraph">{project.description}</p>
+            
+            {isExpanded && (
+              <div className="overview-expanded-body">
+                <p>
+                  {project.name} partnered with Paper Hoof to sharpen a brand that had grown faster than its identity could keep up. We began with research — stakeholder interviews, audience mapping, and a close look at the {project.category.toLowerCase()} landscape they operate in.
+                </p>
+                <p>
+                  From that foundation we built a cohesive visual system: a considered logo, typography, colour, and layout language designed to scale calmly across every touchpoint. Each decision was made to reinforce the story rather than decorate it.
+                </p>
+                <p>
+                  We then rolled the system out end to end — from core identity to digital presence — crafting a seamless, confident experience that feels unmistakably {project.name}.
+                </p>
+              </div>
+            )}
+
+            <button
+              type="button"
+              className="read-more-toggle-btn"
+              onClick={() => setIsExpanded(!isExpanded)}
+              aria-expanded={isExpanded}
+            >
+              <span>{isExpanded ? 'Read Less' : 'Read More'}</span>
+              <ChevronDown className={`toggle-icon ${isExpanded ? 'rotated' : ''}`} size={16} />
+            </button>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Case Study Content */}
-      <div className={`case-study-content ${isDrawerOpen ? 'drawer-open' : ''}`}>
-        <div className="content-container">
-          <div className="content-image-block">
-            <img src={project.image} alt={project.name} className="content-image" />
+      {/* 4: Complete Immersive Presentation Slide Deck */}
+      <section className="case-study-deck-section">
+        <div className="case-study-container">
+          <div className="deck-section-header">
+            <span className="deck-section-label">PRESENTATION DECK</span>
           </div>
-
-          <div className="content-text-block">
-            <h2 className="content-heading">The Challenge</h2>
-            <p className="content-paragraph">
-              {project.name}'s existing identity had served them well, but the market had moved on.
-              The brand needed a system that felt current, cohesive, and true to their values —
-              while staying recognisable across every context.
-            </p>
-          </div>
-
-          <div className="content-image-block">
-            <img src={project.image} alt={`${project.name} process`} className="content-image" />
-          </div>
-
-          <div className="content-text-block">
-            <h2 className="content-heading">The Solution</h2>
-            <p className="content-paragraph">
-              We created a modular design language — bold typography, a warm palette, and clean
-              layouts — that stays consistent yet flexible enough for campaigns, editions, and
-              local variations. The result is confident, modern, and unmistakably {project.name}.
-            </p>
-          </div>
+          <ProjectSlideDeck project={project} />
         </div>
-      </div>
+      </section>
 
-      {/* macOS Animated Dock at the Bottom of Project (Replaces old sidebar & prev/next cues) */}
+      {/* macOS Animated Dock at the Bottom */}
       <MacDockNavigation
         projects={projectList}
         activeSlug={project.slug}
