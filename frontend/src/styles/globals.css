@@ -3,8 +3,8 @@
 /* Body Font: Catalogue */
 @font-face {
   font-family: 'Catalogue';
-  src: url('/fonts/CatalogueLLTrialTT-Regular.ttf') format('truetype'),
-       url('/fonts/CatalogueLLTrial-Regular.otf') format('opentype');
+  src: url('../assets/fonts/CatalogueLLTrialTT-Regular.ttf') format('truetype'),
+       url('../assets/fonts/CatalogueLLTrial-Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -12,8 +12,8 @@
 
 @font-face {
   font-family: 'Catalogue';
-  src: url('/fonts/CatalogueLLTrialTT-Bold.ttf') format('truetype'),
-       url('/fonts/CatalogueLLTrial-Bold.otf') format('opentype');
+  src: url('../assets/fonts/CatalogueLLTrialTT-Bold.ttf') format('truetype'),
+       url('../assets/fonts/CatalogueLLTrial-Bold.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -21,8 +21,8 @@
 
 @font-face {
   font-family: 'Catalogue';
-  src: url('/fonts/CatalogueLLTrialTT-Light.ttf') format('truetype'),
-       url('/fonts/CatalogueLLTrial-Light.otf') format('opentype');
+  src: url('../assets/fonts/CatalogueLLTrialTT-Light.ttf') format('truetype'),
+       url('../assets/fonts/CatalogueLLTrial-Light.otf') format('opentype');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -30,8 +30,8 @@
 
 @font-face {
   font-family: 'Catalogue';
-  src: url('/fonts/CatalogueLLTrialTT-Italic.ttf') format('truetype'),
-       url('/fonts/CatalogueLLTrial-Italic.otf') format('opentype');
+  src: url('../assets/fonts/CatalogueLLTrialTT-Italic.ttf') format('truetype'),
+       url('../assets/fonts/CatalogueLLTrial-Italic.otf') format('opentype');
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -40,7 +40,7 @@
 /* Heading & Display Font: Svatopluk */
 @font-face {
   font-family: 'Svatopluk';
-  src: url('/fonts/Svatopluk-Regular-iF67d6f0d9954ce.otf') format('opentype');
+  src: url('../assets/fonts/Svatopluk-Regular-iF67d6f0d9954ce.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -48,7 +48,7 @@
 
 @font-face {
   font-family: 'Svatopluk';
-  src: url('/fonts/Svatopluk-Medium-iF67d6f0d9a273f.otf') format('opentype');
+  src: url('../assets/fonts/Svatopluk-Medium-iF67d6f0d9a273f.otf') format('opentype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -56,7 +56,7 @@
 
 @font-face {
   font-family: 'Svatopluk';
-  src: url('/fonts/Svatopluk-SemiBold-iF67d6f0d9afd52.otf') format('opentype');
+  src: url('../assets/fonts/Svatopluk-SemiBold-iF67d6f0d9afd52.otf') format('opentype');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -64,7 +64,7 @@
 
 @font-face {
   font-family: 'Svatopluk';
-  src: url('/fonts/Svatopluk-Bold-iF67d6f0d9b5f70.otf') format('opentype');
+  src: url('../assets/fonts/Svatopluk-Bold-iF67d6f0d9b5f70.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -72,7 +72,7 @@
 
 @font-face {
   font-family: 'Svatopluk';
-  src: url('/fonts/Svatopluk-Black-iF67d6f0d9c2423.otf') format('opentype');
+  src: url('../assets/fonts/Svatopluk-Black-iF67d6f0d9c2423.otf') format('opentype');
   font-weight: 800;
   font-style: normal;
   font-display: swap;
