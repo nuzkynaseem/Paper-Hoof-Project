@@ -105,8 +105,6 @@ export const navigationLinks = [
 
 export const socialLinks = [
   { platform: 'Instagram', url: 'https://instagram.com', icon: 'Instagram' },
-  { platform: 'TikTok', url: 'https://tiktok.com', icon: 'Music' },
-  { platform: 'WhatsApp', url: 'https://whatsapp.com', icon: 'MessageCircle' },
   { platform: 'LinkedIn', url: 'https://linkedin.com', icon: 'Linkedin' }
 ];
 

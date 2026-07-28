@@ -1,23 +1,18 @@
 import React, { useState } from 'react';
 import {
-  Instagram,
-  Music,
-  MessageCircle,
-  Linkedin,
   Mail,
   MapPin,
   ArrowUpRight,
   Copy,
   Check,
 } from 'lucide-react';
+import { InstagramIcon, LinkedinIcon } from '../components/SocialIcons';
 import ReadyToMove from '../components/ReadyToMove';
 import './ContactUs.css';
 
 const socialChannels = [
-  { name: 'Instagram', handle: '@paperhoof', url: 'https://instagram.com', icon: Instagram },
-  { name: 'TikTok', handle: '@paperhoof', url: 'https://tiktok.com', icon: Music },
-  { name: 'WhatsApp', handle: '+94 77 123 4567', url: 'https://whatsapp.com', icon: MessageCircle },
-  { name: 'LinkedIn', handle: 'Paper Hoof Studio', url: 'https://linkedin.com', icon: Linkedin },
+  { name: 'Instagram', handle: '@paperhoof', url: 'https://instagram.com', icon: InstagramIcon },
+  { name: 'LinkedIn', handle: 'Paper Hoof Studio', url: 'https://linkedin.com', icon: LinkedinIcon },
 ];
 
 const ContactUs = () => {

@@ -42,7 +42,6 @@ const TiltCard = ({ project, onClick }) => {
       </div>
       <div className="tilt-info">
         <h3 className="tilt-title">{project.name}</h3>
-        <span className="tilt-category">{project.category}</span>
       </div>
     </article>
   );

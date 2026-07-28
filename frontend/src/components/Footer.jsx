@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowUpRight, Instagram, Music, MessageCircle, Linkedin, Share2 } from 'lucide-react';
+import { ArrowUpRight, Share2 } from 'lucide-react';
+import { InstagramIcon, LinkedinIcon } from './SocialIcons';
 import GravityCanvas from './GravityCanvas';
 import './Footer.css';
 
@@ -57,7 +58,7 @@ const Footer = () => {
             >
               <Share2 size={16} />
               <span>Socials</span>
-              <span className="pill-badge-count">4</span>
+              <span className="pill-badge-count">2</span>
             </button>
 
             {/* Unfurling Tooltip Container */}
@@ -77,30 +78,8 @@ const Footer = () => {
                   className="tooltip-link-item"
                   aria-label="Instagram"
                 >
-                  <Instagram size={18} />
+                  <InstagramIcon size={18} />
                   <span>Instagram</span>
-                  <ArrowUpRight size={14} className="link-arrow" />
-                </a>
-                <a
-                  href="https://tiktok.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="tooltip-link-item"
-                  aria-label="TikTok"
-                >
-                  <Music size={18} />
-                  <span>TikTok</span>
-                  <ArrowUpRight size={14} className="link-arrow" />
-                </a>
-                <a
-                  href="https://whatsapp.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="tooltip-link-item"
-                  aria-label="WhatsApp"
-                >
-                  <MessageCircle size={18} />
-                  <span>WhatsApp</span>
                   <ArrowUpRight size={14} className="link-arrow" />
                 </a>
                 <a
@@ -110,7 +89,7 @@ const Footer = () => {
                   className="tooltip-link-item"
                   aria-label="LinkedIn"
                 >
-                  <Linkedin size={18} />
+                  <LinkedinIcon size={18} />
                   <span>LinkedIn</span>
                   <ArrowUpRight size={14} className="link-arrow" />
                 </a>

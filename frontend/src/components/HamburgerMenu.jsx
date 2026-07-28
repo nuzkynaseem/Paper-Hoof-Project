@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
-import { X, Instagram, Music, MessageCircle, Linkedin, Share2, ArrowUpRight, Copy, Check, Calendar } from 'lucide-react';
+import { X, Share2, ArrowUpRight, Copy, Check, Calendar } from 'lucide-react';
+import { InstagramIcon, LinkedinIcon } from './SocialIcons';
 import { navigationLinks } from '../mock';
 import './HamburgerMenu.css';
 
@@ -237,7 +238,7 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
             </div>
 
             <div className="secondary-panel-content">
-              {/* Direct 4 Social Links Grid */}
+              {/* Direct Social Links Grid */}
               <div className="nav-item secondary-section">
                 <span className="section-small-title">SOCIAL PRESENCE</span>
                 
@@ -249,30 +250,8 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
                     className="panel-social-link"
                     aria-label="Instagram"
                   >
-                    <Instagram size={16} />
+                    <InstagramIcon size={16} />
                     <span>Instagram</span>
-                    <ArrowUpRight size={14} className="panel-social-arrow" />
-                  </a>
-                  <a
-                    href="https://tiktok.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="panel-social-link"
-                    aria-label="TikTok"
-                  >
-                    <Music size={16} />
-                    <span>TikTok</span>
-                    <ArrowUpRight size={14} className="panel-social-arrow" />
-                  </a>
-                  <a
-                    href="https://whatsapp.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="panel-social-link"
-                    aria-label="WhatsApp"
-                  >
-                    <MessageCircle size={16} />
-                    <span>WhatsApp</span>
                     <ArrowUpRight size={14} className="panel-social-arrow" />
                   </a>
                   <a
@@ -282,7 +261,7 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
                     className="panel-social-link"
                     aria-label="LinkedIn"
                   >
-                    <Linkedin size={16} />
+                    <LinkedinIcon size={16} />
                     <span>LinkedIn</span>
                     <ArrowUpRight size={14} className="panel-social-arrow" />
                   </a>
