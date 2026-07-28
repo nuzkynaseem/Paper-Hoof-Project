@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { X, Plus } from 'lucide-react';
 import { projects, slugify } from '../mock';
-import ProjectSidebar from '../components/ProjectSidebar';
+import ProjectSlideDeck from '../components/ProjectSlideDeck';
+import MacDockNavigation from '../components/MacDockNavigation';
 import './ProjectCaseStudy.css';
 
 const ProjectCaseStudy = () => {
@@ -17,10 +18,6 @@ const ProjectCaseStudy = () => {
   );
   const project = projectList[currentIndex];
 
-  const prevProject = projectList[(currentIndex - 1 + projectList.length) % projectList.length];
-  const nextProject = projectList[(currentIndex + 1) % projectList.length];
-
-  const shortDescription = project.description;
   const fullDescription = `${project.name} partnered with Paper Hoof to sharpen a brand that had grown faster than its identity could keep up. We began with research — stakeholder interviews, audience mapping, and a close look at the ${project.category.toLowerCase()} landscape they operate in.
 
 From that foundation we built a cohesive visual system: a considered logo, typography, colour, and layout language designed to scale calmly across every touchpoint. Each decision was made to reinforce the story rather than decorate it.
@@ -36,27 +33,9 @@ We then rolled the system out end to end — from core identity to digital prese
 
   return (
     <div className="case-study-page">
-      <ProjectSidebar projects={projectList} activeSlug={project.slug} onSelect={handleSelect} />
-
-      {/* Hero Section */}
-      <section className="case-study-hero">
-        <div className="case-study-hero-container">
-          <div className="hero-left">
-            <h1 className="case-study-title">{project.name}</h1>
-            <div className="case-study-gradient-divider"></div>
-            <div className="case-study-meta">
-              <span className="meta-date">25th December 2025</span>
-              <span className="meta-separator">•</span>
-              <span className="meta-location">Mawanella, Sri Lanka</span>
-            </div>
-            <div className="case-study-tags">
-              {project.tags.map((tag, index) => (
-                <span key={index} className="case-tag">{tag}</span>
-              ))}
-            </div>
-            <p className="case-study-short-desc">{shortDescription}</p>
-          </div>
-        </div>
+      {/* Immersive JKR Global Style Slide Deck at Top (Replaces old text title/location header) */}
+      <section className="case-study-slide-deck-section">
+        <ProjectSlideDeck project={project} />
       </section>
 
       {/* Sticky About Button */}
@@ -72,7 +51,7 @@ We then rolled the system out end to end — from core identity to digital prese
       {/* Left Drawer */}
       <div className={`project-drawer ${isDrawerOpen ? 'open' : ''}`}>
         <div className="drawer-content">
-          <h3 className="drawer-title">About the Project</h3>
+          <h3 className="drawer-title">About {project.name}</h3>
           <div className="drawer-text">
             {fullDescription.split('\n\n').map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
@@ -112,29 +91,12 @@ We then rolled the system out end to end — from core identity to digital prese
         </div>
       </div>
 
-      {/* Project Navigation */}
-      <section className="project-navigation">
-        <div className="nav-container">
-          <div className="nav-item prev" onClick={() => navigate(`/work/${prevProject.slug}`)}>
-            <div className="nav-image-wrapper">
-              <img src={prevProject.image} alt={prevProject.name} className="nav-project-image" />
-            </div>
-            <div className="nav-content">
-              <span className="nav-label">Previous Project</span>
-              <h3 className="nav-project-name">{prevProject.name}</h3>
-            </div>
-          </div>
-          <div className="nav-item next" onClick={() => navigate(`/work/${nextProject.slug}`)}>
-            <div className="nav-image-wrapper">
-              <img src={nextProject.image} alt={nextProject.name} className="nav-project-image" />
-            </div>
-            <div className="nav-content">
-              <span className="nav-label">Next Project</span>
-              <h3 className="nav-project-name">{nextProject.name}</h3>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* macOS Animated Dock at the Bottom of Project (Replaces old sidebar & prev/next cues) */}
+      <MacDockNavigation
+        projects={projectList}
+        activeSlug={project.slug}
+        onSelect={handleSelect}
+      />
     </div>
   );
 };
