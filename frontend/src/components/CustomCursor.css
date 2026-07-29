@@ -104,9 +104,9 @@ body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured
 
 .cursor-text-path {
   font-family: var(--font-primary);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   fill: var(--horse-black);
   text-transform: uppercase;
   opacity: 0.85;
