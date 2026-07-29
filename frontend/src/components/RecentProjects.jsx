@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import gsap from 'gsap';
 import { projects } from '../mock';
 import { ContainerScroll } from './ui/container-scroll-animation';
 import './RecentProjects.css';
@@ -11,20 +10,7 @@ const RecentProjects = () => {
   const navigate = useNavigate();
   const cardRef = useRef(null);
   const mediaRef = useRef(null);
-  const cursorRef = useRef(null);
-  const xTo = useRef(null);
-  const yTo = useRef(null);
-
-  const [isHovered, setIsHovered] = useState(false);
   const featured = projects[0];
-
-  // Initialize GSAP quickTo tracking for fluid cursor tooltip (vivalalabia.com style)
-  useEffect(() => {
-    if (cursorRef.current) {
-      xTo.current = gsap.quickTo(cursorRef.current, 'x', { duration: 0.22, ease: 'power3.out' });
-      yTo.current = gsap.quickTo(cursorRef.current, 'y', { duration: 0.22, ease: 'power3.out' });
-    }
-  }, []);
 
   const handleMouseMove = (e) => {
     // 3D Mouse Tilt Calculation
@@ -35,24 +21,9 @@ const RecentProjects = () => {
       const py = (e.clientY - rect.top) / rect.height - 0.5;
       el.style.transform = `perspective(1000px) rotateX(${(-py * MAX_TILT).toFixed(2)}deg) rotateY(${(px * MAX_TILT).toFixed(2)}deg) scale(1.02)`;
     }
-
-    // Follow cursor position
-    if (xTo.current && yTo.current) {
-      xTo.current(e.clientX);
-      yTo.current(e.clientY);
-    }
-  };
-
-  const handleMouseEnter = (e) => {
-    setIsHovered(true);
-    if (xTo.current && yTo.current) {
-      xTo.current(e.clientX);
-      yTo.current(e.clientY);
-    }
   };
 
   const handleMouseLeave = () => {
-    setIsHovered(false);
     const el = mediaRef.current;
     if (el) {
       el.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
@@ -65,22 +36,6 @@ const RecentProjects = () => {
 
   return (
     <section id="recent-projects" className="recent-projects-section" ref={cardRef}>
-      {/* Floating Circle Cursor Tooltip (vivalalabia.com Style) */}
-      <div
-        ref={cursorRef}
-        className={`featured-cursor-tooltip ${isHovered ? 'visible' : ''}`}
-        aria-hidden="true"
-      >
-        <div className="cursor-icon-box">
-          <img
-            src={`${process.env.PUBLIC_URL}/paperhoof-horse.svg`}
-            alt="Paper Hoof"
-            className="cursor-horse-svg"
-          />
-        </div>
-        <span className="cursor-label-text">See {featured.name}</span>
-      </div>
-
       <div className="container recent-projects-center-container">
         <ContainerScroll>
           <div className="featured-work-center-wrapper">
@@ -94,9 +49,10 @@ const RecentProjects = () => {
             <article
               className="featured-scroll-card"
               onClick={handleClick}
-              onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onMouseMove={handleMouseMove}
+              data-cursor="project"
+              data-cursor-text={`SEE ${featured.name}`}
               data-testid={`project-card-${featured.id}`}
             >
               <div className="featured-media" ref={mediaRef}>

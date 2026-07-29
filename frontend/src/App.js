@@ -14,6 +14,7 @@ import ContactUs from "./pages/ContactUs";
 import AboutUs from "./pages/AboutUs";
 import Work from "./pages/Work";
 import ProjectCaseStudy from "./pages/ProjectCaseStudy";
+import CustomCursor from "./components/CustomCursor";
 
 function HomePage() {
   return (
@@ -71,6 +72,7 @@ function AppContent() {
 
   return (
     <div className="App">
+      <CustomCursor />
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>

@@ -25,6 +25,8 @@ const TiltCard = ({ project, onClick }) => {
     <article
       className="tilt-card"
       onClick={onClick}
+      data-cursor="project"
+      data-cursor-text={`SEE ${project.name}`}
       data-testid={`tilt-card-${project.slug || project.id}`}
     >
       <div
