@@ -119,7 +119,7 @@ const BrandReview = () => {
 
   const [formData, setFormData] = useState(initialFormData);
 
-  // Parallax float for background text (reduced by 75% for subtle floating effect)
+  // Parallax float for background text
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -247,14 +247,13 @@ const BrandReview = () => {
 
   return (
     <div className="brand-review-page">
-      {/* Redesigned Hero Section (White background) */}
+      {/* Redesigned Hero Section */}
       <section
         className="brand-review-hero"
         onMouseMove={handleHeroMouseMove}
         onMouseLeave={handleHeroMouseLeave}
       >
         <DraggableCardContainer className="hero-draggable-container">
-          {/* Foreground Text: 120 minutes Title & Description with Glass Backdrop Blur */}
           <div className="hero-center-content">
             <h1 className="brand-review-hero-title">120 minutes</h1>
             <p className="brand-review-hero-description">
@@ -262,7 +261,6 @@ const BrandReview = () => {
             </p>
           </div>
 
-          {/* Movable Brand Cards in Background with Homepage Tilt Animation */}
           {brandCards.map((item) => (
             <BrandTiltCardItem key={item.title} item={item} />
           ))}
@@ -319,7 +317,7 @@ const BrandReview = () => {
                         onValueChange={(val) => setFormData(prev => ({ ...prev, service: val }))}
                       >
                         <SelectTrigger className="custom-select-trigger">
-                          <SelectValue placeholder="Choose the service from dropdown" />
+                          <SelectValue placeholder="Choose service from dropdown" />
                         </SelectTrigger>
                         <SelectContent className="custom-select-content">
                           {serviceOptions.map((option, index) => (
@@ -341,7 +339,7 @@ const BrandReview = () => {
                         onValueChange={(val) => setFormData(prev => ({ ...prev, budget: val }))}
                       >
                         <SelectTrigger className="custom-select-trigger">
-                          <SelectValue placeholder="Choose your budget from dropdown" />
+                          <SelectValue placeholder="Choose budget from dropdown" />
                         </SelectTrigger>
                         <SelectContent className="custom-select-content">
                           {budgetOptions.map((option, index) => (
@@ -363,7 +361,7 @@ const BrandReview = () => {
                         onValueChange={(val) => setFormData(prev => ({ ...prev, hearAbout: val }))}
                       >
                         <SelectTrigger className="custom-select-trigger">
-                          <SelectValue placeholder="Choose from dropdown" />
+                          <SelectValue placeholder="Choose source from dropdown" />
                         </SelectTrigger>
                         <SelectContent className="custom-select-content">
                           {hearAboutOptions.map((option, index) => (
@@ -385,7 +383,7 @@ const BrandReview = () => {
                         onValueChange={(val) => setFormData(prev => ({ ...prev, referrer: val }))}
                       >
                         <SelectTrigger className="custom-select-trigger">
-                          <SelectValue placeholder="Choose the person from dropdown" />
+                          <SelectValue placeholder="Choose referrer from dropdown" />
                         </SelectTrigger>
                         <SelectContent className="custom-select-content">
                           {referrerOptions.map((option, index) => (
@@ -529,7 +527,7 @@ const BrandReview = () => {
                           <span className="label-arrow">▸</span>
                         </label>
                         <div className="calendar-container">
-                          {/* Calendar Header: Month Nav on Left, Year Heading Pinned to Right */}
+                          {/* Calendar Header: Month Nav & Year Heading neatly inside calendar bounds */}
                           <div className="calendar-custom-header">
                             <div className="calendar-month-nav">
                               <button
@@ -539,10 +537,10 @@ const BrandReview = () => {
                                 disabled={isPrevMonthDisabled()}
                                 aria-label="Previous month"
                               >
-                                <ChevronLeft size={20} />
+                                <ChevronLeft size={18} />
                               </button>
                               <span className="calendar-month-name">
-                                {currentMonth.toLocaleDateString('en-US', { month: 'long' })}
+                                {currentMonth.toLocaleDateString('en-US', { month: 'short' })}
                               </span>
                               <button
                                 type="button"
@@ -551,11 +549,11 @@ const BrandReview = () => {
                                 disabled={isNextMonthDisabled()}
                                 aria-label="Next month"
                               >
-                                <ChevronRight size={20} />
+                                <ChevronRight size={18} />
                               </button>
                             </div>
 
-                            {/* Year Heading Pinned to Right Side of Calendar */}
+                            {/* Year Heading Pinned cleanly inside Calendar */}
                             <div className="calendar-year-heading">
                               <span className="year-label">YEAR</span>
                               <span className="year-number">{currentMonth.getFullYear()}</span>
