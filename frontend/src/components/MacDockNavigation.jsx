@@ -1,6 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { gsap } from 'gsap';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Carousel,
@@ -12,19 +10,6 @@ import {
 import './MacDockNavigation.css';
 
 const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
-  // Desktop macOS dock state & refs
-  const trackRef = useRef(null);
-  const toolbarRef = useRef(null);
-  const iconRefs = useRef([]);
-  const rafRef = useRef(null);
-
-  const [hoveredProject, setHoveredProject] = useState(null);
-  const [centeredProject, setCenteredProject] = useState(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-  const [isScrollMode, setIsScrollMode] = useState(false);
-
-  // Mobile Carousel API state
   const [carouselApi, setCarouselApi] = useState(null);
 
   // Sync active project to carousel position when activeSlug changes or carousel mounts
@@ -36,230 +21,10 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
     }
   }, [carouselApi, activeSlug, projects]);
 
-  // ── Desktop Scroll Mode check ──────────────────────────────────────────
-  const checkScrollMode = useCallback(() => {
-    const track = trackRef.current;
-    const toolbar = toolbarRef.current;
-    if (!track || !toolbar) return;
-
-    const overflows = toolbar.scrollWidth > track.clientWidth;
-    setIsScrollMode(overflows);
-  }, []);
-
-  // ── Desktop Scroll State ───────────────────────────────────────────────
-  const updateScrollState = useCallback(() => {
-    const track = trackRef.current;
-    if (!track) return;
-    const { scrollLeft, scrollWidth, clientWidth } = track;
-    setCanScrollLeft(scrollLeft > 2);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 2);
-  }, []);
-
-  // ── Desktop Center Project ─────────────────────────────────────────────
-  const updateCenteredProject = useCallback(() => {
-    const track = trackRef.current;
-    const icons = iconRefs.current.filter(Boolean);
-    if (!track || icons.length === 0) return;
-
-    const trackRect = track.getBoundingClientRect();
-    const trackCenter = trackRect.left + trackRect.width / 2;
-    let closest = null;
-    let closestDist = Infinity;
-
-    icons.forEach((icon, i) => {
-      const rect = icon.getBoundingClientRect();
-      const iconCenter = rect.left + rect.width / 2;
-      const dist = Math.abs(iconCenter - trackCenter);
-      if (dist < closestDist) {
-        closestDist = dist;
-        closest = projects[i];
-      }
-    });
-
-    setCenteredProject(closest || null);
-  }, [projects]);
-
-  const handleScroll = useCallback(() => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    rafRef.current = requestAnimationFrame(() => {
-      updateScrollState();
-      updateCenteredProject();
-    });
-  }, [updateScrollState, updateCenteredProject]);
-
-  const scrollLeft = () => {
-    const track = trackRef.current;
-    if (track) track.scrollBy({ left: -220, behavior: 'smooth' });
-  };
-  const scrollRight = () => {
-    const track = trackRef.current;
-    if (track) track.scrollBy({ left: 220, behavior: 'smooth' });
-  };
-
-  // ── Desktop Magnification Effect ───────────────────────────────────────
-  useEffect(() => {
-    if (isScrollMode) return;
-
-    const toolbar = toolbarRef.current;
-    const icons = iconRefs.current.filter(Boolean);
-    if (!toolbar || icons.length === 0) return;
-
-    const min = 52;
-    const max = 120;
-    const bound = min * Math.PI;
-
-    gsap.set(icons, { transformOrigin: '50% 120%', height: min });
-
-    const handleMouseMove = (e) => {
-      const firstIcon = icons[0];
-      const firstLeft = firstIcon ? firstIcon.offsetLeft : 0;
-      const offset = toolbar.getBoundingClientRect().left + firstLeft;
-      const pointer = e.clientX - offset;
-
-      icons.forEach((icon, i) => {
-        const distance = i * min + min / 2 - pointer;
-        let scale = 1;
-        let x = 0;
-        if (-bound < distance && distance < bound) {
-          const rad = (distance / min) * 0.5;
-          scale = 1 + (max / min - 1) * Math.cos(rad);
-          x = 2 * (max - min) * Math.sin(rad);
-        } else {
-          x = (-bound < distance ? 2 : -2) * (max - min);
-        }
-        gsap.to(icon, { duration: 0.3, x, scale, ease: 'power2.out' });
-      });
-    };
-
-    const handleMouseLeave = () => {
-      setHoveredProject(null);
-      gsap.to(icons, { duration: 0.3, scale: 1, x: 0, ease: 'power2.out' });
-    };
-
-    toolbar.addEventListener('mousemove', handleMouseMove);
-    toolbar.addEventListener('mouseleave', handleMouseLeave);
-    return () => {
-      toolbar.removeEventListener('mousemove', handleMouseMove);
-      toolbar.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, [isScrollMode, projects]);
-
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-
-    checkScrollMode();
-    updateScrollState();
-    updateCenteredProject();
-
-    track.addEventListener('scroll', handleScroll, { passive: true });
-
-    const resizeObs = new ResizeObserver(() => {
-      checkScrollMode();
-      updateScrollState();
-      updateCenteredProject();
-    });
-    resizeObs.observe(track);
-    if (toolbarRef.current) resizeObs.observe(toolbarRef.current);
-
-    window.addEventListener('resize', checkScrollMode);
-
-    return () => {
-      track.removeEventListener('scroll', handleScroll);
-      resizeObs.disconnect();
-      window.removeEventListener('resize', checkScrollMode);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, [projects, handleScroll, checkScrollMode, updateScrollState, updateCenteredProject]);
-
-  useEffect(() => {
-    const track = trackRef.current;
-    const icons = iconRefs.current.filter(Boolean);
-    if (!track || !isScrollMode) return;
-
-    const activeIdx = projects.findIndex((p) => p.slug === activeSlug);
-    if (activeIdx < 0) return;
-    const activeIcon = icons[activeIdx];
-    if (!activeIcon) return;
-
-    const trackRect = track.getBoundingClientRect();
-    const iconRect = activeIcon.getBoundingClientRect();
-    const scrollTarget =
-      track.scrollLeft +
-      iconRect.left -
-      trackRect.left -
-      (trackRect.width / 2 - iconRect.width / 2);
-    track.scrollTo({ left: scrollTarget, behavior: 'smooth' });
-  }, [activeSlug, projects, isScrollMode]);
-
-  const visibleTooltip = hoveredProject || (isScrollMode ? centeredProject : null);
-
   return (
     <section className="mac-dock-section" aria-label="Project Navigation Dock">
-      {/* ── DESKTOP DOCK (MD and up) ────────────────────────────────── */}
-      <div className="mac-dock-outer-wrapper hidden md:flex">
-        {/* Tooltip */}
-        <div
-          className={`mac-dock-tooltip ${visibleTooltip ? 'visible' : ''} ${
-            !hoveredProject && centeredProject ? 'centered-mode' : ''
-          }`}
-        >
-          {visibleTooltip && <span>{visibleTooltip.name}</span>}
-        </div>
-
-        {/* Dock scroll wrapper with chevrons */}
-        <div className={`dock-scroll-wrapper ${isScrollMode ? 'scroll-mode' : ''}`}>
-          <button
-            type="button"
-            className={`dock-chevron dock-chevron-left ${!canScrollLeft ? 'hidden' : ''}`}
-            onClick={scrollLeft}
-            aria-label="Scroll dock left"
-          >
-            <ChevronLeft size={18} />
-          </button>
-
-          <div
-            ref={trackRef}
-            className={`mac-dock-track ${isScrollMode ? 'scrollable' : ''}`}
-          >
-            <div className="toolbar" ref={toolbarRef}>
-              {projects.map((p, index) => {
-                const isActive = p.slug === activeSlug;
-                return (
-                  <button
-                    key={p.slug || p.id}
-                    ref={(el) => (iconRefs.current[index] = el)}
-                    className={`toolbarItem ${isActive ? 'active' : ''}`}
-                    onClick={() => onSelect(p)}
-                    onMouseEnter={() => setHoveredProject(p)}
-                    onMouseLeave={() => setHoveredProject(null)}
-                    aria-label={`View ${p.name}`}
-                    title={p.name}
-                  >
-                    <div className="dock-icon-img-wrapper">
-                      <img src={p.image} alt={p.name} className="dock-icon-img" />
-                    </div>
-                    {isActive && <span className="dock-active-dot" />}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className={`dock-chevron dock-chevron-right ${!canScrollRight ? 'hidden' : ''}`}
-            onClick={scrollRight}
-            aria-label="Scroll dock right"
-          >
-            <ChevronRight size={18} />
-          </button>
-        </div>
-      </div>
-
-      {/* ── MOBILE RESPONSIVE CAROUSEL DOCK (< MD) ───────────────────── */}
-      <div className="mobile-dock-wrapper block md:hidden w-full px-3">
-        <div className="relative w-full max-w-sm sm:max-w-md mx-auto px-7 py-2">
+      <div className="dock-carousel-wrapper w-full px-4">
+        <div className="relative w-full max-w-sm sm:max-w-xl md:max-w-2xl lg:max-w-4xl mx-auto px-8 py-2">
           <Carousel
             opts={{
               align: 'start',
@@ -275,14 +40,14 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
                 return (
                   <CarouselItem
                     key={p.slug || p.id || index}
-                    className="pl-2 basis-1/2 sm:basis-1/3"
+                    className="pl-2 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
                   >
                     <div className="h-full p-1">
                       <Card
                         className={`h-full cursor-pointer transition-all duration-300 overflow-hidden relative border-2 ${
                           isActive
                             ? 'border-[#FD6D1E] shadow-md shadow-[#FD6D1E]/25 bg-[#FFF6E9]'
-                            : 'border-black/10 opacity-80 hover:opacity-100 bg-white'
+                            : 'border-black/10 opacity-80 hover:opacity-100 hover:border-[#FD6D1E]/50 bg-white'
                         }`}
                         onClick={() => {
                           onSelect(p);
@@ -322,9 +87,9 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
               })}
             </CarouselContent>
 
-            {/* Chevrons trigger sliding */}
-            <CarouselPrevious className="-left-6 h-8 w-8 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white shadow-sm" />
-            <CarouselNext className="-right-6 h-8 w-8 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white shadow-sm" />
+            {/* Chevrons trigger sliding left/right */}
+            <CarouselPrevious className="-left-7 h-9 w-9 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white shadow-sm" />
+            <CarouselNext className="-right-7 h-9 w-9 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white shadow-sm" />
           </Carousel>
         </div>
       </div>
