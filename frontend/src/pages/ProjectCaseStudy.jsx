@@ -1,9 +1,99 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Plus, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { projects, slugify } from '../mock';
 import MacDockNavigation from '../components/MacDockNavigation';
 import './ProjectCaseStudy.css';
+
+const componentDetails = [
+  {
+    id: 'logotype',
+    title: 'Logotype',
+    summary: 'Built on refined geometry, the logotype feels simple, confident, and approachable. The continuous line introduces a sense of flow that echoes the ability to move intelligently through complex environments. In motion, a smooth weight shift adds a sensing, responsive quality.',
+  },
+  {
+    id: 'visual-identity',
+    title: 'Visual Identity System',
+    summary: 'Our visual language pairs high-contrast typographic hierarchy with fluid grid alignments. Built to adapt across digital displays and tactile physical touchpoints without losing structural harmony.',
+  },
+  {
+    id: 'color-palette',
+    title: 'Color Architecture',
+    summary: 'Curated color palettes balance functional clarity with emotional depth. The tones shift dynamically from subtle warm neutrals to high-contrast focal accents.',
+  },
+  {
+    id: 'brand-touchpoints',
+    title: 'Brand Touchpoints',
+    summary: 'From interactive digital platforms to physical environmental assets, every component is systematically engineered for consistency, speed, and lasting impact.',
+  }
+];
+
+const CaseStudyComponent = ({ imgUrl, index, project }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const detail = componentDetails[index % componentDetails.length];
+  const title = detail ? detail.title : `Component 0${index + 1}`;
+  const summary = detail
+    ? detail.summary
+    : `Built on refined geometry and systematic layout rules, this component defines ${project.name}'s visual identity and brand architecture.`;
+
+  return (
+    <div className="case-study-component-item">
+      {/* Component Media (Always fills 100% viewport width, height determined by image/designer specifications) */}
+      <img
+        src={imgUrl}
+        alt={`${project.name} ${title}`}
+        className="component-media-img"
+      />
+
+      {/* Bottom-Left Pill Badge Button & Expandable Popover Modal */}
+      <div className="component-insight-container">
+        <AnimatePresence mode="wait">
+          {!isOpen ? (
+            <motion.button
+              key="pill"
+              type="button"
+              className="component-insight-pill"
+              onClick={() => setIsOpen(true)}
+              aria-expanded="false"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+            >
+              <span className="pill-title-text">{title}</span>
+              <div className="pill-plus-icon">
+                <Plus size={14} />
+              </div>
+            </motion.button>
+          ) : (
+            <motion.div
+              key="modal"
+              className="component-insight-modal"
+              initial={{ opacity: 0, scale: 0.92, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 12 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="insight-modal-header">
+                <h3 className="insight-modal-title">{title}</h3>
+                <button
+                  type="button"
+                  className="insight-modal-close"
+                  onClick={() => setIsOpen(false)}
+                  aria-label="Close component details"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+              <p className="insight-modal-body">{summary}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
 
 const ProjectCaseStudy = () => {
   const { projectId } = useParams();
@@ -35,7 +125,7 @@ const ProjectCaseStudy = () => {
 
   return (
     <div className="case-study-page">
-      {/* 1: Title Section (No eyebrow title) */}
+      {/* 1: Title Section */}
       <header className="case-study-title-section">
         <div className="case-study-container">
           <h1 className="case-study-main-title">{project.name}</h1>
@@ -47,7 +137,7 @@ const ProjectCaseStudy = () => {
         <img src={project.image} alt={project.name} className="case-study-hero-image" />
       </section>
 
-      {/* 3: Description Section (Right-Half Side with Read More / Read Less, No dividing line) */}
+      {/* 3: Description Section (Right-Half Side Layout with Read More / Read Less) */}
       <section className="case-study-overview-section">
         <div className="case-study-container overview-grid">
           <div className="overview-left-meta">
@@ -89,15 +179,15 @@ const ProjectCaseStudy = () => {
         </div>
       </section>
 
-      {/* 4: Full-Width Presentation Media Showcase (Edge-to-Edge 100%) */}
+      {/* 4: Full-Width Presentation Media Showcase (Edge-to-Edge 100% Viewport Width, 0px Gap) */}
       <section className="case-study-presentation-section">
         <div className="presentation-media-stack">
           {presentationImages.map((imgUrl, index) => (
-            <img
+            <CaseStudyComponent
               key={index}
-              src={imgUrl}
-              alt={`${project.name} Showcase ${index + 1}`}
-              className="presentation-long-image"
+              imgUrl={imgUrl}
+              index={index}
+              project={project}
             />
           ))}
         </div>
