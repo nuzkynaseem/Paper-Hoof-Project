@@ -24,38 +24,17 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [isScrollMode, setIsScrollMode] = useState(false);
 
-  // Mobile Carousel API & centered item state
+  // Mobile Carousel API state
   const [carouselApi, setCarouselApi] = useState(null);
-  const [centeredMobileIndex, setCenteredMobileIndex] = useState(0);
 
-  // Sync active project to centered slide when activeSlug changes or carousel mounts
+  // Sync active project to carousel position when activeSlug changes or carousel mounts
   useEffect(() => {
     if (!carouselApi) return;
     const activeIdx = projects.findIndex((p) => p.slug === activeSlug);
     if (activeIdx >= 0) {
       carouselApi.scrollTo(activeIdx);
-      setCenteredMobileIndex(activeIdx);
     }
   }, [carouselApi, activeSlug, projects]);
-
-  // Listen to carousel snap position to track which component is currently in the middle
-  useEffect(() => {
-    if (!carouselApi) return;
-
-    const onSelectMobile = () => {
-      const snapIndex = carouselApi.selectedScrollSnap();
-      setCenteredMobileIndex(snapIndex);
-    };
-
-    onSelectMobile();
-    carouselApi.on('select', onSelectMobile);
-    carouselApi.on('reInit', onSelectMobile);
-
-    return () => {
-      carouselApi.off('select', onSelectMobile);
-      carouselApi.off('reInit', onSelectMobile);
-    };
-  }, [carouselApi]);
 
   // ── Desktop Scroll Mode check ──────────────────────────────────────────
   const checkScrollMode = useCallback(() => {
@@ -278,39 +257,40 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
         </div>
       </div>
 
-      {/* ── MOBILE 5-CARD CAROUSEL DOCK (< MD) ───────────────────────── */}
-      <div className="mobile-dock-wrapper block md:hidden w-full px-2">
-        {/* 5-Card Carousel Deck Centered */}
-        <div className="relative w-full max-w-[21rem] sm:max-w-md mx-auto px-7 py-2">
+      {/* ── MOBILE RESPONSIVE CAROUSEL DOCK (< MD) ───────────────────── */}
+      <div className="mobile-dock-wrapper block md:hidden w-full px-3">
+        <div className="relative w-full max-w-sm sm:max-w-md mx-auto px-7 py-2">
           <Carousel
             opts={{
-              align: 'center',
+              align: 'start',
               loop: false,
             }}
             setApi={setCarouselApi}
             className="w-full"
           >
-            <CarouselContent className="-ml-1 items-center min-h-[105px]">
+            <CarouselContent className="-ml-2 items-stretch">
               {projects.map((p, index) => {
                 const isActive = p.slug === activeSlug;
-                const isCentered = index === centeredMobileIndex;
 
                 return (
-                  <CarouselItem key={p.slug || p.id || index} className="pl-1.5 basis-1/5">
-                    <div className="flex flex-col items-center justify-center relative">
+                  <CarouselItem
+                    key={p.slug || p.id || index}
+                    className="pl-2 basis-1/2 sm:basis-1/3"
+                  >
+                    <div className="h-full p-1">
                       <Card
-                        className={`cursor-pointer transition-all duration-300 overflow-hidden relative border-2 ${
+                        className={`h-full cursor-pointer transition-all duration-300 overflow-hidden relative border-2 ${
                           isActive
                             ? 'border-[#FD6D1E] shadow-md shadow-[#FD6D1E]/25 bg-[#FFF6E9]'
-                            : 'border-black/10 opacity-60 hover:opacity-90 bg-white'
+                            : 'border-black/10 opacity-80 hover:opacity-100 bg-white'
                         }`}
                         onClick={() => {
                           onSelect(p);
                           carouselApi?.scrollTo(index);
                         }}
                       >
-                        <CardContent className="flex flex-col items-center justify-center p-1 relative aspect-square">
-                          <div className="w-full h-full rounded-md overflow-hidden relative">
+                        <CardContent className="flex flex-col items-center justify-between p-2.5 h-full">
+                          <div className="w-full aspect-square rounded-md overflow-hidden relative mb-2">
                             <img
                               src={p.image}
                               alt={p.name}
@@ -318,21 +298,24 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
                             />
                             {isActive && (
                               <div className="absolute inset-0 bg-[#FD6D1E]/15 flex items-center justify-center">
-                                <span className="w-2 h-2 rounded-full bg-[#FD6D1E] shadow-[0_0_6px_#FD6D1E]" />
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#FD6D1E] shadow-[0_0_8px_#FD6D1E]" />
                               </div>
                             )}
                           </div>
-                        </CardContent>
-                      </Card>
 
-                      {/* ONLY the card/component in the middle shows its name */}
-                      {isCentered && (
-                        <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap pointer-events-none z-30">
-                          <span className="inline-block bg-[#222220]/95 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-white/20 shadow-md">
+                          {/* All project cards are properly named */}
+                          <span
+                            className={`text-xs w-full text-center truncate ${
+                              isActive
+                                ? 'font-extrabold text-[#FD6D1E]'
+                                : 'font-semibold text-[#222220]'
+                            }`}
+                            title={p.name}
+                          >
                             {p.name}
                           </span>
-                        </div>
-                      )}
+                        </CardContent>
+                      </Card>
                     </div>
                   </CarouselItem>
                 );
