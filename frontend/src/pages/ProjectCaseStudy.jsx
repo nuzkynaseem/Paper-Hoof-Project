@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronDown, Plus, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import gsap from 'gsap';
 import { projects, slugify } from '../mock';
 import MacDockNavigation from '../components/MacDockNavigation';
 import './ProjectCaseStudy.css';
@@ -37,59 +37,113 @@ const CaseStudyComponent = ({ imgUrl, index, project }) => {
     ? detail.summary
     : `Built on refined geometry and systematic layout rules, this component defines ${project.name}'s visual identity and brand architecture.`;
 
+  const containerRef = useRef(null);
+  const pillContentRef = useRef(null);
+  const modalContentRef = useRef(null);
+
+  const handleOpen = () => {
+    setIsOpen(true);
+    const container = containerRef.current;
+    const pill = pillContentRef.current;
+
+    if (!container) return;
+
+    gsap.killTweensOf([container, pill]);
+
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+    // GSAP Liquid Physics Transition:
+    // 1. Liquid squash & stretch build-up
+    tl.to(container, {
+      scaleX: 1.08,
+      scaleY: 0.88,
+      duration: 0.12,
+      ease: 'power2.out'
+    })
+    // 2. Liquid elastic expansion to full modal box
+    .to(container, {
+      scaleX: 1,
+      scaleY: 1,
+      borderRadius: '20px',
+      duration: 0.65,
+      ease: 'elastic.out(1, 0.72)'
+    });
+  };
+
+  const handleClose = () => {
+    const container = containerRef.current;
+    const modal = modalContentRef.current;
+
+    if (!container) return;
+
+    gsap.killTweensOf([container, modal]);
+
+    const tl = gsap.timeline({
+      onComplete: () => setIsOpen(false)
+    });
+
+    // Liquid contract bounce physics back to pill
+    tl.to(container, {
+      scaleX: 0.92,
+      scaleY: 1.08,
+      duration: 0.12,
+      ease: 'power2.in'
+    })
+    .to(container, {
+      scaleX: 1,
+      scaleY: 1,
+      borderRadius: '999px',
+      duration: 0.55,
+      ease: 'elastic.out(1, 0.75)'
+    });
+  };
+
   return (
     <div className="case-study-component-item">
-      {/* Component Media (Always fills 100% viewport width, height determined by image/designer specifications) */}
+      {/* Component Media (Always fills 100% viewport width) */}
       <img
         src={imgUrl}
         alt={`${project.name} ${title}`}
         className="component-media-img"
       />
 
-      {/* Bottom-Left Pill Badge Button & Expandable Popover Modal */}
+      {/* Bottom-Left Pill Badge & GSAP Liquid Expandable Modal */}
       <div className="component-insight-container">
-        <AnimatePresence mode="wait">
+        <div
+          ref={containerRef}
+          className={`component-insight-card ${isOpen ? 'is-open' : ''}`}
+        >
           {!isOpen ? (
-            <motion.button
-              key="pill"
+            <button
+              ref={pillContentRef}
               type="button"
-              className="component-insight-pill"
-              onClick={() => setIsOpen(true)}
+              className="component-insight-pill-inner"
+              onClick={handleOpen}
               aria-expanded="false"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.2 }}
+              data-testid={`insight-pill-${index}`}
             >
               <span className="pill-title-text">{title}</span>
               <div className="pill-plus-icon">
                 <Plus size={14} />
               </div>
-            </motion.button>
+            </button>
           ) : (
-            <motion.div
-              key="modal"
-              className="component-insight-modal"
-              initial={{ opacity: 0, scale: 0.92, y: 12 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 12 }}
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            >
+            <div ref={modalContentRef} className="component-insight-modal-inner">
               <div className="insight-modal-header">
                 <h3 className="insight-modal-title">{title}</h3>
                 <button
                   type="button"
                   className="insight-modal-close"
-                  onClick={() => setIsOpen(false)}
+                  onClick={handleClose}
                   aria-label="Close component details"
                 >
                   <X size={14} />
                 </button>
               </div>
               <p className="insight-modal-body">{summary}</p>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
     </div>
   );
