@@ -8,6 +8,12 @@
   height: 100vh;
   pointer-events: none;
   z-index: 999999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.custom-cursor-wrapper.active {
+  opacity: 1;
 }
 
 /* Hide browser default cursor globally on interactive elements for desktop */
@@ -29,7 +35,12 @@ body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured
   box-shadow: 0 0 12px rgba(227, 76, 24, 0.6);
   pointer-events: none;
   z-index: 1000001;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease, box-shadow 0.25s ease;
+  /* DO NOT transition transform, JS lerp controls position */
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              margin 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.25s ease,
+              box-shadow 0.25s ease;
   will-change: transform;
 }
 
@@ -50,6 +61,7 @@ body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured
   display: flex;
   align-items: center;
   justify-content: center;
+  /* DO NOT transition transform, JS lerp controls position */
   transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
               height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
               margin 0.35s cubic-bezier(0.16, 1, 0.3, 1),
@@ -102,16 +114,19 @@ body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured
 
 /* State: Button / Link Hover */
 .custom-cursor-wrapper.button .cursor-dot {
-  transform: scale(0.6);
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  margin-top: -4px;
   background: var(--horse-black);
   box-shadow: none;
 }
 
 .custom-cursor-wrapper.button .cursor-aura {
-  width: 56px;
-  height: 56px;
-  margin-left: -28px;
-  margin-top: -28px;
+  width: 54px;
+  height: 54px;
+  margin-left: -27px;
+  margin-top: -27px;
   background: rgba(32, 36, 35, 0.08);
   border-color: rgba(32, 36, 35, 0.25);
 }

@@ -1,20 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
-import gsap from 'gsap';
 import './CustomCursor.css';
 
 const CustomCursor = () => {
   const dotRef = useRef(null);
   const auraRef = useRef(null);
 
+  const mousePos = useRef({ x: -100, y: -100 });
+  const dotPos = useRef({ x: -100, y: -100 });
+  const auraPos = useRef({ x: -100, y: -100 });
+  const rafId = useRef(null);
+
   const [hoverState, setHoverState] = useState('default'); // 'default' | 'button' | 'project'
   const [cursorText, setCursorText] = useState('SEE PROJECT • SEE PROJECT • ');
   const [isVisible, setIsVisible] = useState(false);
-
-  // GSAP quickTo refs for ultra-smooth fluid movement
-  const dotX = useRef(null);
-  const dotY = useRef(null);
-  const auraX = useRef(null);
-  const auraY = useRef(null);
 
   useEffect(() => {
     // Check if touch device
@@ -22,23 +20,9 @@ const CustomCursor = () => {
       return;
     }
 
-    setIsVisible(true);
-
-    if (dotRef.current && auraRef.current) {
-      dotX.current = gsap.quickTo(dotRef.current, 'x', { duration: 0.1, ease: 'power2.out' });
-      dotY.current = gsap.quickTo(dotRef.current, 'y', { duration: 0.1, ease: 'power2.out' });
-
-      auraX.current = gsap.quickTo(auraRef.current, 'x', { duration: 0.32, ease: 'power3.out' });
-      auraY.current = gsap.quickTo(auraRef.current, 'y', { duration: 0.32, ease: 'power3.out' });
-    }
-
     const handleMouseMove = (e) => {
-      if (dotX.current && dotY.current && auraX.current && auraY.current) {
-        dotX.current(e.clientX);
-        dotY.current(e.clientY);
-        auraX.current(e.clientX);
-        auraY.current(e.clientY);
-      }
+      mousePos.current = { x: e.clientX, y: e.clientY };
+      setIsVisible(true);
     };
 
     const handleMouseOver = (e) => {
@@ -78,23 +62,44 @@ const CustomCursor = () => {
       setIsVisible(true);
     };
 
+    // High-performance 120fps LERP Animation Loop
+    const loop = () => {
+      // Lerp Dot (fast & precise)
+      dotPos.current.x += (mousePos.current.x - dotPos.current.x) * 0.45;
+      dotPos.current.y += (mousePos.current.y - dotPos.current.y) * 0.45;
+
+      // Lerp Aura (silky smooth trailing)
+      auraPos.current.x += (mousePos.current.x - auraPos.current.x) * 0.16;
+      auraPos.current.y += (mousePos.current.y - auraPos.current.y) * 0.16;
+
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate3d(${dotPos.current.x}px, ${dotPos.current.y}px, 0)`;
+      }
+      if (auraRef.current) {
+        auraRef.current.style.transform = `translate3d(${auraPos.current.x}px, ${auraPos.current.y}px, 0)`;
+      }
+
+      rafId.current = requestAnimationFrame(loop);
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseover', handleMouseOver);
     document.addEventListener('mouseleave', handleMouseLeaveWindow);
     document.addEventListener('mouseenter', handleMouseEnterWindow);
+
+    rafId.current = requestAnimationFrame(loop);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseover', handleMouseOver);
       document.removeEventListener('mouseleave', handleMouseLeaveWindow);
       document.removeEventListener('mouseenter', handleMouseEnterWindow);
+      if (rafId.current) cancelAnimationFrame(rafId.current);
     };
   }, []);
 
-  if (!isVisible) return null;
-
   return (
-    <div className={`custom-cursor-wrapper ${hoverState}`}>
+    <div className={`custom-cursor-wrapper ${hoverState} ${isVisible ? 'active' : ''}`}>
       {/* Central Solid Focal Dot (Image 1) */}
       <div ref={dotRef} className="cursor-dot" />
 
