@@ -201,26 +201,24 @@ const GravityCanvas = () => {
       }
     });
 
-    // Unbind Matter.js wheel capture listeners
-    if (mouse.mousewheel) {
-      canvas.removeEventListener('mousewheel', mouse.mousewheel);
-      canvas.removeEventListener('DOMMouseScroll', mouse.mousewheel);
-      canvas.removeEventListener('wheel', mouse.mousewheel);
-    }
+    // Pointer Events Toggle: Canvas defaults to 'none' for 100% native smooth scrolling!
+    // Enabled to 'auto' only on click/drag so shapes are interactive!
+    canvas.style.pointerEvents = 'none';
 
-    // Direct wheel scroll forwarding so scrolling over canvas always scrolls the page seamlessly
-    const handleWheel = (e) => {
-      let dy = e.deltaY;
-      if (e.deltaMode === 1) {
-        dy *= 16;
-      } else if (e.deltaMode === 2) {
-        dy *= window.innerHeight;
-      }
-      window.scrollBy(0, dy);
+    const handlePointerDown = () => {
+      canvas.style.pointerEvents = 'auto';
     };
 
-    canvas.addEventListener('wheel', handleWheel, { passive: true });
-    container.addEventListener('wheel', handleWheel, { passive: true });
+    const handlePointerUp = () => {
+      canvas.style.pointerEvents = 'none';
+    };
+
+    container.addEventListener('pointerdown', handlePointerDown);
+    container.addEventListener('mousedown', handlePointerDown);
+
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('mouseup', handlePointerUp);
+    window.addEventListener('touchend', handlePointerUp);
 
     Composite.add(engine.world, mouseConstraint);
     render.mouse = mouse;
@@ -266,8 +264,11 @@ const GravityCanvas = () => {
 
     return () => {
       clearTimeout(timer);
-      canvas.removeEventListener('wheel', handleWheel);
-      container.removeEventListener('wheel', handleWheel);
+      container.removeEventListener('pointerdown', handlePointerDown);
+      container.removeEventListener('mousedown', handlePointerDown);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('mouseup', handlePointerUp);
+      window.removeEventListener('touchend', handlePointerUp);
       observer.disconnect();
       resizeObserver.disconnect();
       Render.stop(render);
