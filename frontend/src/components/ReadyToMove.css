@@ -1,8 +1,9 @@
 .ready-band {
-  background: var(--horse-black);
+  background: var(--mint-sprig, #97D9AF);
   padding: 72px 0 64px;
   overflow: hidden;
   position: relative;
+  transition: background-color 0.3s ease;
 }
 
 .ready-band-marquee {
@@ -20,19 +21,27 @@
 .rb-phrase {
   font-family: var(--font-heading);
   font-size: clamp(3rem, 9vw, 7rem);
+  font-weight: 800; /* Bold Moving Ticker Text */
   line-height: 1;
   text-transform: uppercase;
   letter-spacing: -0.005em;
-  color: rgba(255, 253, 247, 0.9);
+  color: var(--dark-soot, #222220);
   padding-right: 0.15em;
 }
 
 .rb-orange {
-  color: var(--mane-orange);
+  color: var(--tangerine-blaze, #FD6D1E);
 }
 
-.rb-yellow {
-  color: #E8B84B;
+.rb-navy {
+  color: var(--midnight-harbor, #183165);
+}
+
+.rb-cream-question {
+  color: #FFF6E9; /* Cream color for the question mark */
+  font-weight: 800;
+  display: inline-block;
+  margin-left: 2px;
 }
 
 @keyframes rbScroll {
@@ -57,22 +66,24 @@
   align-items: center;
   gap: 10px;
   font-family: var(--font-primary);
-  font-weight: 500;
+  font-weight: 700;
   font-size: 1.05rem;
-  color: var(--sheep-white);
-  background: transparent;
-  border: 1px solid rgba(255, 253, 247, 0.4);
+  color: #FFFFFF;
+  background: var(--dark-soot, #222220);
+  border: 1.5px solid var(--dark-soot, #222220);
   border-radius: 999px;
-  padding: 14px 30px;
+  padding: 14px 32px;
   cursor: pointer;
-  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 8px 24px rgba(34, 34, 32, 0.2);
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .ready-contact-btn:hover {
-  background: var(--primary-green, #123524);
-  border-color: var(--primary-green, #123524);
+  background: var(--tangerine-blaze, #FD6D1E);
+  border-color: var(--tangerine-blaze, #FD6D1E);
   color: #FFFFFF;
   transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(253, 109, 30, 0.35);
 }
 
 @media (prefers-reduced-motion: reduce) {
