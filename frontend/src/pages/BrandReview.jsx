@@ -16,37 +16,37 @@ import './BrandReview.css';
 const brandCards = [
   {
     title: "Nordic Light",
-    tag: "Brand Identity",
+    minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop",
     className: "top-8 left-[3%] md:left-[8%] rotate-[-8deg]"
   },
   {
     title: "Aesop Organics",
-    tag: "Packaging & Audit",
+    minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=600&auto=format&fit=crop",
     className: "top-48 left-[1%] md:left-[5%] rotate-[7deg]"
   },
   {
     title: "Lumen Living",
-    tag: "Visual System",
+    minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80&w=600&auto=format&fit=crop",
     className: "top-8 right-[3%] md:right-[8%] rotate-[10deg]"
   },
   {
     title: "Maison Kith",
-    tag: "Digital Experience",
+    minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=600&auto=format&fit=crop",
     className: "top-52 right-[1%] md:right-[5%] rotate-[-6deg]"
   },
   {
     title: "Aura Creative",
-    tag: "Full Rebrand",
+    minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=600&auto=format&fit=crop",
     className: "bottom-6 left-[14%] md:left-[20%] rotate-[-5deg]"
   },
   {
     title: "Bare Essence",
-    tag: "Strategy & Positioning",
+    minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1526947425960-945c6e72858f?q=80&w=600&auto=format&fit=crop",
     className: "bottom-6 right-[14%] md:right-[20%] rotate-[8deg]"
   }
@@ -86,13 +86,10 @@ const BrandTiltCardItem = ({ item }) => {
             alt={item.title}
             className="brand-card-img"
           />
-          <div className="brand-card-overlay-tag">
-            <span>{item.tag}</span>
-          </div>
         </div>
         <div className="brand-card-footer">
           <h3 className="brand-card-title">{item.title}</h3>
-          <span className="brand-card-category">{item.tag}</span>
+          <span className="brand-card-minutes">{item.minutes}</span>
         </div>
       </div>
     </DraggableCardBody>

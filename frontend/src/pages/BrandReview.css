@@ -182,12 +182,13 @@
   margin: 0 0 2px;
 }
 
-.brand-card-category {
+.brand-card-minutes {
   display: block;
   font-family: var(--font-primary);
   font-size: 0.78rem;
-  font-weight: 500;
-  color: rgba(32, 36, 35, 0.65);
+  font-weight: 600;
+  color: var(--tangerine-blaze, #FD6D1E);
+  letter-spacing: 0.02em;
 }
 
 
