@@ -126,6 +126,24 @@
   color: var(--mane-orange);
 }
 
+.nav-work-btn.active {
+  color: var(--mane-orange) !important;
+  font-weight: 600;
+  position: relative;
+}
+
+.nav-work-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 2.5px;
+  background: var(--mane-orange);
+  border-radius: 999px;
+}
+
 @keyframes navWorkFade {
   from {
     opacity: 0;

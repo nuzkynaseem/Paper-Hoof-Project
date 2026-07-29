@@ -9,6 +9,7 @@ const Navbar = ({ onMenuClick, isMenuOpen = false, darkHero = false }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isBrandReview = location.pathname === '/brand-review';
+  const isWork = location.pathname.startsWith('/work');
 
   useEffect(() => {
     let lastY = window.scrollY;
@@ -81,9 +82,9 @@ const Navbar = ({ onMenuClick, isMenuOpen = false, darkHero = false }) => {
           </div>
         </div>
         <div className="navbar-right">
-          {isScrolled && (
+          {(isScrolled || isWork) && (
             <button
-              className="nav-work-btn"
+              className={`nav-work-btn ${isWork ? 'active' : ''}`}
               onClick={() => navigate('/work')}
               data-testid="navbar-work-link"
             >
