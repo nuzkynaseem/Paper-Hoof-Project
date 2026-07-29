@@ -161,14 +161,14 @@
 }
 
 .btn-submit {
-  background: var(--mane-orange);
-  color: var(--sheep-white);
+  background: var(--primary-green, #123524);
+  color: #FFFFFF;
 }
 
 .btn-submit:hover {
-  background: var(--horse-black);
+  background: var(--tangerine-blaze, #FD6D1E);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(227, 76, 24, 0.25);
+  box-shadow: 0 4px 16px rgba(18, 53, 36, 0.3);
 }
 
 @media (max-width: 768px) {

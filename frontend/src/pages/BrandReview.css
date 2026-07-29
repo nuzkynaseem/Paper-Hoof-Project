@@ -256,9 +256,9 @@
 }
 
 .step-pill.active {
-  background: var(--horse-black);
-  color: #FFFFFF;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  background: var(--mint-sprig, #97D9AF);
+  color: var(--dark-soot, #222220);
+  box-shadow: 0 4px 14px rgba(151, 217, 175, 0.4);
 }
 
 .step-num {
@@ -580,10 +580,10 @@
 }
 
 .time-slot-btn.selected {
-  background: var(--horse-black);
-  color: #FFFFFF;
-  border-color: var(--horse-black);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  background: var(--mint-sprig, #97D9AF);
+  color: var(--dark-soot, #222220);
+  border-color: var(--mint-sprig, #97D9AF);
+  box-shadow: 0 4px 14px rgba(151, 217, 175, 0.4);
 }
 
 /* Success / Booking Confirmation Screen */
@@ -682,7 +682,7 @@
   height: 56px;
   padding: 0 48px;
   border-radius: 999px;
-  background: var(--horse-black);
+  background: var(--primary-green, #123524);
   color: #FFFFFF;
   font-family: var(--font-primary);
   font-size: 1.05rem;
@@ -690,13 +690,13 @@
   border: none;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 16px rgba(18, 53, 36, 0.25);
 }
 
 .btn-done:hover {
-  background: var(--mane-orange);
+  background: var(--tangerine-blaze, #FD6D1E);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(227, 76, 24, 0.3);
+  box-shadow: 0 8px 24px rgba(253, 109, 30, 0.3);
 }
 
 /* Action Buttons */
@@ -716,7 +716,7 @@
   height: 54px;
   padding: 0 36px;
   border-radius: 999px;
-  background: var(--horse-black);
+  background: var(--primary-green, #123524);
   color: #FFFFFF;
   font-family: var(--font-primary);
   font-size: 0.98rem;
@@ -724,14 +724,14 @@
   border: none;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 14px rgba(18, 53, 36, 0.25);
 }
 
 .btn-next:hover,
 .btn-submit:hover {
-  background: var(--mane-orange);
+  background: var(--tangerine-blaze, #FD6D1E);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(227, 76, 24, 0.3);
+  box-shadow: 0 8px 24px rgba(253, 109, 30, 0.3);
 }
 
 .btn-back {

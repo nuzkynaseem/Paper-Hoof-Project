@@ -103,29 +103,29 @@
 }
 
 :root {
-  /* Core Colors — Paper Hoof Primary Palette */
-  --bg-cream: #FFF6E9; /* Antler Cream */
+  /* Core Colors — Birch Mist Default Background & Primary Palette */
+  --bg-cream: #F5F5F5; /* Birch Mist Background */
+  --birch-mist: #F5F5F5; /* Birch Mist */
   --primary-green: #123524; /* Phthalo Green */
   --black: #222220; /* Dark Soot */
   --grey: #595656;
   --white: #FFFFFF;
-  --birch-mist: #F5F5F5; /* Birch Mist */
 
   /* Paper Hoof Brand Palette (Primary) */
   --phthalo-green: #123524;
   --antler-cream: #FFF6E9;
   --dark-soot: #222220;
-  --sheep-white: #FFF6E9;
+  --sheep-white: #F5F5F5;
   --horse-black: #222220;
   --saddle-green: #123524;
 
   /* Secondary Accent Palette */
+  --mint-sprig: #97D9AF; /* Primary Selection Color */
   --mane-orange: #FD6D1E; /* Tangerine Blaze */
   --tangerine-blaze: #FD6D1E;
   --hero-navy: #183165; /* Midnight Harbor */
   --midnight-harbor: #183165;
   --bubblegum-bloom: #FDB5ED;
-  --mint-sprig: #97D9AF;
   --sandy-reed: #D9D5B0;
   --olive-bramble: #92A71D;
   --golden-straw: #FFD221;

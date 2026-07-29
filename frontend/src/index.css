@@ -42,15 +42,15 @@ code {
 
 @layer base {
     :root {
-        --background: 36 100% 96%; /* Antler Cream #FFF6E9 */
+        --background: 0 0% 96.1%; /* Birch Mist #F5F5F5 */
         --foreground: 60 3% 13%; /* Dark Soot #222220 */
-        --card: 36 100% 96%;
+        --card: 0 0% 96.1%;
         --card-foreground: 60 3% 13%;
-        --popover: 36 100% 96%;
+        --popover: 0 0% 96.1%;
         --popover-foreground: 60 3% 13%;
         --primary: 151 49% 14%; /* Phthalo Green #123524 */
-        --primary-foreground: 36 100% 96%;
-        --secondary: 0 0% 96.1%; /* Birch Mist #F5F5F5 */
+        --primary-foreground: 0 0% 96.1%;
+        --secondary: 141 39% 72%; /* Mint Sprig #97D9AF */
         --secondary-foreground: 60 3% 13%;
         --muted: 0 0% 96.1%;
         --muted-foreground: 0 0% 45.1%;

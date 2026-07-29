@@ -69,9 +69,9 @@
 }
 
 .ready-contact-btn:hover {
-  background: var(--mane-orange);
-  border-color: var(--mane-orange);
-  color: var(--sheep-white);
+  background: var(--primary-green, #123524);
+  border-color: var(--primary-green, #123524);
+  color: #FFFFFF;
   transform: translateY(-2px);
 }
 
