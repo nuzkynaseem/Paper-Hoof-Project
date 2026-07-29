@@ -24,7 +24,8 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
   return (
     <section className="mac-dock-section" aria-label="Project Navigation Dock">
       <div className="dock-carousel-wrapper w-full px-4">
-        <div className="relative w-full max-w-sm sm:max-w-xl md:max-w-2xl lg:max-w-4xl mx-auto px-8 py-2">
+        {/* Outer relative container with generous side padding to separate chevrons from cards */}
+        <div className="relative w-full max-w-sm sm:max-w-xl md:max-w-3xl lg:max-w-5xl mx-auto px-12 sm:px-16 md:px-20 py-2">
           <Carousel
             opts={{
               align: 'start',
@@ -47,7 +48,7 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
                         className={`h-full cursor-pointer transition-all duration-300 overflow-hidden relative border-2 ${
                           isActive
                             ? 'border-[#FD6D1E] shadow-md shadow-[#FD6D1E]/25 bg-[#FFF6E9]'
-                            : 'border-black/10 opacity-80 hover:opacity-100 hover:border-[#FD6D1E]/50 bg-white'
+                            : 'border-black/10 opacity-85 hover:opacity-100 hover:border-[#FD6D1E]/50 bg-white'
                         }`}
                         onClick={() => {
                           onSelect(p);
@@ -87,9 +88,9 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
               })}
             </CarouselContent>
 
-            {/* Chevrons trigger sliding left/right */}
-            <CarouselPrevious className="-left-7 h-9 w-9 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white shadow-sm" />
-            <CarouselNext className="-right-7 h-9 w-9 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white shadow-sm" />
+            {/* Chevrons with proper padding and separation from nearby cards */}
+            <CarouselPrevious className="left-1 sm:left-2 md:left-3 h-10 w-10 sm:h-11 sm:w-11 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white shadow-md transition-all" />
+            <CarouselNext className="right-1 sm:right-2 md:right-3 h-10 w-10 sm:h-11 sm:w-11 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white shadow-md transition-all" />
           </Carousel>
         </div>
       </div>
