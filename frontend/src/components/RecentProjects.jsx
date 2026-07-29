@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import gsap from 'gsap';
 import { projects } from '../mock';
 import { ContainerScroll } from './ui/container-scroll-animation';
 import './RecentProjects.css';
@@ -11,62 +11,76 @@ const RecentProjects = () => {
   const navigate = useNavigate();
   const cardRef = useRef(null);
   const mediaRef = useRef(null);
+  const cursorRef = useRef(null);
+  const xTo = useRef(null);
+  const yTo = useRef(null);
+
+  const [isHovered, setIsHovered] = useState(false);
   const featured = projects[0];
-  const slideImages = featured.images || [featured.image];
 
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-
-  // Auto-play slider timer
+  // Initialize GSAP quickTo tracking for fluid cursor tooltip (vivalalabia.com style)
   useEffect(() => {
-    if (slideImages.length <= 1 || isPaused) return;
+    if (cursorRef.current) {
+      xTo.current = gsap.quickTo(cursorRef.current, 'x', { duration: 0.22, ease: 'power3.out' });
+      yTo.current = gsap.quickTo(cursorRef.current, 'y', { duration: 0.22, ease: 'power3.out' });
+    }
+  }, []);
 
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slideImages.length);
-    }, 3500);
-
-    return () => clearInterval(timer);
-  }, [slideImages.length, isPaused]);
-
-  // Cohesive Mouse Tilt Animation matching homepage tilt cards
   const handleMouseMove = (e) => {
+    // 3D Mouse Tilt Calculation
     const el = mediaRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width - 0.5;
-    const py = (e.clientY - rect.top) / rect.height - 0.5;
-    el.style.transform = `perspective(1000px) rotateX(${(-py * MAX_TILT).toFixed(2)}deg) rotateY(${(px * MAX_TILT).toFixed(2)}deg) scale(1.02)`;
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width - 0.5;
+      const py = (e.clientY - rect.top) / rect.height - 0.5;
+      el.style.transform = `perspective(1000px) rotateX(${(-py * MAX_TILT).toFixed(2)}deg) rotateY(${(px * MAX_TILT).toFixed(2)}deg) scale(1.02)`;
+    }
+
+    // Follow cursor position
+    if (xTo.current && yTo.current) {
+      xTo.current(e.clientX);
+      yTo.current(e.clientY);
+    }
+  };
+
+  const handleMouseEnter = (e) => {
+    setIsHovered(true);
+    if (xTo.current && yTo.current) {
+      xTo.current(e.clientX);
+      yTo.current(e.clientY);
+    }
   };
 
   const handleMouseLeave = () => {
+    setIsHovered(false);
     const el = mediaRef.current;
     if (el) {
       el.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
     }
-    setIsPaused(false);
   };
 
   const handleClick = () => {
     navigate(`/work/${featured.name.toLowerCase().replace(/ /g, '-')}`);
   };
 
-  const handlePrevSlide = (e) => {
-    e.stopPropagation();
-    setCurrentSlide((prev) => (prev - 1 + slideImages.length) % slideImages.length);
-  };
-
-  const handleNextSlide = (e) => {
-    e.stopPropagation();
-    setCurrentSlide((prev) => (prev + 1) % slideImages.length);
-  };
-
-  const handleDotClick = (e, index) => {
-    e.stopPropagation();
-    setCurrentSlide(index);
-  };
-
   return (
     <section id="recent-projects" className="recent-projects-section" ref={cardRef}>
+      {/* Floating Circle Cursor Tooltip (vivalalabia.com Style) */}
+      <div
+        ref={cursorRef}
+        className={`featured-cursor-tooltip ${isHovered ? 'visible' : ''}`}
+        aria-hidden="true"
+      >
+        <div className="cursor-icon-box">
+          <img
+            src={`${process.env.PUBLIC_URL}/paperhoof-horse.svg`}
+            alt="Paper Hoof"
+            className="cursor-horse-svg"
+          />
+        </div>
+        <span className="cursor-label-text">See {featured.name}</span>
+      </div>
+
       <div className="container recent-projects-center-container">
         <ContainerScroll>
           <div className="featured-work-center-wrapper">
@@ -80,67 +94,24 @@ const RecentProjects = () => {
             <article
               className="featured-scroll-card"
               onClick={handleClick}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              onMouseMove={handleMouseMove}
               data-testid={`project-card-${featured.id}`}
             >
-              <div
-                className="featured-media"
-                ref={mediaRef}
-                onMouseMove={handleMouseMove}
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={handleMouseLeave}
-              >
-                {slideImages.map((imgSrc, idx) => (
-                  <img
-                    key={idx}
-                    src={imgSrc}
-                    alt={`${featured.name} slide ${idx + 1}`}
-                    className={`rp-image ${idx === currentSlide ? 'active' : ''}`}
-                    loading={idx === 0 ? 'eager' : 'lazy'}
-                    decoding="async"
-                  />
-                ))}
+              <div className="featured-media" ref={mediaRef}>
+                <img
+                  src={featured.image}
+                  alt={featured.name}
+                  className="rp-image single-featured-img"
+                  loading="eager"
+                  decoding="async"
+                />
 
                 {/* Corner-wrapping Featured Work Banner */}
                 <div className="featured-corner-banner" data-testid="featured-work-badge">
                   <span>Featured Work</span>
                 </div>
-
-                {/* Slider Controls */}
-                {slideImages.length > 1 && (
-                  <>
-                    <button
-                      type="button"
-                      className="slider-arrow slider-arrow-prev"
-                      onClick={handlePrevSlide}
-                      aria-label="Previous slide"
-                      data-testid="slider-prev-btn"
-                    >
-                      <ChevronLeft size={20} />
-                    </button>
-                    <button
-                      type="button"
-                      className="slider-arrow slider-arrow-next"
-                      onClick={handleNextSlide}
-                      aria-label="Next slide"
-                      data-testid="slider-next-btn"
-                    >
-                      <ChevronRight size={20} />
-                    </button>
-
-                    <div className="slider-dots" data-testid="slider-dots">
-                      {slideImages.map((_, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          className={`slider-dot ${idx === currentSlide ? 'active' : ''}`}
-                          onClick={(e) => handleDotClick(e, idx)}
-                          aria-label={`Go to slide ${idx + 1}`}
-                          data-testid={`slider-dot-${idx}`}
-                        />
-                      ))}
-                    </div>
-                  </>
-                )}
               </div>
             </article>
 
