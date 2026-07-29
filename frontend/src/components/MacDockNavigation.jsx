@@ -38,7 +38,7 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
     }
   }, [carouselApi, activeSlug, projects]);
 
-  // Listen to carousel snap position to track which card is currently in the middle
+  // Listen to carousel snap position to track which component is currently in the middle
   useEffect(() => {
     if (!carouselApi) return;
 
@@ -297,14 +297,12 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
 
                 return (
                   <CarouselItem key={p.slug || p.id || index} className="pl-1.5 basis-1/5">
-                    <div className="flex flex-col items-center justify-center">
+                    <div className="flex flex-col items-center justify-center relative">
                       <Card
                         className={`cursor-pointer transition-all duration-300 overflow-hidden relative border-2 ${
-                          isCentered
-                            ? 'border-[#FD6D1E] scale-110 z-20 shadow-lg shadow-[#FD6D1E]/30 bg-[#FFF6E9]'
-                            : isActive
-                            ? 'border-[#FD6D1E]/60 opacity-75 bg-white scale-95'
-                            : 'border-black/10 opacity-50 hover:opacity-90 bg-white scale-90'
+                          isActive
+                            ? 'border-[#FD6D1E] shadow-md shadow-[#FD6D1E]/25 bg-[#FFF6E9]'
+                            : 'border-black/10 opacity-60 hover:opacity-90 bg-white'
                         }`}
                         onClick={() => {
                           onSelect(p);
@@ -327,7 +325,7 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
                         </CardContent>
                       </Card>
 
-                      {/* ONLY the card that shows in the middle displays its name */}
+                      {/* ONLY the card/component in the middle shows its name */}
                       {isCentered && (
                         <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap pointer-events-none z-30">
                           <span className="inline-block bg-[#222220]/95 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-white/20 shadow-md">
@@ -341,7 +339,7 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
               })}
             </CarouselContent>
 
-            {/* Chevrons trigger slide to next/previous component */}
+            {/* Chevrons trigger sliding */}
             <CarouselPrevious className="-left-6 h-8 w-8 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white shadow-sm" />
             <CarouselNext className="-right-6 h-8 w-8 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white shadow-sm" />
           </Carousel>
