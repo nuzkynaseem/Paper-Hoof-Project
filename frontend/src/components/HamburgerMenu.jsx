@@ -173,7 +173,7 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
 
   const handleCopyEmail = (e) => {
     e.stopPropagation();
-    navigator.clipboard.writeText('hello@paperhoof.com');
+    navigator.clipboard.writeText('paperhoof@gmail.com');
     setCopiedEmail(true);
     setTimeout(() => setCopiedEmail(false), 2000);
   };
@@ -272,8 +272,8 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
               <div className="nav-login secondary-section">
                 <span className="section-small-title">DIRECT INQUIRIES</span>
                 <div className="email-box" onClick={handleCopyEmail}>
-                  <a href="mailto:hello@paperhoof.com" onClick={(e) => e.stopPropagation()} className="email-link">
-                    hello@paperhoof.com
+                  <a href="mailto:paperhoof@gmail.com" onClick={(e) => e.stopPropagation()} className="email-link">
+                    paperhoof@gmail.com
                   </a>
                   <button
                     type="button"

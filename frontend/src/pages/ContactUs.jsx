@@ -21,7 +21,7 @@ const ContactUs = () => {
 
   const handleCopyEmail = (e) => {
     e.stopPropagation();
-    navigator.clipboard.writeText('hello@paperhoof.com');
+    navigator.clipboard.writeText('paperhoof@gmail.com');
     setCopiedEmail(true);
     setTimeout(() => setCopiedEmail(false), 2200);
   };
@@ -74,11 +74,11 @@ const ContactUs = () => {
                   <div className="email-text-details">
                     <span className="email-label">DIRECT EMAIL</span>
                     <a
-                      href="mailto:hello@paperhoof.com"
+                      href="mailto:paperhoof@gmail.com"
                       onClick={(e) => e.stopPropagation()}
                       className="email-address-link"
                     >
-                      hello@paperhoof.com
+                      paperhoof@gmail.com
                     </a>
                   </div>
                   <button

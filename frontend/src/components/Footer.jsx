@@ -20,11 +20,11 @@ const Footer = () => {
           <div className="email-cta-row">
             <h3 className="compact-headline">LET'S TALK DESIGN</h3>
             <a
-              href="mailto:hello@paperhoof.com"
+              href="mailto:paperhoof@gmail.com"
               className="compact-email-link"
-              aria-label="Email hello@paperhoof.com"
+              aria-label="Email paperhoof@gmail.com"
             >
-              <span>hello@paperhoof.com</span>
+              <span>paperhoof@gmail.com</span>
               <ArrowUpRight size={24} />
             </a>
           </div>

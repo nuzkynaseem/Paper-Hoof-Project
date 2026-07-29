@@ -173,10 +173,9 @@
 
 .brand-card-title {
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 1.05rem;
   line-height: 1.1;
-  text-transform: uppercase;
   letter-spacing: 0.01em;
   color: var(--horse-black);
   margin: 0 0 2px;
