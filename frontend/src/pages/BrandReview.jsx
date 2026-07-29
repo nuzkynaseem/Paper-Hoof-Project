@@ -257,23 +257,9 @@ const BrandReview = () => {
         onMouseLeave={handleHeroMouseLeave}
       >
         <DraggableCardContainer className="hero-draggable-container">
-          {/* Background Text: 120 MINUTES (Pinned to Middle, 50% Opacity, Floating Parallax Effect) */}
-          <div className="hero-bg-text-wrapper">
-            <motion.div
-              className="hero-bg-text"
-              aria-hidden="true"
-              style={{
-                x: bgTextX,
-                y: bgTextY,
-              }}
-            >
-              120 MINUTES
-            </motion.div>
-          </div>
-
-          {/* Foreground Text: Brand Review & Description with Glass Backdrop Blur */}
+          {/* Foreground Text: 120 minutes Title & Description with Glass Backdrop Blur */}
           <div className="hero-center-content">
-            <h1 className="brand-review-hero-title">Brand Review</h1>
+            <h1 className="brand-review-hero-title">120 minutes</h1>
             <p className="brand-review-hero-description">
               Our Brand Review is a <strong>120-minute</strong> strategic session where we assess, analyze, and align your brand's core story, identity, and long-term potential.
             </p>

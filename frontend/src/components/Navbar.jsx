@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import './Navbar.css';
 
@@ -7,6 +7,8 @@ const Navbar = ({ onMenuClick, isMenuOpen = false, darkHero = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isBrandReview = location.pathname === '/brand-review';
 
   useEffect(() => {
     let lastY = window.scrollY;
@@ -88,7 +90,10 @@ const Navbar = ({ onMenuClick, isMenuOpen = false, darkHero = false }) => {
               Work
             </button>
           )}
-          <button className="brand-review-btn" onClick={handleBrandReviewClick}>
+          <button
+            className={`brand-review-btn ${isBrandReview ? 'active' : ''}`}
+            onClick={handleBrandReviewClick}
+          >
             Brand Review
           </button>
           <button

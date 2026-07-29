@@ -156,6 +156,24 @@
   color: var(--mane-orange);
 }
 
+.brand-review-btn.active {
+  color: var(--mane-orange) !important;
+  font-weight: 600;
+  position: relative;
+}
+
+.brand-review-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 2.5px;
+  background: var(--mane-orange);
+  border-radius: 999px;
+}
+
 .hamburger-btn {
   background: transparent;
   border: none;
