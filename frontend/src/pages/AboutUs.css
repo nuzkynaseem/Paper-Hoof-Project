@@ -374,27 +374,81 @@
   margin: 0;
 }
 
+/* Mobile Accordion Section (< 900px) */
+.mobile-accordion-section {
+  display: none;
+  padding: 60px 0 80px;
+  background: var(--bg-cream);
+}
+
+.accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.accordion-item {
+  border: 1.5px solid rgba(32, 36, 35, 0.12);
+  border-radius: 18px;
+  background: #FFFFFF;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.accordion-item.open {
+  border-color: rgba(32, 36, 35, 0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.accordion-header-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-heading);
+  font-size: clamp(1rem, 4vw, 1.25rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.accordion-header-btn:hover {
+  background-color: rgba(32, 36, 35, 0.03);
+}
+
+.accordion-chevron {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  color: currentColor;
+  flex-shrink: 0;
+}
+
+.accordion-chevron.rotated {
+  transform: rotate(180deg);
+}
+
+.accordion-content-body {
+  padding: 0 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeIn 0.3s ease;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 900px) {
   .pin-section {
-    height: auto;
-    padding: 60px 0;
+    display: none !important;
   }
 
-  .pin-container {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-
-  .pin-slides-col {
-    height: auto;
-  }
-
-  .slide {
-    position: relative;
-    visibility: visible !important;
-    opacity: 1 !important;
-    margin-bottom: 60px;
+  .mobile-accordion-section {
+    display: block !important;
   }
 
   .sub-fields-grid {

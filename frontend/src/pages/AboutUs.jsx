@@ -1,13 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, ChevronDown } from 'lucide-react';
 import ReadyToMove from '../components/ReadyToMove';
 import './AboutUs.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SubFieldCard = ({ title, description, bgColor, textColor }) => {
+const SubFieldCard = ({ title, description, bgColor, textColor, descColor }) => {
   const cardRef = useRef(null);
 
   const handleMouseMove = (e) => {
@@ -43,7 +43,7 @@ const SubFieldCard = ({ title, description, bgColor, textColor }) => {
       </div>
       <div className="sub-card-content">
         <h4 className="sub-card-title" style={{ color: textColor }}>{title}</h4>
-        <p className="sub-card-desc" style={{ color: textColor }}>{description}</p>
+        <p className="sub-card-desc" style={{ color: descColor || '#FFFFFF' }}>{description}</p>
       </div>
     </div>
   );
@@ -57,6 +57,8 @@ const philosophiesData = [
     description: 'We reject template design and generic corporate aesthetics in pursuit of distinct, bespoke brand identities built to endure and inspire.',
     bgColor: 'var(--barn-red, #D92B24)',
     textColor: 'var(--bubblegum-bloom, #FDB5ED)',
+    descColor: '#FFFFFF', // High-contrast White for Barn Red
+    headingColor: '#D92B24', // Barn Red heading
     subFields: [
       {
         title: 'Custom Typography',
@@ -79,6 +81,8 @@ const philosophiesData = [
     description: 'Design without strategy is mere decoration. We anchor every visual choice in rigorous positioning, market clarity, and cultural movement.',
     bgColor: 'var(--tangerine-blaze, #FD6D1E)',
     textColor: 'var(--golden-straw, #FFD221)',
+    descColor: '#222220', // High-contrast Dark Soot / Charcoal for Tangerine Blaze
+    headingColor: '#FD6D1E', // Tangerine Blaze heading
     subFields: [
       {
         title: 'Brand Architecture',
@@ -101,6 +105,8 @@ const philosophiesData = [
     description: 'We extend physical brand identities into living, dynamic digital spaces with high-performance web engineering and fluid motion physics.',
     bgColor: 'var(--midnight-harbor, #183165)',
     textColor: 'var(--sandy-reed, #D9D5B0)',
+    descColor: '#FFFFFF', // High-contrast White for Midnight Harbor
+    headingColor: '#183165', // Midnight Harbor heading
     subFields: [
       {
         title: 'Web Applications',
@@ -141,6 +147,7 @@ const teamMembers = [
 
 const AboutUs = () => {
   const pinSectionRef = useRef(null);
+  const [openAccordion, setOpenAccordion] = useState(0);
 
   useEffect(() => {
     const pinSection = pinSectionRef.current;
@@ -172,8 +179,9 @@ const AboutUs = () => {
 
       listItems.forEach((item, i) => {
         const previousItem = listItems[i - 1];
+        const headingColor = philosophiesData[i].headingColor;
         if (previousItem) {
-          tl.set(item, { color: '#FD6D1E' }, 0.5 * i)
+          tl.set(item, { color: headingColor }, 0.5 * i)
             .to(
               slides[i],
               {
@@ -192,7 +200,7 @@ const AboutUs = () => {
               '<'
             );
         } else {
-          gsap.set(item, { color: '#FD6D1E' });
+          gsap.set(item, { color: headingColor });
           gsap.set(slides[i], { autoAlpha: 1 });
         }
       });
@@ -227,7 +235,7 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* Pinned 3 Philosophies Section */}
+      {/* Pinned 3 Philosophies Section (Desktop View) */}
       <section ref={pinSectionRef} className="pin-section">
         <div className="pin-container">
           
@@ -249,12 +257,14 @@ const AboutUs = () => {
             {philosophiesData.map((p) => (
               <div key={p.id} className="slide">
                 <div className="slide-header">
-                  <span className="slide-badge">{p.id} / PHILOSOPHY</span>
+                  <span className="slide-badge" style={{ color: p.headingColor }}>
+                    {p.id} / PHILOSOPHY
+                  </span>
                   <h2 className="slide-title">{p.title}</h2>
                   <p className="slide-description">{p.description}</p>
                 </div>
 
-                {/* Sub-Field Cards Grid with Cohesive 3D Hover Animation */}
+                {/* Sub-Field Cards Grid */}
                 <div className="sub-fields-grid">
                   {p.subFields.map((field, idx) => (
                     <SubFieldCard
@@ -263,6 +273,7 @@ const AboutUs = () => {
                       description={field.description}
                       bgColor={p.bgColor}
                       textColor={p.textColor}
+                      descColor={p.descColor}
                     />
                   ))}
                 </div>
@@ -270,6 +281,58 @@ const AboutUs = () => {
             ))}
           </div>
 
+        </div>
+      </section>
+
+      {/* Mobile Accordion View (< 900px) */}
+      <section className="mobile-accordion-section">
+        <div className="about-container">
+          <span className="pin-nav-label">OUR PHILOSOPHIES</span>
+          <div className="accordion-list">
+            {philosophiesData.map((p, idx) => {
+              const isOpen = openAccordion === idx;
+              return (
+                <div key={p.id} className={`accordion-item ${isOpen ? 'open' : ''}`}>
+                  <button
+                    type="button"
+                    className="accordion-header-btn"
+                    onClick={() => setOpenAccordion(isOpen ? null : idx)}
+                    style={{
+                      color: isOpen ? p.headingColor : 'rgba(32, 36, 35, 0.7)'
+                    }}
+                  >
+                    <span className="accordion-header-title">{p.navTitle}</span>
+                    <ChevronDown
+                      size={22}
+                      className={`accordion-chevron ${isOpen ? 'rotated' : ''}`}
+                    />
+                  </button>
+
+                  {isOpen && (
+                    <div className="accordion-content-body">
+                      <div className="slide-header">
+                        <h2 className="slide-title">{p.title}</h2>
+                        <p className="slide-description">{p.description}</p>
+                      </div>
+
+                      <div className="sub-fields-grid">
+                        {p.subFields.map((field, fIdx) => (
+                          <SubFieldCard
+                            key={fIdx}
+                            title={field.title}
+                            description={field.description}
+                            bgColor={p.bgColor}
+                            textColor={p.textColor}
+                            descColor={p.descColor}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
