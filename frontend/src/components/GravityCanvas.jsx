@@ -201,12 +201,26 @@ const GravityCanvas = () => {
       }
     });
 
-    // Allow smooth homepage page scrolling over the canvas by unbinding Matter.js wheel capture
+    // Unbind Matter.js wheel capture listeners
     if (mouse.mousewheel) {
       canvas.removeEventListener('mousewheel', mouse.mousewheel);
       canvas.removeEventListener('DOMMouseScroll', mouse.mousewheel);
       canvas.removeEventListener('wheel', mouse.mousewheel);
     }
+
+    // Direct wheel scroll forwarding so scrolling over canvas always scrolls the page seamlessly
+    const handleWheel = (e) => {
+      let dy = e.deltaY;
+      if (e.deltaMode === 1) {
+        dy *= 16;
+      } else if (e.deltaMode === 2) {
+        dy *= window.innerHeight;
+      }
+      window.scrollBy(0, dy);
+    };
+
+    canvas.addEventListener('wheel', handleWheel, { passive: true });
+    container.addEventListener('wheel', handleWheel, { passive: true });
 
     Composite.add(engine.world, mouseConstraint);
     render.mouse = mouse;
@@ -252,6 +266,8 @@ const GravityCanvas = () => {
 
     return () => {
       clearTimeout(timer);
+      canvas.removeEventListener('wheel', handleWheel);
+      container.removeEventListener('wheel', handleWheel);
       observer.disconnect();
       resizeObserver.disconnect();
       Render.stop(render);
