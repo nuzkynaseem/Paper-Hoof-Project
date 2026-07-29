@@ -9,7 +9,7 @@
   margin-top: 0;
   margin-bottom: 20px;
   z-index: 5;
-  pointer-events: auto;
+  touch-action: pan-y;
 }
 
 .gravity-canvas-container:active {
@@ -23,8 +23,9 @@
   width: 100% !important;
   height: 100% !important;
   display: block;
-  pointer-events: none; /* Native smooth momentum scroll passthrough */
+  pointer-events: auto;
   background: transparent !important;
+  touch-action: pan-y;
 }
 
 @media (max-width: 768px) {

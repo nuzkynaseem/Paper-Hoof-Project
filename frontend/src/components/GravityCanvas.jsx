@@ -201,24 +201,19 @@ const GravityCanvas = () => {
       }
     });
 
-    // Pointer Events Toggle: Canvas defaults to 'none' for 100% native smooth scrolling!
-    // Enabled to 'auto' only on click/drag so shapes are interactive!
-    canvas.style.pointerEvents = 'none';
-
-    const handlePointerDown = () => {
-      canvas.style.pointerEvents = 'auto';
+    // Guarantee 100% smooth native page scrolling over canvas
+    const handlePassiveWheel = (e) => {
+      // Passive listener ensures browser performs native scrolling without JS blocking
     };
 
-    const handlePointerUp = () => {
-      canvas.style.pointerEvents = 'none';
-    };
+    canvas.addEventListener('wheel', handlePassiveWheel, { passive: true });
 
-    container.addEventListener('pointerdown', handlePointerDown);
-    container.addEventListener('mousedown', handlePointerDown);
-
-    window.addEventListener('pointerup', handlePointerUp);
-    window.addEventListener('mouseup', handlePointerUp);
-    window.addEventListener('touchend', handlePointerUp);
+    // Remove any Matter.js default wheel interception
+    if (mouse.mousewheel) {
+      canvas.removeEventListener('mousewheel', mouse.mousewheel);
+      canvas.removeEventListener('DOMMouseScroll', mouse.mousewheel);
+      canvas.removeEventListener('wheel', mouse.mousewheel);
+    }
 
     Composite.add(engine.world, mouseConstraint);
     render.mouse = mouse;
@@ -263,12 +258,8 @@ const GravityCanvas = () => {
     resizeObserver.observe(container);
 
     return () => {
+      canvas.removeEventListener('wheel', handlePassiveWheel);
       clearTimeout(timer);
-      container.removeEventListener('pointerdown', handlePointerDown);
-      container.removeEventListener('mousedown', handlePointerDown);
-      window.removeEventListener('pointerup', handlePointerUp);
-      window.removeEventListener('mouseup', handlePointerUp);
-      window.removeEventListener('touchend', handlePointerUp);
       observer.disconnect();
       resizeObserver.disconnect();
       Render.stop(render);
