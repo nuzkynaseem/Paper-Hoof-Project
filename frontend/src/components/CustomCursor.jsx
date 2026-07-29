@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { ArrowUpRight } from 'lucide-react';
 import './CustomCursor.css';
 
 const CustomCursor = () => {
@@ -11,7 +12,7 @@ const CustomCursor = () => {
   const rafId = useRef(null);
 
   const [hoverState, setHoverState] = useState('default'); // 'default' | 'button' | 'project'
-  const [cursorText, setCursorText] = useState('SEE PROJECT • SEE PROJECT • ');
+  const [cursorText, setCursorText] = useState('SEE PROJECT');
   const [isVisible, setIsVisible] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -40,13 +41,12 @@ const CustomCursor = () => {
       if (cursorType === 'project' || customText || target.closest('.tilt-card, .featured-scroll-card, .work-card, .sub-field-card, .project-case-study-hero, .gravity-canvas-container')) {
         setHoverState('project');
         if (customText) {
-          const upper = customText.trim().toUpperCase();
-          setCursorText(`${upper} • ${upper} • `);
+          setCursorText(customText.trim().toUpperCase());
         } else {
           // Extract title if present
           const titleEl = target.querySelector('.tilt-title, .featured-side-title, .work-title, h3, h2');
           const titleText = titleEl ? titleEl.textContent.trim().toUpperCase() : 'SEE PROJECT';
-          setCursorText(`SEE ${titleText} • SEE ${titleText} • `);
+          setCursorText(`SEE ${titleText}`);
         }
       } else if (target.tagName === 'A' || target.tagName === 'BUTTON' || target.getAttribute('role') === 'button') {
         setHoverState('button');
@@ -82,8 +82,8 @@ const CustomCursor = () => {
       dotPos.current.y += (mousePos.current.y - dotPos.current.y) * 0.45;
 
       // Lerp Aura (silky smooth trailing)
-      auraPos.current.x += (mousePos.current.x - auraPos.current.x) * 0.16;
-      auraPos.current.y += (mousePos.current.y - auraPos.current.y) * 0.16;
+      auraPos.current.x += (mousePos.current.x - auraPos.current.x) * 0.18;
+      auraPos.current.y += (mousePos.current.y - auraPos.current.y) * 0.18;
 
       if (dotRef.current) {
         dotRef.current.style.transform = `translate3d(${dotPos.current.x}px, ${dotPos.current.y}px, 0)`;
@@ -117,25 +117,14 @@ const CustomCursor = () => {
 
   return (
     <div className={`custom-cursor-wrapper ${hoverState} ${isVisible && !isDragging ? 'active' : ''}`}>
-      {/* Central Solid Focal Dot (Image 1) */}
+      {/* Central Solid Focal Dot */}
       <div ref={dotRef} className="cursor-dot" />
 
-      {/* Outer Fluid Aura & Compact Circular Text Ring Container (Image 2) */}
+      {/* Outer Fluid Aura / Pill Capsule Tooltip */}
       <div ref={auraRef} className="cursor-aura">
-        {/* Rotating Circular SVG Text Ring */}
-        <div className="cursor-text-ring">
-          <svg viewBox="0 0 140 140" className="cursor-text-svg">
-            <path
-              id="cursorCirclePath"
-              d="M 70, 70 m -36, 0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0"
-              fill="none"
-            />
-            <text className="cursor-text-path">
-              <textPath href="#cursorCirclePath" startOffset="0%">
-                {cursorText}
-              </textPath>
-            </text>
-          </svg>
+        <div className="cursor-pill-content">
+          <span className="cursor-pill-text">{cursorText}</span>
+          <ArrowUpRight size={16} className="cursor-pill-arrow" />
         </div>
       </div>
     </div>

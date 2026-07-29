@@ -1,4 +1,4 @@
-/* Global Custom Cursor Styles */
+/* Global Custom Cursor Styles - Pill Capsule Tooltip (Waabi Style) */
 
 .custom-cursor-wrapper {
   position: fixed;
@@ -21,7 +21,7 @@ body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured
   cursor: none !important;
 }
 
-/* Central Solid Focal Dot (Image 1) */
+/* Central Solid Focal Dot */
 .cursor-dot {
   position: fixed;
   top: 0;
@@ -40,11 +40,12 @@ body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured
               height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
               margin 0.25s cubic-bezier(0.16, 1, 0.3, 1),
               background-color 0.25s ease,
-              box-shadow 0.25s ease;
+              box-shadow 0.25s ease,
+              opacity 0.2s ease;
   will-change: transform;
 }
 
-/* Outer Aura Ring & Rotating Text Ring */
+/* Outer Aura Ring & Pill Capsule Tooltip */
 .cursor-aura {
   position: fixed;
   top: 0;
@@ -61,55 +62,43 @@ body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   /* DO NOT transition transform, JS lerp controls position */
-  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              margin 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              margin-left 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              margin-top 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1),
               background 0.3s ease,
               border-color 0.3s ease,
               box-shadow 0.3s ease;
   will-change: transform;
 }
 
-/* Rotating SVG Text Ring (Image 2) - Refined Compact Size */
-.cursor-text-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 96px;
-  height: 96px;
-  margin-left: -48px;
-  margin-top: -48px;
-  pointer-events: none;
+/* Pill Content Container */
+.cursor-pill-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
   opacity: 0;
-  transform: scale(0.4) rotate(0deg);
-  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  animation: spinCursorText 14s linear infinite;
+  transform: scale(0.7);
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes spinCursorText {
-  from {
-    transform: scale(1) rotate(0deg);
-  }
-  to {
-    transform: scale(1) rotate(360deg);
-  }
-}
-
-.cursor-text-svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.cursor-text-path {
+.cursor-pill-text {
   font-family: var(--font-primary);
-  font-size: 7.5px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.13em;
-  fill: var(--horse-black);
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  opacity: 0.85;
+  color: #FFFFFF;
+}
+
+.cursor-pill-arrow {
+  color: #FFFFFF;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
 }
 
 /* State: Button / Link Hover */
@@ -131,31 +120,33 @@ body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured
   border-color: rgba(32, 36, 35, 0.25);
 }
 
-/* State: Project & Physics Canvas Hover (Compact Non-Intrusive Circle) */
+/* State: Project Hover (Pill Capsule Tooltip - Waabi Style) */
 .custom-cursor-wrapper.project .cursor-dot {
-  width: 8px;
-  height: 8px;
-  margin-left: -4px;
-  margin-top: -4px;
-  background: var(--horse-black);
-  box-shadow: 0 0 8px rgba(32, 36, 35, 0.3);
+  opacity: 0; /* Hide focal dot when pill capsule opens */
 }
 
 .custom-cursor-wrapper.project .cursor-aura {
-  width: 82px;
-  height: 82px;
-  margin-left: -41px;
-  margin-top: -41px;
-  background: rgba(255, 253, 247, 0.9);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
-  backdrop-filter: blur(10px) saturate(180%);
-  border: 1.5px solid rgba(32, 36, 35, 0.18);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+  width: auto;
+  min-width: 140px;
+  height: 44px;
+  margin-left: -70px;
+  margin-top: -22px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: rgba(32, 36, 35, 0.88);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  backdrop-filter: blur(14px) saturate(180%);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
 }
 
-.custom-cursor-wrapper.project .cursor-text-ring {
+.custom-cursor-wrapper.project .cursor-pill-content {
   opacity: 1;
   transform: scale(1);
+}
+
+.custom-cursor-wrapper.project .cursor-pill-arrow {
+  transform: translate(1px, -1px);
 }
 
 /* Hide on Touch / Mobile Devices */
