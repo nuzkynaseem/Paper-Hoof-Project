@@ -403,8 +403,8 @@
 }
 
 .accordion-item.open {
-  border-color: rgba(32, 36, 35, 0.25);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  border-color: transparent;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
 }
 
 .accordion-header-btn {
@@ -422,11 +422,12 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  transition: color 0.3s ease, background-color 0.3s ease;
+  /* background-color and color are driven by inline JS styles */
+  transition: color 0.3s ease, background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.accordion-header-btn:hover {
-  background-color: rgba(32, 36, 35, 0.03);
+.accordion-item:not(.open) .accordion-header-btn:hover {
+  background-color: rgba(32, 36, 35, 0.04);
 }
 
 .accordion-chevron {
@@ -439,12 +440,28 @@
   transform: rotate(180deg);
 }
 
+/* max-height, opacity and transition are set inline via JS for smooth animation */
 .accordion-content-body {
-  padding: 0 24px 28px;
+  overflow: hidden;
+}
+
+/* Inner wrapper carries the actual padding so it doesn't affect height calculation */
+.accordion-inner-body {
+  padding: 4px 24px 28px;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Mobile Responsiveness */
