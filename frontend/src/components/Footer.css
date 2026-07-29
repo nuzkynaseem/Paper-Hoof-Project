@@ -105,15 +105,15 @@
   transform: translate(2px, -2px);
 }
 
-/* Bottom Bar & Middle Wordmark Stamp */
+/* Bottom Bar & Viewport Centered Wordmark Stamp */
 .compact-bottom-bar {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-top: 16px;
   border-top: none;
-  flex-wrap: wrap;
-  gap: 16px;
+  width: 100%;
 }
 
 .copyright-info {
@@ -123,9 +123,13 @@
 }
 
 .brand-stamp {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: auto;
 }
 
 .footer-wordmark-img {

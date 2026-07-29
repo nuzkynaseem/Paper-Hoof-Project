@@ -201,6 +201,13 @@ const GravityCanvas = () => {
       }
     });
 
+    // Allow smooth homepage page scrolling over the canvas by unbinding Matter.js wheel capture
+    if (mouse.mousewheel) {
+      canvas.removeEventListener('mousewheel', mouse.mousewheel);
+      canvas.removeEventListener('DOMMouseScroll', mouse.mousewheel);
+      canvas.removeEventListener('wheel', mouse.mousewheel);
+    }
+
     Composite.add(engine.world, mouseConstraint);
     render.mouse = mouse;
 
