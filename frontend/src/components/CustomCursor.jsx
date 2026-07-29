@@ -13,6 +13,7 @@ const CustomCursor = () => {
   const [hoverState, setHoverState] = useState('default'); // 'default' | 'button' | 'project'
   const [cursorText, setCursorText] = useState('SEE PROJECT • SEE PROJECT • ');
   const [isVisible, setIsVisible] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     // Check if touch device
@@ -22,11 +23,11 @@ const CustomCursor = () => {
 
     const handleMouseMove = (e) => {
       mousePos.current = { x: e.clientX, y: e.clientY };
-      setIsVisible(true);
+      if (!isVisible) setIsVisible(true);
     };
 
     const handleMouseOver = (e) => {
-      const target = e.target.closest('[data-cursor], [data-cursor-text], .tilt-card, .featured-scroll-card, .work-card, .sub-field-card, .project-case-study-hero, a, button');
+      const target = e.target.closest('[data-cursor], [data-cursor-text], .tilt-card, .featured-scroll-card, .work-card, .sub-field-card, .project-case-study-hero, .gravity-canvas-container, a, button');
 
       if (!target) {
         setHoverState('default');
@@ -36,7 +37,7 @@ const CustomCursor = () => {
       const cursorType = target.getAttribute('data-cursor');
       const customText = target.getAttribute('data-cursor-text');
 
-      if (cursorType === 'project' || customText || target.closest('.tilt-card, .featured-scroll-card, .work-card, .sub-field-card, .project-case-study-hero')) {
+      if (cursorType === 'project' || customText || target.closest('.tilt-card, .featured-scroll-card, .work-card, .sub-field-card, .project-case-study-hero, .gravity-canvas-container')) {
         setHoverState('project');
         if (customText) {
           const upper = customText.trim().toUpperCase();
@@ -54,8 +55,20 @@ const CustomCursor = () => {
       }
     };
 
+    const handleMouseDown = (e) => {
+      const isCanvas = e.target.closest('.gravity-canvas-container, canvas');
+      if (isCanvas) {
+        setIsDragging(true);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
     const handleMouseLeaveWindow = () => {
       setIsVisible(false);
+      setIsDragging(false);
     };
 
     const handleMouseEnterWindow = () => {
@@ -83,6 +96,8 @@ const CustomCursor = () => {
     };
 
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('mouseover', handleMouseOver);
     document.addEventListener('mouseleave', handleMouseLeaveWindow);
     document.addEventListener('mouseenter', handleMouseEnterWindow);
@@ -91,26 +106,28 @@ const CustomCursor = () => {
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('mouseover', handleMouseOver);
       document.removeEventListener('mouseleave', handleMouseLeaveWindow);
       document.removeEventListener('mouseenter', handleMouseEnterWindow);
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, []);
+  }, [isVisible]);
 
   return (
-    <div className={`custom-cursor-wrapper ${hoverState} ${isVisible ? 'active' : ''}`}>
+    <div className={`custom-cursor-wrapper ${hoverState} ${isVisible && !isDragging ? 'active' : ''}`}>
       {/* Central Solid Focal Dot (Image 1) */}
       <div ref={dotRef} className="cursor-dot" />
 
-      {/* Outer Fluid Aura & Circular Text Ring Container (Image 2) */}
+      {/* Outer Fluid Aura & Compact Circular Text Ring Container (Image 2) */}
       <div ref={auraRef} className="cursor-aura">
         {/* Rotating Circular SVG Text Ring */}
         <div className="cursor-text-ring">
           <svg viewBox="0 0 140 140" className="cursor-text-svg">
             <path
               id="cursorCirclePath"
-              d="M 70, 70 m -50, 0 a 50,50 0 1,1 100,0 a 50,50 0 1,1 -100,0"
+              d="M 70, 70 m -36, 0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0"
               fill="none"
             />
             <text className="cursor-text-path">
