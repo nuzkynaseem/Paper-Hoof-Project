@@ -258,8 +258,8 @@ const GravityCanvas = () => {
     <div
       className="gravity-canvas-container"
       ref={containerRef}
-      data-cursor="project"
-      data-cursor-text="CLICK AND DRAG SHAPES"
+      data-cursor="canvas"
+      data-cursor-text="PLAY WITH SHAPES"
       data-testid="gravity-canvas"
     >
       <canvas ref={canvasRef} className="gravity-canvas-element" />

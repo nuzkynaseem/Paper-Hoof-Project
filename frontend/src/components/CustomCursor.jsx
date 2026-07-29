@@ -11,7 +11,7 @@ const CustomCursor = () => {
   const auraPos = useRef({ x: -100, y: -100 });
   const rafId = useRef(null);
 
-  const [hoverState, setHoverState] = useState('default'); // 'default' | 'button' | 'project'
+  const [hoverState, setHoverState] = useState('default'); // 'default' | 'button' | 'project' | 'canvas'
   const [cursorText, setCursorText] = useState('SEE PROJECT');
   const [isVisible, setIsVisible] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -38,7 +38,10 @@ const CustomCursor = () => {
       const cursorType = target.getAttribute('data-cursor');
       const customText = target.getAttribute('data-cursor-text');
 
-      if (cursorType === 'project' || customText || target.closest('.tilt-card, .featured-scroll-card, .work-card, .sub-field-card, .project-case-study-hero, .gravity-canvas-container')) {
+      if (cursorType === 'canvas' || target.closest('.gravity-canvas-container')) {
+        setHoverState('canvas');
+        setCursorText('PLAY WITH SHAPES');
+      } else if (cursorType === 'project' || customText || target.closest('.tilt-card, .featured-scroll-card, .work-card, .sub-field-card, .project-case-study-hero')) {
         setHoverState('project');
         if (customText) {
           setCursorText(customText.trim().toUpperCase());
@@ -116,7 +119,7 @@ const CustomCursor = () => {
   }, [isVisible]);
 
   return (
-    <div className={`custom-cursor-wrapper ${hoverState} ${isVisible && !isDragging ? 'active' : ''}`}>
+    <div className={`custom-cursor-wrapper ${hoverState} ${isVisible ? 'active' : ''} ${isDragging ? 'is-dragging' : ''}`}>
       {/* Central Solid Focal Dot */}
       <div ref={dotRef} className="cursor-dot" />
 
@@ -124,7 +127,7 @@ const CustomCursor = () => {
       <div ref={auraRef} className="cursor-aura">
         <div className="cursor-pill-content">
           <span className="cursor-pill-text">{cursorText}</span>
-          <ArrowUpRight size={16} className="cursor-pill-arrow" />
+          <ArrowUpRight size={14} className="cursor-pill-arrow" />
         </div>
       </div>
     </div>

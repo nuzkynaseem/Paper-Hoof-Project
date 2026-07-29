@@ -71,7 +71,8 @@ body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured
               border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1),
               background 0.3s ease,
               border-color 0.3s ease,
-              box-shadow 0.3s ease;
+              box-shadow 0.3s ease,
+              opacity 0.25s ease;
   will-change: transform;
 }
 
@@ -79,7 +80,7 @@ body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured
 .cursor-pill-content {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   white-space: nowrap;
   opacity: 0;
   transform: scale(0.7);
@@ -88,7 +89,7 @@ body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured
 
 .cursor-pill-text {
   font-family: var(--font-primary);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -120,9 +121,9 @@ body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured
   border-color: rgba(32, 36, 35, 0.25);
 }
 
-/* State: Project Hover (Pill Capsule Tooltip - Waabi Style) */
+/* State: Project Hover (Standard Pill Capsule Tooltip - Waabi Style) */
 .custom-cursor-wrapper.project .cursor-dot {
-  opacity: 0; /* Hide focal dot when pill capsule opens */
+  opacity: 0; /* Hide focal dot when full project pill capsule opens */
 }
 
 .custom-cursor-wrapper.project .cursor-aura {
@@ -147,6 +148,54 @@ body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured
 
 .custom-cursor-wrapper.project .cursor-pill-arrow {
   transform: translate(1px, -1px);
+}
+
+/* State: Physics Canvas Hover (Circle Pointer ALWAYS Visible + 40% Smaller Pill "PLAY WITH SHAPES") */
+.custom-cursor-wrapper.canvas .cursor-dot {
+  opacity: 1 !important;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  margin-top: -5px;
+  background: var(--mane-orange);
+  box-shadow: 0 0 12px rgba(227, 76, 24, 0.85);
+}
+
+.custom-cursor-wrapper.canvas .cursor-aura {
+  width: auto;
+  min-width: 95px;
+  height: 26px; /* 40% smaller than 44px standard pill */
+  margin-left: 14px; /* Positioned to the right of central circle dot so both stay visible! */
+  margin-top: -13px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(32, 36, 35, 0.9);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  backdrop-filter: blur(10px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.custom-cursor-wrapper.canvas .cursor-pill-content {
+  opacity: 1;
+  transform: scale(1);
+  gap: 6px;
+}
+
+.custom-cursor-wrapper.canvas .cursor-pill-text {
+  font-size: 8.5px;
+  letter-spacing: 0.05em;
+}
+
+.custom-cursor-wrapper.canvas .cursor-pill-arrow {
+  width: 12px;
+  height: 12px;
+}
+
+/* Drag State: Fade out aura pill when user clicks & drags shapes in physics canvas */
+.custom-cursor-wrapper.is-dragging .cursor-aura {
+  opacity: 0 !important;
+  transform: scale(0.5) !important;
 }
 
 /* Hide on Touch / Mobile Devices */
