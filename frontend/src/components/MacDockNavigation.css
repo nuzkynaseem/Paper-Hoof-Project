@@ -1,9 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════════
    macOS Animated Dock — Project Case Study Navigation
    Supports:
-     • Desktop magnification (few items)
-     • Horizontal scroll deck (overflow or mobile < 768px)
-     • Edge fade masks, chevron arrows, center-item tooltip
+     • Desktop: macOS Dock Navigation (≥ 768px)
+     • Mobile: Carousel Navigation (< 768px)
 ═══════════════════════════════════════════════════════════════════ */
 
 /* ── Section wrapper ─────────────────────────────────────────────── */
@@ -20,7 +19,13 @@
   overflow: visible;
 }
 
-/* ── Outer wrapper (positions tooltip above) ─────────────────────── */
+@media (max-width: 767px) {
+  .mac-dock-section {
+    padding: 40px 0 60px;
+  }
+}
+
+/* ── Outer wrapper (Desktop Macbook Dock) ─────────────────────────── */
 .mac-dock-outer-wrapper {
   position: relative;
   display: flex;
@@ -31,10 +36,25 @@
   overflow: visible;
 }
 
+@media (max-width: 767px) {
+  .mac-dock-outer-wrapper {
+    display: none !important;
+  }
+}
+
+/* ── Mobile Dock Wrapper ─────────────────────────────────────────── */
+.mobile-dock-wrapper {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .mobile-dock-wrapper {
+    display: block !important;
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════════════
-   TOOLTIP
-   ─ hover: full opacity (1)
-   ─ centered-mode (scroll + center): reduced opacity (0.65)
+   TOOLTIP (Desktop Dock)
 ═══════════════════════════════════════════════════════════════════ */
 .mac-dock-tooltip {
   position: absolute;
@@ -66,13 +86,12 @@
   transform: translateX(-50%) translateY(0) scale(1);
 }
 
-/* Reduced opacity when showing center-item (scroll mode) */
 .mac-dock-tooltip.visible.centered-mode {
   opacity: 0.65;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   SCROLL WRAPPER — holds track + chevrons side by side
+   SCROLL WRAPPER — holds track + chevrons side by side (Desktop Dock)
 ═══════════════════════════════════════════════════════════════════ */
 .dock-scroll-wrapper {
   position: relative;
@@ -84,7 +103,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   CHEVRON BUTTONS
+   CHEVRON BUTTONS (Desktop Dock)
 ═══════════════════════════════════════════════════════════════════ */
 .dock-chevron {
   position: absolute;
@@ -124,14 +143,11 @@
 .dock-chevron-left  { left: 0; }
 .dock-chevron-right { right: 0; }
 
-/* In scroll mode chevrons sit just outside the padded track */
 .dock-scroll-wrapper.scroll-mode .dock-chevron-left  { left: 4px; }
 .dock-scroll-wrapper.scroll-mode .dock-chevron-right { right: 4px; }
 
 /* ═══════════════════════════════════════════════════════════════════
-   DOCK TRACK
-   ─ default: centered, overflow visible (magnification mode)
-   ─ .scrollable: hidden scroll, edge fade masks
+   DOCK TRACK (Desktop Dock)
 ═══════════════════════════════════════════════════════════════════ */
 .mac-dock-track {
   display: flex;
@@ -139,7 +155,7 @@
   justify-content: center;
   flex: 1;
   overflow: visible;
-  padding: 24px 56px 28px;   /* horizontal pad leaves room for chevrons */
+  padding: 24px 56px 28px;
   scrollbar-width: none;
   -ms-overflow-style: none;
   position: relative;
@@ -150,7 +166,6 @@
   display: none;
 }
 
-/* Scrollable mode — enable scroll + edge fade masks */
 .mac-dock-track.scrollable {
   overflow-x: scroll;
   justify-content: flex-start;
@@ -172,7 +187,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   GLASSMORPHISM DOCK BAR (toolbar)
+   GLASSMORPHISM DOCK BAR (Desktop Dock)
 ═══════════════════════════════════════════════════════════════════ */
 .toolbar {
   display: flex;
@@ -194,7 +209,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   INDIVIDUAL DOCK ICON
+   INDIVIDUAL DOCK ICON (Desktop Dock)
 ═══════════════════════════════════════════════════════════════════ */
 .toolbarItem {
   position: relative;
@@ -240,7 +255,6 @@
   display: block;
 }
 
-/* Selected visual cue indicator */
 .dock-active-dot {
   position: absolute;
   bottom: -8px;
@@ -249,33 +263,4 @@
   border-radius: 50%;
   background: var(--tangerine-blaze, #FD6D1E);
   box-shadow: 0 0 8px var(--tangerine-blaze, #FD6D1E);
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   MOBILE OVERRIDES (< 768px)
-   Always in scroll mode; smaller icons
-═══════════════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
-  .mac-dock-section {
-    padding: 48px 0 72px;
-  }
-
-  .dock-icon-img-wrapper {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-  }
-
-  .toolbarItem {
-    margin: 0 2px;
-  }
-
-  .mac-dock-track {
-    padding: 20px 52px 24px;
-  }
-
-  .dock-chevron {
-    width: 36px;
-    height: 36px;
-  }
 }
