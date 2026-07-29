@@ -7,7 +7,7 @@ import './AboutUs.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SubFieldCard = ({ title, tag, image, description }) => {
+const SubFieldCard = ({ title, description, bgColor, textColor }) => {
   const cardRef = useRef(null);
 
   const handleMouseMove = (e) => {
@@ -34,16 +34,16 @@ const SubFieldCard = ({ title, tag, image, description }) => {
     <div
       ref={cardRef}
       className="sub-field-card"
+      style={{ backgroundColor: bgColor, color: textColor }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="sub-card-image-wrapper">
-        <img src={image} alt={title} className="sub-card-img" />
-        <span className="sub-card-tag-pill">{tag}</span>
+      <div className="sub-card-horse-watermark">
+        <img src={`${process.env.PUBLIC_URL}/paperhoof-horse.svg`} alt="" />
       </div>
       <div className="sub-card-content">
-        <h4 className="sub-card-title">{title}</h4>
-        <p className="sub-card-desc">{description}</p>
+        <h4 className="sub-card-title" style={{ color: textColor }}>{title}</h4>
+        <p className="sub-card-desc" style={{ color: textColor }}>{description}</p>
       </div>
     </div>
   );
@@ -55,23 +55,19 @@ const philosophiesData = [
     navTitle: '01 / CRAFT OVER CONFORMITY',
     title: 'Craft Over Conformity',
     description: 'We reject template design and generic corporate aesthetics in pursuit of distinct, bespoke brand identities built to endure and inspire.',
+    bgColor: 'var(--barn-red, #D92B24)',
+    textColor: 'var(--bubblegum-bloom, #FDB5ED)',
     subFields: [
       {
         title: 'Custom Typography',
-        tag: 'Editorial',
-        image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&h=400&fit=crop',
-        description: 'Besopke typefaces and publication systems engineered for authority.'
+        description: 'Bespoke typefaces and publication systems engineered for authority.'
       },
       {
         title: 'Physical Artifacts',
-        tag: 'Materiality',
-        image: 'https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=600&h=400&fit=crop',
         description: 'Tactile packaging, print collateral, and physical touchpoints.'
       },
       {
         title: 'Distinctive Visual Systems',
-        tag: 'Identity',
-        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
         description: 'Comprehensive brand guidelines designed for calm, confident scale.'
       }
     ]
@@ -81,23 +77,19 @@ const philosophiesData = [
     navTitle: '02 / STRATEGY IN MOTION',
     title: 'Strategy In Motion',
     description: 'Design without strategy is mere decoration. We anchor every visual choice in rigorous positioning, market clarity, and cultural movement.',
+    bgColor: 'var(--tangerine-blaze, #FD6D1E)',
+    textColor: 'var(--golden-straw, #FFD221)',
     subFields: [
       {
         title: 'Brand Architecture',
-        tag: 'Positioning',
-        image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&h=400&fit=crop',
         description: 'Structuring complex portfolio assets for long-term clarity.'
       },
       {
         title: 'Cultural Research',
-        tag: 'Insights',
-        image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop',
         description: 'Deep audience mapping and competitive differentiation.'
       },
       {
         title: 'Verbal Identity',
-        tag: 'Messaging',
-        image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=600&h=400&fit=crop',
         description: 'Voice tone, brand taglines, and strategic editorial messaging.'
       }
     ]
@@ -107,23 +99,19 @@ const philosophiesData = [
     navTitle: '03 / IMMERSIVE EXPRESSION',
     title: 'Immersive Digital Expression',
     description: 'We extend physical brand identities into living, dynamic digital spaces with high-performance web engineering and fluid motion physics.',
+    bgColor: 'var(--midnight-harbor, #183165)',
+    textColor: 'var(--sandy-reed, #D9D5B0)',
     subFields: [
       {
         title: 'Web Applications',
-        tag: 'Engineering',
-        image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=600&h=400&fit=crop',
         description: 'Custom React & Vite frontend architectures built for speed.'
       },
       {
         title: 'Kinetic Motion',
-        tag: 'Physics',
-        image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&h=400&fit=crop',
         description: 'Smooth GSAP timelines, micro-interactions, and 3D effects.'
       },
       {
         title: 'UI Design Systems',
-        tag: 'Digital Kits',
-        image: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=600&h=400&fit=crop',
         description: 'Reusable component libraries and design tokens for web.'
       }
     ]
@@ -272,9 +260,9 @@ const AboutUs = () => {
                     <SubFieldCard
                       key={idx}
                       title={field.title}
-                      tag={field.tag}
-                      image={field.image}
                       description={field.description}
+                      bgColor={p.bgColor}
+                      textColor={p.textColor}
                     />
                   ))}
                 </div>
