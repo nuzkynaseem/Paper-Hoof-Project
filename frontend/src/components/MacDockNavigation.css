@@ -1,7 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════════
    macOS Animated Dock — Project Case Study Navigation
-   • Desktop  → classic magnification dock (GSAP)
-   • Mobile   → Embla carousel, 2+ items visible, edge fade, chevrons
+   Supports:
+     • Desktop magnification (few items)
+     • Horizontal scroll deck (overflow or mobile < 768px)
+     • Edge fade masks, chevron arrows, center-item tooltip
 ═══════════════════════════════════════════════════════════════════ */
 
 /* ── Section wrapper ─────────────────────────────────────────────── */
@@ -18,19 +20,22 @@
   overflow: visible;
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   DESKTOP DOCK
-══════════════════════════════════════════════════════════════════ */
+/* ── Outer wrapper (positions tooltip above) ─────────────────────── */
 .mac-dock-outer-wrapper {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
   max-width: 100%;
   overflow: visible;
 }
 
-/* Hover tooltip */
+/* ═══════════════════════════════════════════════════════════════════
+   TOOLTIP
+   ─ hover: full opacity (1)
+   ─ centered-mode (scroll + center): reduced opacity (0.65)
+═══════════════════════════════════════════════════════════════════ */
 .mac-dock-tooltip {
   position: absolute;
   bottom: calc(100% + 24px);
@@ -61,16 +66,114 @@
   transform: translateX(-50%) translateY(0) scale(1);
 }
 
-/* Dock track */
+/* Reduced opacity when showing center-item (scroll mode) */
+.mac-dock-tooltip.visible.centered-mode {
+  opacity: 0.65;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SCROLL WRAPPER — holds track + chevrons side by side
+═══════════════════════════════════════════════════════════════════ */
+.dock-scroll-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CHEVRON BUTTONS
+═══════════════════════════════════════════════════════════════════ */
+.dock-chevron {
+  position: absolute;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 253, 247, 0.88);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1.5px solid rgba(32, 36, 35, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  cursor: pointer;
+  color: var(--dark-soot, #222220);
+  transition: opacity 0.25s ease,
+              background 0.2s ease,
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s ease;
+}
+
+.dock-chevron:hover {
+  background: var(--phthalo-green, #123524);
+  color: #FFFFFF;
+  border-color: var(--phthalo-green, #123524);
+  transform: scale(1.1);
+  box-shadow: 0 12px 28px rgba(18, 53, 36, 0.35);
+}
+
+.dock-chevron.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dock-chevron-left  { left: 0; }
+.dock-chevron-right { right: 0; }
+
+/* In scroll mode chevrons sit just outside the padded track */
+.dock-scroll-wrapper.scroll-mode .dock-chevron-left  { left: 4px; }
+.dock-scroll-wrapper.scroll-mode .dock-chevron-right { right: 4px; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   DOCK TRACK
+   ─ default: centered, overflow visible (magnification mode)
+   ─ .scrollable: hidden scroll, edge fade masks
+═══════════════════════════════════════════════════════════════════ */
 .mac-dock-track {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 1;
   overflow: visible;
-  padding: 24px 28px 28px;
+  padding: 24px 56px 28px;   /* horizontal pad leaves room for chevrons */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  position: relative;
+  transition: -webkit-mask-image 0.3s ease, mask-image 0.3s ease;
 }
 
-/* Glassmorphism bar */
+.mac-dock-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Scrollable mode — enable scroll + edge fade masks */
+.mac-dock-track.scrollable {
+  overflow-x: scroll;
+  justify-content: flex-start;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+  scroll-snap-type: x proximity;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GLASSMORPHISM DOCK BAR (toolbar)
+═══════════════════════════════════════════════════════════════════ */
 .toolbar {
   display: flex;
   align-items: flex-end;
@@ -87,9 +190,12 @@
   overflow: visible;
   position: relative;
   z-index: 10;
+  flex-shrink: 0;
 }
 
-/* Dock icon button */
+/* ═══════════════════════════════════════════════════════════════════
+   INDIVIDUAL DOCK ICON
+═══════════════════════════════════════════════════════════════════ */
 .toolbarItem {
   position: relative;
   background: transparent;
@@ -105,11 +211,11 @@
   will-change: transform;
   overflow: visible;
   z-index: 10;
+  scroll-snap-align: center;
 }
 
 .toolbarItem:hover { z-index: 30; }
 
-/* Shared icon wrapper */
 .dock-icon-img-wrapper {
   width: 48px;
   height: 48px;
@@ -134,7 +240,7 @@
   display: block;
 }
 
-/* Active indicator dot */
+/* Selected visual cue indicator */
 .dock-active-dot {
   position: absolute;
   bottom: -8px;
@@ -145,157 +251,31 @@
   box-shadow: 0 0 8px var(--tangerine-blaze, #FD6D1E);
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   MOBILE CAROUSEL DOCK
-   Embla-powered, ~2 items visible + edge peek, chevrons outside
-══════════════════════════════════════════════════════════════════ */
-.mobile-dock-wrapper {
-  width: 100%;
-  max-width: 480px;         /* constrain so carousel feels tight */
-  padding: 0 0 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Carousel root — shadcn adds `relative` internally */
-.mobile-dock-carousel {
-  width: 100%;
-  /* extra left/right space for the positioned chevron buttons */
-  padding: 0 40px;
-  box-sizing: border-box;
-}
-
-/* Embla viewport — apply edge fade masks here */
-.mobile-dock-carousel .overflow-hidden {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 12%,
-    black 88%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 12%,
-    black 88%,
-    transparent 100%
-  );
-  overflow: hidden;         /* Embla needs this */
-  padding: 20px 0 28px;    /* vertical breathing room */
-}
-
-/* Embla flex track — shadcn sets -ml-4; items use pl-4 */
-.mobile-dock-content {
-  /* inherits flex + -ml-4 from shadcn CarouselContent */
-}
-
-/* Each slide: show 2 items + half a third peeking */
-.mobile-dock-item {
-  flex: 0 0 42% !important;  /* ~2 full + edge peek */
-  padding-left: 12px !important;
-  display: flex;
-  justify-content: center;
-}
-
-/* Icon button inside each slide */
-.mobile-dock-icon-btn {
-  position: relative;
-  background: transparent;
-  border: none;
-  padding: 4px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Active icon enlarged slightly */
-.mobile-dock-icon-btn.active .dock-icon-img-wrapper {
-  border-color: var(--tangerine-blaze, #FD6D1E);
-  box-shadow: 0 10px 24px rgba(253, 109, 30, 0.35);
-  transform: scale(1.08);
-}
-
-/* Mobile icon size */
-.mobile-dock-icon-btn .dock-icon-img-wrapper {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.25s ease,
-              box-shadow 0.25s ease;
-}
-
-/* Project name label above icon (reduced opacity, shown for active/tapped) */
-.mobile-dock-icon-label {
-  font-family: var(--font-primary);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--dark-soot, #222220);
-  white-space: nowrap;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.22s ease, transform 0.22s ease;
-  pointer-events: none;
-  background: rgba(255, 253, 247, 0.88);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(32, 36, 35, 0.1);
-  border-radius: 999px;
-  padding: 3px 10px;
-}
-
-.mobile-dock-icon-label.visible {
-  opacity: 0.72;            /* reduced opacity as requested */
-  transform: translateY(0);
-}
-
-/* Prev / Next chevron buttons */
-.mobile-dock-prev,
-.mobile-dock-next {
-  width: 36px !important;
-  height: 36px !important;
-  border-radius: 50% !important;
-  background: rgba(255, 253, 247, 0.9) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  backdrop-filter: blur(12px) !important;
-  border: 1.5px solid rgba(32, 36, 35, 0.15) !important;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14) !important;
-  color: var(--dark-soot, #222220) !important;
-  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
-}
-
-.mobile-dock-prev:hover,
-.mobile-dock-next:hover {
-  background: var(--phthalo-green, #123524) !important;
-  color: #FFFFFF !important;
-  transform: scale(1.1) !important;
-  box-shadow: 0 10px 24px rgba(18, 53, 36, 0.3) !important;
-}
-
-/* shadcn default positions the buttons at -left-12 / -right-12 from the carousel root.
-   Since we padded the carousel root by 40px, they land neatly at the edges. */
-.mobile-dock-prev { left: 0 !important; }
-.mobile-dock-next { right: 0 !important; }
-
-/* Disabled state */
-.mobile-dock-prev:disabled,
-.mobile-dock-next:disabled {
-  opacity: 0.3 !important;
-  pointer-events: none !important;
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════════════════════════════════ */
-@media (max-width: 767px) {
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE OVERRIDES (< 768px)
+   Always in scroll mode; smaller icons
+═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
   .mac-dock-section {
     padding: 48px 0 72px;
+  }
+
+  .dock-icon-img-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+
+  .toolbarItem {
+    margin: 0 2px;
+  }
+
+  .mac-dock-track {
+    padding: 20px 52px 24px;
+  }
+
+  .dock-chevron {
+    width: 36px;
+    height: 36px;
   }
 }
