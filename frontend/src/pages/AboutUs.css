@@ -269,7 +269,7 @@
 
 /* Team Collective Section */
 .team-section {
-  padding: 120px 0 100px;
+  padding: 60px 0 60px;
   background: var(--bg-cream);
   border-top: 1px solid rgba(32, 36, 35, 0.08);
 }
@@ -287,41 +287,47 @@
 
 .section-heading {
   font-family: var(--font-heading);
-  font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+  font-size: clamp(2rem, 3.8vw, 3rem);
   font-weight: 800;
   color: var(--horse-black);
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   line-height: 1.02;
   text-transform: uppercase;
 }
 
 .team-intro {
   font-family: var(--font-primary);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 400;
   color: rgba(32, 36, 35, 0.75);
-  margin: 0 0 48px;
+  margin: 0 0 32px;
 }
 
 .team-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
+  gap: 24px;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .team-member-card {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
+  align-items: center;
+  text-align: center;
 }
 
 .team-img-wrapper {
   position: relative;
-  border-radius: 20px;
+  border-radius: 16px;
   overflow: hidden;
   aspect-ratio: 1;
+  width: 100%;
+  max-width: 250px;
   background: var(--birch-mist, #F5F5F5);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
 }
 
 .team-img {
@@ -347,7 +353,7 @@
   gap: 8px;
   color: #FFFFFF;
   font-family: var(--font-primary);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 700;
   text-decoration: none;
   opacity: 0;
@@ -360,7 +366,7 @@
 
 .team-name {
   font-family: var(--font-heading);
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--horse-black);
   margin: 0;
@@ -369,7 +375,7 @@
 
 .team-role {
   font-family: var(--font-primary);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   color: rgba(32, 36, 35, 0.6);
   margin: 0;
 }

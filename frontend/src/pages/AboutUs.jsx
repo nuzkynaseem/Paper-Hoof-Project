@@ -34,6 +34,7 @@ const SubFieldCard = ({ title, description, bgColor, textColor, descColor }) => 
     <div
       ref={cardRef}
       className="sub-field-card"
+      data-cursor="none"
       style={{ backgroundColor: bgColor, color: textColor }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -163,7 +164,7 @@ const AboutUs = () => {
         scrollTrigger: {
           trigger: pinSection,
           start: 'top top',
-          end: '+=' + listItems.length * 75 + '%',
+          end: '+=' + listItems.length * 40 + '%',
           pin: true,
           scrub: 0.8,
           anticipatePin: 1

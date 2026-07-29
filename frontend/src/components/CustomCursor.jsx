@@ -28,7 +28,7 @@ const CustomCursor = () => {
     };
 
     const handleMouseOver = (e) => {
-      const target = e.target.closest('[data-cursor], [data-cursor-text], .tilt-card, .featured-scroll-card, .work-card, .sub-field-card, .project-case-study-hero, .gravity-canvas-container, a, button');
+      const target = e.target.closest('[data-cursor], [data-cursor-text], .tilt-card, .featured-scroll-card, .work-card, .project-case-study-hero, .gravity-canvas-container, a, button');
 
       if (!target) {
         setHoverState('default');
@@ -38,10 +38,12 @@ const CustomCursor = () => {
       const cursorType = target.getAttribute('data-cursor');
       const customText = target.getAttribute('data-cursor-text');
 
-      if (cursorType === 'canvas' || target.closest('.gravity-canvas-container')) {
+      if (cursorType === 'none' || target.closest('.sub-field-card, .pin-section')) {
+        setHoverState('default');
+      } else if (cursorType === 'canvas' || target.closest('.gravity-canvas-container')) {
         setHoverState('canvas');
         setCursorText('PLAY WITH SHAPES');
-      } else if (cursorType === 'project' || customText || target.closest('.tilt-card, .featured-scroll-card, .work-card, .sub-field-card, .project-case-study-hero')) {
+      } else if (cursorType === 'project' || customText || target.closest('.tilt-card, .featured-scroll-card, .work-card, .project-case-study-hero')) {
         setHoverState('project');
         if (customText) {
           setCursorText(customText.trim().toUpperCase());
