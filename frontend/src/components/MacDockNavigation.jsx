@@ -38,7 +38,7 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
     }
   }, [carouselApi, activeSlug, projects]);
 
-  // Listen to carousel snap position to always know which item is in the middle
+  // Listen to carousel snap position to track which card is currently in the middle
   useEffect(() => {
     if (!carouselApi) return;
 
@@ -215,9 +215,6 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
 
   const visibleTooltip = hoveredProject || (isScrollMode ? centeredProject : null);
 
-  // Project currently in the middle of mobile carousel
-  const currentMiddleMobileProject = projects[centeredMobileIndex] || projects[0];
-
   return (
     <section className="mac-dock-section" aria-label="Project Navigation Dock">
       {/* ── DESKTOP DOCK (MD and up) ────────────────────────────────── */}
@@ -283,15 +280,8 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
 
       {/* ── MOBILE 5-CARD CAROUSEL DOCK (< MD) ───────────────────────── */}
       <div className="mobile-dock-wrapper block md:hidden w-full px-2">
-        {/* Floating Tooltip displaying name of project currently in the middle */}
-        <div className="text-center mb-3">
-          <span className="inline-block bg-[#222220]/95 backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-full border border-white/15 shadow-md transition-all duration-300">
-            {currentMiddleMobileProject ? currentMiddleMobileProject.name : 'Select Project'}
-          </span>
-        </div>
-
         {/* 5-Card Carousel Deck Centered */}
-        <div className="relative w-full max-w-[20rem] sm:max-w-md mx-auto px-7">
+        <div className="relative w-full max-w-[21rem] sm:max-w-md mx-auto px-7 py-2">
           <Carousel
             opts={{
               align: 'center',
@@ -300,21 +290,21 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
             setApi={setCarouselApi}
             className="w-full"
           >
-            <CarouselContent className="-ml-1">
+            <CarouselContent className="-ml-1 items-center min-h-[105px]">
               {projects.map((p, index) => {
                 const isActive = p.slug === activeSlug;
                 const isCentered = index === centeredMobileIndex;
 
                 return (
-                  <CarouselItem key={p.slug || p.id || index} className="pl-1 basis-1/5">
-                    <div className="p-0.5">
+                  <CarouselItem key={p.slug || p.id || index} className="pl-1.5 basis-1/5">
+                    <div className="flex flex-col items-center justify-center">
                       <Card
                         className={`cursor-pointer transition-all duration-300 overflow-hidden relative border-2 ${
                           isCentered
-                            ? 'border-[#FD6D1E] scale-105 z-10 shadow-lg shadow-[#FD6D1E]/30 bg-[#FFF6E9]'
+                            ? 'border-[#FD6D1E] scale-110 z-20 shadow-lg shadow-[#FD6D1E]/30 bg-[#FFF6E9]'
                             : isActive
-                            ? 'border-[#FD6D1E]/70 opacity-80 bg-white'
-                            : 'border-black/10 opacity-60 hover:opacity-100 bg-white'
+                            ? 'border-[#FD6D1E]/60 opacity-75 bg-white scale-95'
+                            : 'border-black/10 opacity-50 hover:opacity-90 bg-white scale-90'
                         }`}
                         onClick={() => {
                           onSelect(p);
@@ -336,13 +326,24 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
                           </div>
                         </CardContent>
                       </Card>
+
+                      {/* ONLY the card that shows in the middle displays its name */}
+                      {isCentered && (
+                        <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap pointer-events-none z-30">
+                          <span className="inline-block bg-[#222220]/95 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-white/20 shadow-md">
+                            {p.name}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </CarouselItem>
                 );
               })}
             </CarouselContent>
-            <CarouselPrevious className="-left-5 h-7 w-7 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white" />
-            <CarouselNext className="-right-5 h-7 w-7 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white" />
+
+            {/* Chevrons trigger slide to next/previous component */}
+            <CarouselPrevious className="-left-6 h-8 w-8 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white shadow-sm" />
+            <CarouselNext className="-right-6 h-8 w-8 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white shadow-sm" />
           </Carousel>
         </div>
       </div>
