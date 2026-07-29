@@ -24,17 +24,38 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [isScrollMode, setIsScrollMode] = useState(false);
 
-  // Mobile Carousel API state
+  // Mobile Carousel API & centered item state
   const [carouselApi, setCarouselApi] = useState(null);
+  const [centeredMobileIndex, setCenteredMobileIndex] = useState(0);
 
-  // Auto-scroll mobile carousel to active project on load / change
+  // Sync active project to centered slide when activeSlug changes or carousel mounts
   useEffect(() => {
     if (!carouselApi) return;
     const activeIdx = projects.findIndex((p) => p.slug === activeSlug);
     if (activeIdx >= 0) {
       carouselApi.scrollTo(activeIdx);
+      setCenteredMobileIndex(activeIdx);
     }
   }, [carouselApi, activeSlug, projects]);
+
+  // Listen to carousel snap position to always know which item is in the middle
+  useEffect(() => {
+    if (!carouselApi) return;
+
+    const onSelectMobile = () => {
+      const snapIndex = carouselApi.selectedScrollSnap();
+      setCenteredMobileIndex(snapIndex);
+    };
+
+    onSelectMobile();
+    carouselApi.on('select', onSelectMobile);
+    carouselApi.on('reInit', onSelectMobile);
+
+    return () => {
+      carouselApi.off('select', onSelectMobile);
+      carouselApi.off('reInit', onSelectMobile);
+    };
+  }, [carouselApi]);
 
   // ── Desktop Scroll Mode check ──────────────────────────────────────────
   const checkScrollMode = useCallback(() => {
@@ -194,7 +215,8 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
 
   const visibleTooltip = hoveredProject || (isScrollMode ? centeredProject : null);
 
-  const activeProject = projects.find((p) => p.slug === activeSlug) || projects[0];
+  // Project currently in the middle of mobile carousel
+  const currentMiddleMobileProject = projects[centeredMobileIndex] || projects[0];
 
   return (
     <section className="mac-dock-section" aria-label="Project Navigation Dock">
@@ -259,38 +281,48 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
         </div>
       </div>
 
-      {/* ── MOBILE CAROUSEL DOCK (< MD) ────────────────────────────── */}
-      <div className="mobile-dock-wrapper block md:hidden w-full px-4">
+      {/* ── MOBILE 5-CARD CAROUSEL DOCK (< MD) ───────────────────────── */}
+      <div className="mobile-dock-wrapper block md:hidden w-full px-2">
+        {/* Floating Tooltip displaying name of project currently in the middle */}
         <div className="text-center mb-3">
-          <span className="inline-block bg-[#222220]/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/15 shadow-sm">
-            {activeProject ? activeProject.name : 'Select Project'}
+          <span className="inline-block bg-[#222220]/95 backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-full border border-white/15 shadow-md transition-all duration-300">
+            {currentMiddleMobileProject ? currentMiddleMobileProject.name : 'Select Project'}
           </span>
         </div>
 
-        <div className="relative w-full max-w-[14rem] sm:max-w-xs mx-auto px-8">
+        {/* 5-Card Carousel Deck Centered */}
+        <div className="relative w-full max-w-[20rem] sm:max-w-md mx-auto px-7">
           <Carousel
             opts={{
-              align: 'start',
+              align: 'center',
+              loop: false,
             }}
             setApi={setCarouselApi}
             className="w-full"
           >
-            <CarouselContent className="-ml-2">
+            <CarouselContent className="-ml-1">
               {projects.map((p, index) => {
                 const isActive = p.slug === activeSlug;
+                const isCentered = index === centeredMobileIndex;
+
                 return (
-                  <CarouselItem key={p.slug || p.id || index} className="pl-2 basis-1/2 sm:basis-1/3">
-                    <div className="p-1">
+                  <CarouselItem key={p.slug || p.id || index} className="pl-1 basis-1/5">
+                    <div className="p-0.5">
                       <Card
-                        className={`cursor-pointer transition-all duration-200 overflow-hidden relative border-2 ${
-                          isActive
-                            ? 'border-[#FD6D1E] shadow-md shadow-[#FD6D1E]/20 bg-[#FFF6E9]'
-                            : 'border-black/10 hover:border-[#FD6D1E]/50 bg-white'
+                        className={`cursor-pointer transition-all duration-300 overflow-hidden relative border-2 ${
+                          isCentered
+                            ? 'border-[#FD6D1E] scale-105 z-10 shadow-lg shadow-[#FD6D1E]/30 bg-[#FFF6E9]'
+                            : isActive
+                            ? 'border-[#FD6D1E]/70 opacity-80 bg-white'
+                            : 'border-black/10 opacity-60 hover:opacity-100 bg-white'
                         }`}
-                        onClick={() => onSelect(p)}
+                        onClick={() => {
+                          onSelect(p);
+                          carouselApi?.scrollTo(index);
+                        }}
                       >
-                        <CardContent className="flex flex-col items-center justify-center p-2 relative aspect-square">
-                          <div className="w-full h-full rounded-lg overflow-hidden relative">
+                        <CardContent className="flex flex-col items-center justify-center p-1 relative aspect-square">
+                          <div className="w-full h-full rounded-md overflow-hidden relative">
                             <img
                               src={p.image}
                               alt={p.name}
@@ -298,13 +330,10 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
                             />
                             {isActive && (
                               <div className="absolute inset-0 bg-[#FD6D1E]/15 flex items-center justify-center">
-                                <span className="w-2.5 h-2.5 rounded-full bg-[#FD6D1E] shadow-[0_0_8px_#FD6D1E]" />
+                                <span className="w-2 h-2 rounded-full bg-[#FD6D1E] shadow-[0_0_6px_#FD6D1E]" />
                               </div>
                             )}
                           </div>
-                          <span className="text-[10px] font-bold text-[#222220] truncate w-full text-center mt-1">
-                            {p.name}
-                          </span>
                         </CardContent>
                       </Card>
                     </div>
@@ -312,8 +341,8 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
                 );
               })}
             </CarouselContent>
-            <CarouselPrevious className="-left-6 h-8 w-8 bg-white/90 border-black/15 hover:bg-[#123524] hover:text-white" />
-            <CarouselNext className="-right-6 h-8 w-8 bg-white/90 border-black/15 hover:bg-[#123524] hover:text-white" />
+            <CarouselPrevious className="-left-5 h-7 w-7 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white" />
+            <CarouselNext className="-right-5 h-7 w-7 bg-white/95 border-black/15 text-[#222220] hover:bg-[#123524] hover:text-white" />
           </Carousel>
         </div>
       </div>
