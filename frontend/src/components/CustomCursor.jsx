@@ -127,7 +127,7 @@ const CustomCursor = () => {
       <div ref={auraRef} className="cursor-aura">
         <div className="cursor-pill-content">
           <span className="cursor-pill-text">{cursorText}</span>
-          <ArrowUpRight size={14} className="cursor-pill-arrow" />
+          {hoverState !== 'canvas' && <ArrowUpRight size={14} className="cursor-pill-arrow" />}
         </div>
       </div>
     </div>

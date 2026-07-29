@@ -188,8 +188,7 @@ body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured
 }
 
 .custom-cursor-wrapper.canvas .cursor-pill-arrow {
-  width: 12px;
-  height: 12px;
+  display: none !important;
 }
 
 /* Drag State: Fade out aura pill when user clicks & drags shapes in physics canvas */

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, ArrowUp } from 'lucide-react';
 import { InstagramIcon, LinkedinIcon } from './SocialIcons';
 import GravityCanvas from './GravityCanvas';
 import './Footer.css';
@@ -62,8 +62,16 @@ const Footer = () => {
             © {new Date().getFullYear()} Paper Hoof Studio. All rights reserved.
           </div>
 
-          <div className="brand-stamp">PAPER HOOF</div>
+          {/* Paper Hoof Wordmark Icon in Middle */}
+          <div className="brand-stamp">
+            <img
+              src={`${process.env.PUBLIC_URL}/paperhoof-wordmark.svg`}
+              alt="Paper Hoof Studio"
+              className="footer-wordmark-img"
+            />
+          </div>
 
+          {/* Back to Top Button with Upward Arrow & Springing Motion */}
           <button
             type="button"
             className="scroll-top-btn"
@@ -71,7 +79,7 @@ const Footer = () => {
             aria-label="Back to top"
           >
             <span>BACK TO TOP</span>
-            <ArrowUpRight size={16} />
+            <ArrowUp size={16} className="scroll-top-arrow" />
           </button>
         </div>
       </div>

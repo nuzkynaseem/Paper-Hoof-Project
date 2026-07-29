@@ -105,7 +105,7 @@
   transform: translate(2px, -2px);
 }
 
-/* Bottom Bar */
+/* Bottom Bar & Middle Wordmark Stamp */
 .compact-bottom-bar {
   display: flex;
   justify-content: space-between;
@@ -123,12 +123,24 @@
 }
 
 .brand-stamp {
-  font-family: var(--font-heading);
-  font-size: 1.25rem;
-  letter-spacing: 0.1em;
-  color: rgba(32, 36, 35, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.footer-wordmark-img {
+  height: 28px;
+  width: auto;
+  opacity: 0.85;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.footer-wordmark-img:hover {
+  opacity: 1;
+  transform: scale(1.04);
+}
+
+/* Back to Top Button with Upward Arrow & Springing Motion */
 .scroll-top-btn {
   display: inline-flex;
   align-items: center;
@@ -144,13 +156,31 @@
   border-radius: 999px;
   cursor: pointer;
   min-height: 44px;
-  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+  transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease, transform 250ms ease;
+}
+
+.scroll-top-arrow {
+  transition: transform 350ms cubic-bezier(0.175, 0.885, 0.32, 1.35);
 }
 
 .scroll-top-btn:hover {
   background: var(--mane-orange);
   border-color: var(--mane-orange);
   color: var(--sheep-white);
+  transform: translateY(-2px);
+}
+
+.scroll-top-btn:hover .scroll-top-arrow {
+  animation: springUpward 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.35) infinite alternate;
+}
+
+@keyframes springUpward {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-5px);
+  }
 }
 
 /* Mobile Adaptation */
