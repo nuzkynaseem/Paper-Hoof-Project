@@ -115,7 +115,7 @@
   width: 100%;
   overflow: hidden;
   border-radius: 12px;
-  background-color: #ECE6DB;
+  background-color: var(--birch-mist, #F5F5F5);
 }
 
 .brand-card-img {

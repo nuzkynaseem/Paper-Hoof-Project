@@ -154,7 +154,7 @@
   aspect-ratio: 16 / 10;
   overflow: hidden;
   border-radius: 20px;
-  background: #ECE6DB;
+  background: var(--birch-mist, #F5F5F5);
   border: 1.5px solid rgba(32, 36, 35, 0.12);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   transform-style: preserve-3d;

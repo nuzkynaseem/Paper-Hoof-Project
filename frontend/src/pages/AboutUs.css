@@ -222,7 +222,7 @@
   position: relative;
   height: 140px;
   overflow: hidden;
-  background-color: #ECE6DB;
+  background-color: var(--birch-mist, #F5F5F5);
 }
 
 .sub-card-img {
@@ -334,7 +334,7 @@
   border-radius: 20px;
   overflow: hidden;
   aspect-ratio: 1;
-  background: #ECE6DB;
+  background: var(--birch-mist, #F5F5F5);
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
 }
 

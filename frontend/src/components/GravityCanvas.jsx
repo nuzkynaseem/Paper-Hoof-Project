@@ -59,13 +59,15 @@ const GravityCanvas = () => {
 
     Composite.add(engine.world, [ground, leftWall, rightWall]);
 
-    // Color palette for dynamic shapes
+    // Color palette for dynamic shapes (Primary & Secondary Palettes)
     const colors = [
-      'rgba(227, 76, 24, 0.94)',   // Mane Orange
-      'rgba(32, 36, 35, 0.94)',    // Horse Black
-      'rgba(1, 54, 10, 0.92)',     // Saddle Green
-      'rgba(13, 46, 74, 0.92)',    // Hero Navy
-      'rgba(215, 70, 20, 0.94)'    // Accent Orange
+      'rgba(253, 109, 30, 0.94)',  // Tangerine Blaze (#FD6D1E)
+      'rgba(18, 53, 36, 0.94)',    // Phthalo Green (#123524)
+      'rgba(34, 34, 32, 0.94)',    // Dark Soot (#222220)
+      'rgba(24, 49, 101, 0.92)',   // Midnight Harbor (#183165)
+      'rgba(255, 210, 33, 0.94)',  // Golden Straw (#FFD221)
+      'rgba(151, 217, 175, 0.94)', // Mint Sprig (#97D9AF)
+      'rgba(217, 43, 36, 0.92)'    // Barn Red (#D92B24)
     ];
 
     const spawnShapes = () => {
@@ -126,7 +128,7 @@ const GravityCanvas = () => {
             chamfer: { radius: 10 },
             restitution: 0.65,
             friction: 0.15,
-            render: { fillStyle: 'rgba(227, 76, 24, 0.95)' }
+            render: { fillStyle: 'rgba(253, 109, 30, 0.95)' }
           });
           body.customType = 'horse';
           body.customSize = size;

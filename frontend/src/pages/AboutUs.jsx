@@ -185,7 +185,7 @@ const AboutUs = () => {
       listItems.forEach((item, i) => {
         const previousItem = listItems[i - 1];
         if (previousItem) {
-          tl.set(item, { color: '#E34C18' }, 0.5 * i)
+          tl.set(item, { color: '#FD6D1E' }, 0.5 * i)
             .to(
               slides[i],
               {
@@ -194,7 +194,7 @@ const AboutUs = () => {
               },
               '<'
             )
-            .set(previousItem, { color: 'rgba(32, 36, 35, 0.4)' }, '<')
+            .set(previousItem, { color: 'rgba(34, 34, 32, 0.4)' }, '<')
             .to(
               slides[i - 1],
               {
@@ -204,7 +204,7 @@ const AboutUs = () => {
               '<'
             );
         } else {
-          gsap.set(item, { color: '#E34C18' });
+          gsap.set(item, { color: '#FD6D1E' });
           gsap.set(slides[i], { autoAlpha: 1 });
         }
       });

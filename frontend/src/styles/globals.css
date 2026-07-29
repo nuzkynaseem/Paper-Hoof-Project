@@ -103,19 +103,34 @@
 }
 
 :root {
-  /* Core Colors — Paper Hoof (WCAG AA Compliant High Contrast Palette) */
-  --bg-cream: #FFFDF7;
-  --primary-green: #01360A;
-  --black: #202423;
+  /* Core Colors — Paper Hoof Primary Palette */
+  --bg-cream: #FFF6E9; /* Antler Cream */
+  --primary-green: #123524; /* Phthalo Green */
+  --black: #222220; /* Dark Soot */
   --grey: #595656;
   --white: #FFFFFF;
+  --birch-mist: #F5F5F5; /* Birch Mist */
 
-  /* Paper Hoof Brand Palette */
-  --sheep-white: #FFFDF7;
-  --horse-black: #202423;
-  --mane-orange: #E34C18;
-  --saddle-green: #01360A;
-  --hero-navy: #0D2E4A;
+  /* Paper Hoof Brand Palette (Primary) */
+  --phthalo-green: #123524;
+  --antler-cream: #FFF6E9;
+  --dark-soot: #222220;
+  --sheep-white: #FFF6E9;
+  --horse-black: #222220;
+  --saddle-green: #123524;
+
+  /* Secondary Accent Palette */
+  --mane-orange: #FD6D1E; /* Tangerine Blaze */
+  --tangerine-blaze: #FD6D1E;
+  --hero-navy: #183165; /* Midnight Harbor */
+  --midnight-harbor: #183165;
+  --bubblegum-bloom: #FDB5ED;
+  --mint-sprig: #97D9AF;
+  --sandy-reed: #D9D5B0;
+  --olive-bramble: #92A71D;
+  --golden-straw: #FFD221;
+  --barn-red: #D92B24;
+  --forest-bramble: #275C24;
   
   /* Spacing System (4px base) */
   --space-1: 4px;
