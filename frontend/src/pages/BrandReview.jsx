@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ArrowLeft, ArrowRight, CheckCircle2, Calendar as CalendarIcon, Clock, Mail, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowLeft, ArrowRight, CheckCircle2, Calendar as CalendarIcon, Clock, Mail, Check, Loader2 } from 'lucide-react';
 import { Calendar } from '../components/ui/calendar';
 import ReadyToMove from '../components/ReadyToMove';
 import { DraggableCardContainer, DraggableCardBody } from '../components/ui/draggable-card';
@@ -100,6 +100,10 @@ const BrandReview = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [bookedSlots, setBookedSlots] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [stepError, setStepError] = useState('');
 
   const formSectionRef = useRef(null);
 
@@ -126,8 +130,6 @@ const BrandReview = () => {
   const mouseY = useMotionValue(0);
 
   const springConfig = { damping: 25, stiffness: 120 };
-  const bgTextX = useSpring(useTransform(mouseX, [-0.5, 0.5], [28, -28]), springConfig);
-  const bgTextY = useSpring(useTransform(mouseY, [-0.5, 0.5], [9, -9]), springConfig);
 
   const handleHeroMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -142,6 +144,32 @@ const BrandReview = () => {
     mouseX.set(0);
     mouseY.set(0);
   };
+
+  // Fetch booked slots whenever selected date changes
+  useEffect(() => {
+    if (!formData.date) {
+      setBookedSlots([]);
+      return;
+    }
+    const year = formData.date.getFullYear();
+    const month = String(formData.date.getMonth() + 1).padStart(2, '0');
+    const day = String(formData.date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+
+    const fetchBookedSlots = async () => {
+      try {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+        const res = await fetch(`${backendUrl}/api/bookings/booked-slots?date=${dateStr}`);
+        if (res.ok) {
+          const data = await res.json();
+          setBookedSlots(data.bookedSlots || []);
+        }
+      } catch (err) {
+        console.warn("Could not fetch booked slots:", err);
+      }
+    };
+    fetchBookedSlots();
+  }, [formData.date]);
 
   // Calendar Boundaries: Current Date up to 6 Months in the Future
   const today = new Date();
@@ -214,14 +242,14 @@ const BrandReview = () => {
   ];
 
   const timeSlots = [
-    '7:30 PM - 8:30 PM',
-    '8:30 PM - 9:30 PM',
-    '9:30 PM - 10:30 PM'
+    '7:00 PM - 9:00 PM',
+    '9:00 PM - 11:00 PM'
   ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (stepError) setStepError('');
   };
 
   const scrollToFormTop = () => {
@@ -233,7 +261,44 @@ const BrandReview = () => {
     }
   };
 
+  const validateStep1 = () => {
+    if (!formData.service || !formData.budget || !formData.hearAbout || !formData.referrer) {
+      setStepError('Please select all required options before proceeding.');
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep2 = () => {
+    if (
+      !formData.firstName.trim() ||
+      !formData.lastName.trim() ||
+      !formData.email.trim() ||
+      !formData.phone.trim() ||
+      !formData.company.trim()
+    ) {
+      setStepError('Please fill in all required fields (First Name, Last Name, Email, Phone, and Company).');
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      setStepError('Please enter a valid email address (e.g. name@company.com).');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleNext = () => {
+    setStepError('');
+
+    if (currentStep === 1) {
+      if (!validateStep1()) return;
+    } else if (currentStep === 2) {
+      if (!validateStep2()) return;
+    }
+
     if (currentStep < 3) {
       setCurrentStep(prev => prev + 1);
       scrollToFormTop();
@@ -241,23 +306,87 @@ const BrandReview = () => {
   };
 
   const handleBack = () => {
+    setStepError('');
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1);
       scrollToFormTop();
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    setTimeout(() => {
+    setSubmitError('');
+    setStepError('');
+
+    if (!validateStep1()) {
+      setCurrentStep(1);
       scrollToFormTop();
-    }, 50);
+      return;
+    }
+
+    if (!validateStep2()) {
+      setCurrentStep(2);
+      scrollToFormTop();
+      return;
+    }
+
+    if (!formData.date || !formData.timeSlot) {
+      setSubmitError('Please select both a date and an available time slot.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const year = formData.date.getFullYear();
+    const month = String(formData.date.getMonth() + 1).padStart(2, '0');
+    const day = String(formData.date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+
+    const payload = {
+      service: formData.service,
+      budget: formData.budget,
+      hearAbout: formData.hearAbout,
+      referrer: formData.referrer,
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      company: formData.company.trim(),
+      instagram: formData.instagram ? formData.instagram.trim() : '',
+      dateStr: dateStr,
+      timeSlot: formData.timeSlot,
+      notes: formData.notes ? formData.notes.trim() : ''
+    };
+
+    try {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+      const res = await fetch(`${backendUrl}/api/bookings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || 'Failed to submit booking');
+      }
+
+      setIsSubmitted(true);
+      setTimeout(() => {
+        scrollToFormTop();
+      }, 50);
+    } catch (err) {
+      setSubmitError(err.message || 'Error submitting booking. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleResetFlow = () => {
     setFormData(initialFormData);
     setIsSubmitted(false);
+    setSubmitError('');
+    setStepError('');
     setCurrentStep(1);
     setTimeout(() => {
       scrollToFormTop();
@@ -301,7 +430,7 @@ const BrandReview = () => {
                 <div className="stepper-progress-bar">
                   <div
                     className={`step-pill ${currentStep >= 1 ? 'active' : ''}`}
-                    onClick={() => currentStep > 1 && setCurrentStep(1)}
+                    onClick={() => { setStepError(''); setCurrentStep(1); }}
                   >
                     <span className="step-num">01</span>
                     <span className="step-label">Service</span>
@@ -309,7 +438,14 @@ const BrandReview = () => {
                   <div className="step-divider" />
                   <div
                     className={`step-pill ${currentStep >= 2 ? 'active' : ''}`}
-                    onClick={() => currentStep > 2 && setCurrentStep(2)}
+                    onClick={() => {
+                      if (currentStep > 2) {
+                        setStepError('');
+                        setCurrentStep(2);
+                      } else if (currentStep === 1) {
+                        handleNext();
+                      }
+                    }}
                   >
                     <span className="step-num">02</span>
                     <span className="step-label">Details</span>
@@ -322,18 +458,21 @@ const BrandReview = () => {
                 </div>
               </div>
 
-              <form onSubmit={handleSubmit} className="brand-review-form">
+              <form onSubmit={handleSubmit} className="brand-review-form" noValidate>
                 {/* Step 1: Service Context */}
                 {currentStep === 1 && (
                   <div className="form-step">
                     <div className="form-field">
                       <label className="field-label">
-                        Select Service
+                        Select Service *
                         <span className="label-arrow">▸</span>
                       </label>
                       <Select
                         value={formData.service}
-                        onValueChange={(val) => setFormData(prev => ({ ...prev, service: val }))}
+                        onValueChange={(val) => {
+                          setFormData(prev => ({ ...prev, service: val }));
+                          if (stepError) setStepError('');
+                        }}
                       >
                         <SelectTrigger className="custom-select-trigger">
                           <SelectValue placeholder="Choose service from dropdown" />
@@ -350,12 +489,15 @@ const BrandReview = () => {
 
                     <div className="form-field">
                       <label className="field-label">
-                        What's Your Budget
+                        What's Your Budget *
                         <span className="label-arrow">▸</span>
                       </label>
                       <Select
                         value={formData.budget}
-                        onValueChange={(val) => setFormData(prev => ({ ...prev, budget: val }))}
+                        onValueChange={(val) => {
+                          setFormData(prev => ({ ...prev, budget: val }));
+                          if (stepError) setStepError('');
+                        }}
                       >
                         <SelectTrigger className="custom-select-trigger">
                           <SelectValue placeholder="Choose budget from dropdown" />
@@ -372,12 +514,15 @@ const BrandReview = () => {
 
                     <div className="form-field">
                       <label className="field-label">
-                        How Did You Hear Us
+                        How Did You Hear Us *
                         <span className="label-arrow">▸</span>
                       </label>
                       <Select
                         value={formData.hearAbout}
-                        onValueChange={(val) => setFormData(prev => ({ ...prev, hearAbout: val }))}
+                        onValueChange={(val) => {
+                          setFormData(prev => ({ ...prev, hearAbout: val }));
+                          if (stepError) setStepError('');
+                        }}
                       >
                         <SelectTrigger className="custom-select-trigger">
                           <SelectValue placeholder="Choose source from dropdown" />
@@ -394,12 +539,15 @@ const BrandReview = () => {
 
                     <div className="form-field">
                       <label className="field-label">
-                        Who Referred Us
+                        Who Referred Us *
                         <span className="label-arrow">▸</span>
                       </label>
                       <Select
                         value={formData.referrer}
-                        onValueChange={(val) => setFormData(prev => ({ ...prev, referrer: val }))}
+                        onValueChange={(val) => {
+                          setFormData(prev => ({ ...prev, referrer: val }));
+                          if (stepError) setStepError('');
+                        }}
                       >
                         <SelectTrigger className="custom-select-trigger">
                           <SelectValue placeholder="Choose referrer from dropdown" />
@@ -413,6 +561,12 @@ const BrandReview = () => {
                         </SelectContent>
                       </Select>
                     </div>
+
+                    {stepError && (
+                      <div className="submit-error-banner">
+                        {stepError}
+                      </div>
+                    )}
 
                     <div className="form-actions">
                       <button type="button" onClick={handleNext} className="btn-next">
@@ -429,7 +583,7 @@ const BrandReview = () => {
                     <div className="form-grid">
                       <div className="form-field">
                         <label className="field-label">
-                          First Name
+                          First Name *
                           <span className="label-arrow">▸</span>
                         </label>
                         <input
@@ -445,7 +599,7 @@ const BrandReview = () => {
 
                       <div className="form-field">
                         <label className="field-label">
-                          Last Name
+                          Last Name *
                           <span className="label-arrow">▸</span>
                         </label>
                         <input
@@ -461,7 +615,7 @@ const BrandReview = () => {
 
                       <div className="form-field">
                         <label className="field-label">
-                          Email
+                          Email *
                           <span className="label-arrow">▸</span>
                         </label>
                         <input
@@ -477,7 +631,7 @@ const BrandReview = () => {
 
                       <div className="form-field">
                         <label className="field-label">
-                          Phone
+                          Phone *
                           <span className="label-arrow">▸</span>
                         </label>
                         <input
@@ -493,7 +647,7 @@ const BrandReview = () => {
 
                       <div className="form-field">
                         <label className="field-label">
-                          Company Name
+                          Company Name *
                           <span className="label-arrow">▸</span>
                         </label>
                         <input
@@ -509,7 +663,7 @@ const BrandReview = () => {
 
                       <div className="form-field">
                         <label className="field-label">
-                          Instagram ID
+                          Instagram ID <span className="optional-tag">(Optional)</span>
                           <span className="label-arrow">▸</span>
                         </label>
                         <input
@@ -522,6 +676,12 @@ const BrandReview = () => {
                         />
                       </div>
                     </div>
+
+                    {stepError && (
+                      <div className="submit-error-banner">
+                        {stepError}
+                      </div>
+                    )}
 
                     <div className="form-actions">
                       <button type="button" onClick={handleBack} className="btn-back">
@@ -542,7 +702,7 @@ const BrandReview = () => {
                     <div className="booking-section">
                       <div className="form-field calendar-field-wrapper">
                         <label className="field-label-dropdown">
-                          Reserve a Date
+                          Reserve a Date *
                           <span className="label-arrow">▸</span>
                         </label>
                         <div className="calendar-container">
@@ -583,7 +743,10 @@ const BrandReview = () => {
                             month={currentMonth}
                             onMonthChange={setCurrentMonth}
                             selected={formData.date}
-                            onSelect={(date) => setFormData(prev => ({ ...prev, date }))}
+                            onSelect={(date) => {
+                              setFormData(prev => ({ ...prev, date }));
+                              if (submitError) setSubmitError('');
+                            }}
                             disabled={isDateDisabled}
                             className="brand-calendar"
                             classNames={{
@@ -610,16 +773,27 @@ const BrandReview = () => {
                           </div>
 
                           <div className="time-slots">
-                            {timeSlots.map((slot, index) => (
-                              <button
-                                key={index}
-                                type="button"
-                                className={`time-slot-btn ${formData.timeSlot === slot ? 'selected' : ''}`}
-                                onClick={() => setFormData(prev => ({ ...prev, timeSlot: slot }))}
-                              >
-                                {slot}
-                              </button>
-                            ))}
+                            {timeSlots.map((slot, index) => {
+                              const isBooked = bookedSlots.includes(slot);
+                              const isSelected = formData.timeSlot === slot;
+                              return (
+                                <button
+                                  key={index}
+                                  type="button"
+                                  disabled={isBooked}
+                                  className={`time-slot-btn ${isSelected ? 'selected' : ''} ${isBooked ? 'booked' : ''}`}
+                                  onClick={() => {
+                                    if (!isBooked) {
+                                      setFormData(prev => ({ ...prev, timeSlot: slot }));
+                                      if (submitError) setSubmitError('');
+                                    }
+                                  }}
+                                >
+                                  <span>{slot}</span>
+                                  {isBooked && <span className="booked-badge">Booked</span>}
+                                </button>
+                              );
+                            })}
                           </div>
                         </>
                       )}
@@ -627,7 +801,7 @@ const BrandReview = () => {
 
                     <div className="form-field">
                       <label className="field-label-dropdown">
-                        Anything you like us to know
+                        Anything you like us to know <span className="optional-tag">(Optional)</span>
                         <span className="label-arrow">▸</span>
                       </label>
                       <textarea
@@ -640,19 +814,35 @@ const BrandReview = () => {
                       />
                     </div>
 
+                    {submitError && (
+                      <div className="submit-error-banner">
+                        {submitError}
+                      </div>
+                    )}
+
                     <div className="form-actions">
-                      <button type="button" onClick={handleBack} className="btn-back">
+                      <button type="button" onClick={handleBack} className="btn-back" disabled={isSubmitting}>
                         <ArrowLeft size={18} />
                         <span>Back</span>
                       </button>
-                      <button type="submit" className="btn-submit">
-                        <span>Submit Booking</span>
-                        <Check size={18} />
+                      <button type="submit" className="btn-submit" disabled={isSubmitting || !formData.date || !formData.timeSlot}>
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 size={18} className="animate-spin" />
+                            <span>Scheduling...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Submit Booking</span>
+                            <Check size={18} />
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
                 )}
               </form>
+
             </>
           ) : (
             /* Booking Confirmation / Success Screen */
@@ -697,9 +887,6 @@ const BrandReview = () => {
           )}
         </div>
       </section>
-
-      {/* Ready to Move CTA band */}
-      <ReadyToMove />
     </div>
   );
 };
