@@ -455,6 +455,56 @@
   padding: 4px 0 !important;
 }
 
+/* Calendar Cells & Days Overrides for High Visibility */
+.brand-calendar td {
+  background-color: transparent !important;
+}
+
+.brand-calendar td:has([aria-selected="true"]) {
+  background-color: transparent !important;
+}
+
+.brand-calendar button {
+  border-radius: 50% !important;
+  font-family: var(--font-primary) !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.brand-calendar button:hover:not([disabled]):not([aria-selected="true"]) {
+  background: rgba(18, 53, 36, 0.1) !important;
+  color: var(--primary-green, #123524) !important;
+}
+
+/* Selected Day Pill Circle - Mint Green (#97D9AF) background with Dark Charcoal (#222220) text */
+.brand-calendar [aria-selected="true"],
+.brand-calendar .rdp-day_selected,
+.brand-calendar .day_selected {
+  background-color: var(--mint-sprig, #97D9AF) !important;
+  color: var(--dark-soot, #222220) !important;
+  font-weight: 800 !important;
+  opacity: 1 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 4px 14px rgba(151, 217, 175, 0.5) !important;
+}
+
+/* Today's Date Ring (if unselected) */
+.brand-calendar [aria-current="date"]:not([aria-selected="true"]),
+.brand-calendar .day_today:not([aria-selected="true"]) {
+  border: 1.5px solid var(--primary-green, #123524) !important;
+  color: var(--primary-green, #123524) !important;
+  font-weight: 700 !important;
+  background: transparent !important;
+}
+
+/* Disabled Days */
+.brand-calendar button:disabled,
+.brand-calendar [aria-disabled="true"] {
+  opacity: 0.25 !important;
+  cursor: not-allowed !important;
+  background: transparent !important;
+}
+
 .calendar-custom-header {
   display: flex;
   align-items: center;

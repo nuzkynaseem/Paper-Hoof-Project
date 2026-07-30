@@ -376,11 +376,16 @@ const BrandReview = () => {
         scrollToFormTop();
       }, 50);
     } catch (err) {
-      setSubmitError(err.message || 'Error submitting booking. Please try again.');
+      if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
+        setSubmitError('Unable to connect to the booking server. Please ensure your backend server (port 8000) is running.');
+      } else {
+        setSubmitError(err.message || 'Error submitting booking. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   const handleResetFlow = () => {
     setFormData(initialFormData);
