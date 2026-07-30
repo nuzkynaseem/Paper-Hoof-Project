@@ -169,6 +169,8 @@
   background: var(--bg-cream);
   position: relative;
   z-index: 5;
+  min-height: 600px;
+  scroll-margin-top: 100px;
 }
 
 .form-container {
@@ -301,7 +303,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02) !important;
 }
 
-/* Placeholder Opacity Styling so users know input is a selectable/editable field */
+/* Placeholder Opacity Styling */
 .custom-select-trigger [data-placeholder],
 .custom-select-trigger span:empty::before,
 .field-input::placeholder,
@@ -790,6 +792,8 @@
   /* Form Container & Padding Fixes */
   .brand-review-form-section {
     padding: 32px 12px 60px !important;
+    min-height: 540px !important;
+    scroll-margin-top: 80px !important;
   }
 
   .brand-review-form {

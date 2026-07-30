@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowLeft, ArrowRight, CheckCircle2, Calendar as CalendarIcon, Clock, Mail, Check } from 'lucide-react';
 import { Calendar } from '../components/ui/calendar';
@@ -100,6 +100,8 @@ const BrandReview = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  const formSectionRef = useRef(null);
 
   const initialFormData = {
     service: '',
@@ -222,27 +224,44 @@ const BrandReview = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const scrollToFormTop = () => {
+    if (formSectionRef.current) {
+      const yOffset = -90; // Header navbar offset
+      const element = formSectionRef.current;
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
+
   const handleNext = () => {
     if (currentStep < 3) {
       setCurrentStep(prev => prev + 1);
+      scrollToFormTop();
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1);
+      scrollToFormTop();
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitted(true);
+    setTimeout(() => {
+      scrollToFormTop();
+    }, 50);
   };
 
   const handleResetFlow = () => {
     setFormData(initialFormData);
     setIsSubmitted(false);
     setCurrentStep(1);
+    setTimeout(() => {
+      scrollToFormTop();
+    }, 50);
   };
 
   return (
@@ -268,7 +287,7 @@ const BrandReview = () => {
       </section>
 
       {/* Main Form & Booking Section */}
-      <section className="brand-review-form-section">
+      <section className="brand-review-form-section" ref={formSectionRef}>
         <div className="form-container">
           {!isSubmitted ? (
             <>
@@ -527,7 +546,7 @@ const BrandReview = () => {
                           <span className="label-arrow">▸</span>
                         </label>
                         <div className="calendar-container">
-                          {/* Calendar Header: Month Nav & Year Heading neatly inside calendar bounds */}
+                          {/* Calendar Header */}
                           <div className="calendar-custom-header">
                             <div className="calendar-month-nav">
                               <button
@@ -553,7 +572,6 @@ const BrandReview = () => {
                               </button>
                             </div>
 
-                            {/* Year Heading Pinned cleanly inside Calendar */}
                             <div className="calendar-year-heading">
                               <span className="year-label">YEAR</span>
                               <span className="year-number">{currentMonth.getFullYear()}</span>
