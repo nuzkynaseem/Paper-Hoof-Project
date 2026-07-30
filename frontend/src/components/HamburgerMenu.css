@@ -1,4 +1,4 @@
-/* Hamburger Overlay Container */
+/* Hamburger Overlay Container — hidden by default, shown via GSAP */
 #nav {
   position: fixed;
   inset: 0;
@@ -11,6 +11,9 @@
   box-sizing: border-box;
   overflow-y: auto;
   overflow-x: hidden;
+  /* Hidden by default — GSAP sets visibility:visible when opening */
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* Dark Glass Backdrop */
@@ -130,14 +133,17 @@
   font-family: var(--font-heading);
   font-size: clamp(1.4rem, 2.5vw, 1.9rem);
   font-weight: 700;
-  color: var(--horse-black, #222220);
+  /* WCAG AA: #222220 on #FFFFFF = 16.1:1 contrast ratio */
+  color: #222220 !important;
   text-decoration: none;
   background: transparent;
   border: none;
   padding: 10px 14px;
   border-radius: 14px;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              padding-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
   width: 100%;
 }
@@ -146,18 +152,27 @@
   font-family: var(--font-heading);
   font-size: clamp(1.4rem, 2.5vw, 1.9rem);
   font-weight: 700;
-  color: inherit;
+  /* Explicit colour so GSAP colour transforms never mask the label */
+  color: #222220 !important;
 }
 
 .nav-link-item:hover {
-  background: rgba(18, 53, 36, 0.08);
-  color: var(--primary-green, #123524);
+  background: rgba(18, 53, 36, 0.09);
+  color: #123524 !important;
   padding-left: 18px;
 }
 
+.nav-link-item:hover .item-label {
+  color: #123524 !important;
+}
+
 .nav-link-item.active {
-  color: var(--primary-green, #123524);
+  color: #123524 !important;
   background: rgba(18, 53, 36, 0.06);
+}
+
+.nav-link-item.active .item-label {
+  color: #123524 !important;
 }
 
 .nav-link-item .item-arrow {

@@ -10,81 +10,86 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [copiedEmail, setCopiedEmail] = useState(false);
+  // Track whether the component has ever been opened — skip close animation on initial mount
+  const hasOpenedRef = useRef(false);
 
-  // Robust GSAP animation on isOpen prop change
   useEffect(() => {
     if (isOpen) {
-      // Kill any running tweens to prevent stale animation states
-      gsap.killTweensOf(['#nav', '.nav-bg', '.nav-panel', '.nav-item', '.nav-login']);
+      hasOpenedRef.current = true;
 
-      // Ensure menu container is visible & interactive
-      gsap.set('#nav', { visibility: 'visible', pointerEvents: 'auto' });
-      gsap.set('.nav-panel', { y: 0, rotation: 0, opacity: 1 });
+      // Kill any in-flight tweens
+      gsap.killTweensOf(['#nav', '.nav-bg', '.nav-panel', '.nav-link-item', '.nav-login', '.nav-item.secondary-section']);
 
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      // Reset panels to starting position, fully visible
+      gsap.set('#nav', { visibility: 'visible', pointerEvents: 'auto', opacity: 1 });
+      gsap.set('.nav-bg', { opacity: 0 });
+      gsap.set('.nav-panel', { x: '105%', y: 0, rotation: 0, opacity: 1 });
 
-      tl.fromTo(
-        '.nav-bg',
-        { opacity: 0 },
-        { opacity: 1, duration: 0.35, ease: 'power2.out' },
-        0
-      )
-        .fromTo(
+      // Force-clear any stale GSAP inline opacity from nav link items
+      gsap.set('.nav-link-item', { opacity: 1, x: 0, clearProps: 'transform' });
+      gsap.set('.nav-item.secondary-section', { opacity: 1, clearProps: 'all' });
+      gsap.set('.nav-login', { opacity: 0, y: 10 });
+
+      const tl = gsap.timeline();
+
+      // Backdrop fades in
+      tl.to('.nav-bg', { opacity: 1, duration: 0.3, ease: 'power2.out' }, 0)
+
+        // Panels slide in from right
+        .to(
           '.nav-panel',
-          { x: '105%', opacity: 1 },
-          { x: '0%', opacity: 1, duration: 0.55, ease: 'back.out(1.1)', stagger: 0.08 },
+          { x: '0%', opacity: 1, duration: 0.5, ease: 'back.out(1.05)', stagger: 0.07 },
           0
         )
+
+        // Primary nav link buttons animate in (opacity + slight x slide)
         .fromTo(
-          '.nav-item',
-          { opacity: 0, x: -16 },
-          { opacity: 1, x: 0, duration: 0.45, ease: 'power2.out', stagger: 0.04 },
-          0.12
+          '.nav-link-item',
+          { opacity: 0, x: -14 },
+          { opacity: 1, x: 0, duration: 0.4, ease: 'power2.out', stagger: 0.05 },
+          0.15
         )
-        .fromTo(
+
+        // Secondary sections (social grid etc.) remain fully visible — just ensure opacity
+        .set('.nav-item.secondary-section', { opacity: 1 }, 0.15)
+
+        // Login / connect / location / CTA sections fade in
+        .to(
           '.nav-login',
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out', stagger: 0.04 },
-          0.22
+          { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out', stagger: 0.04 },
+          0.25
         );
+
     } else {
-      gsap.killTweensOf(['#nav', '.nav-bg', '.nav-panel', '.nav-item', '.nav-login']);
+      // Skip close animation on initial mount — menu was never open
+      if (!hasOpenedRef.current) return;
+
+      gsap.killTweensOf(['#nav', '.nav-bg', '.nav-panel', '.nav-link-item', '.nav-login']);
 
       const tl = gsap.timeline({
         onComplete: () => {
           gsap.set('#nav', { visibility: 'hidden', pointerEvents: 'none' });
+          // Reset panels so next open starts fresh from off-screen right
           gsap.set('.nav-panel', { x: '105%', y: 0, rotation: 0, opacity: 1 });
+          // Clear GSAP inline styles so CSS opacity rules take full control
+          gsap.set('.nav-link-item', { clearProps: 'all' });
+          gsap.set('.nav-login', { clearProps: 'all' });
+          gsap.set('.nav-item.secondary-section', { clearProps: 'all' });
         },
       });
 
       tl.to(
         '.nav-panel',
-        {
-          y: '100vh',
-          opacity: 0,
-          duration: 0.45,
-          ease: 'power2.in',
-          stagger: { from: 'end', each: 0.04 },
-        },
+        { y: '90vh', opacity: 0, duration: 0.4, ease: 'power2.in', stagger: { from: 'end', each: 0.04 } },
         0
-      ).to(
-        '.nav-bg',
-        { opacity: 0, duration: 0.3, ease: 'power2.in' },
-        0.1
-      );
+      ).to('.nav-bg', { opacity: 0, duration: 0.25, ease: 'power2.in' }, 0.05);
     }
   }, [isOpen]);
 
   // Keyboard Escape listener
   useEffect(() => {
     if (!isOpen) return;
-
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
+    const handleKeyDown = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
@@ -112,20 +117,17 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
       {/* Dark Blur Backdrop */}
       <div className="nav-bg" onClick={onClose} aria-hidden="true" />
 
-      {/* Floating Close Button Header inside Overlay */}
+      {/* Floating Close Button */}
       <div className="overlay-header">
-        <button
-          className="menu-close-btn"
-          onClick={onClose}
-          aria-label="Close navigation menu"
-        >
+        <button className="menu-close-btn" onClick={onClose} aria-label="Close navigation menu">
           <X size={26} />
         </button>
       </div>
 
       {/* Panels Container */}
       <div className="nav-panels-container">
-        {/* Block 1 / Panel 1: Primary Navigation */}
+
+        {/* Panel 1: Primary Navigation */}
         <div className="nav-panel nav-panel-primary">
           <div className="panel-badge">
             <span className="badge-dot" />
@@ -139,7 +141,7 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
               return (
                 <button
                   key={index}
-                  className={`nav-item nav-link-item ${isActive ? 'active' : ''}`}
+                  className={`nav-link-item ${isActive ? 'active' : ''}`}
                   onClick={() => handleNavClick(link.path)}
                 >
                   <span className="item-label">{link.label}</span>
@@ -150,40 +152,29 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
           </nav>
         </div>
 
-        {/* Right Column: Panel 2 (Secondary) & Panel 3 (Brand Wordmark Block) */}
+        {/* Right Column: Panel 2 + Panel 3 */}
         <div className="nav-panel-column-secondary">
-          {/* Block 2 / Panel 2: Secondary / Socials & Connect Block */}
+
+          {/* Panel 2: Connect & Reach */}
           <div className="nav-panel nav-panel-secondary">
             <div className="panel-badge light">
               <span className="badge-dot light" />
-              <span className="badge-text light">CONNECT & REACH</span>
+              <span className="badge-text light">CONNECT &amp; REACH</span>
               <span className="badge-num light">02</span>
             </div>
 
             <div className="secondary-panel-content">
-              {/* Direct Social Links Grid */}
+
+              {/* Social Links */}
               <div className="nav-item secondary-section">
                 <span className="section-small-title">SOCIAL PRESENCE</span>
-                
                 <div className="panel-socials-grid">
-                  <a
-                    href="https://instagram.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="panel-social-link"
-                    aria-label="Instagram"
-                  >
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="panel-social-link" aria-label="Instagram">
                     <InstagramIcon size={16} />
                     <span>Instagram</span>
                     <ArrowUpRight size={14} className="panel-social-arrow" />
                   </a>
-                  <a
-                    href="https://linkedin.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="panel-social-link"
-                    aria-label="LinkedIn"
-                  >
+                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="panel-social-link" aria-label="LinkedIn">
                     <LinkedinIcon size={16} />
                     <span>LinkedIn</span>
                     <ArrowUpRight size={14} className="panel-social-arrow" />
@@ -191,19 +182,14 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Email Contact Block */}
+              {/* Email */}
               <div className="nav-login secondary-section">
                 <span className="section-small-title">DIRECT INQUIRIES</span>
                 <div className="email-box" onClick={handleCopyEmail}>
                   <a href="mailto:paperhoof@gmail.com" onClick={(e) => e.stopPropagation()} className="email-link">
                     paperhoof@gmail.com
                   </a>
-                  <button
-                    type="button"
-                    className="email-copy-btn"
-                    onClick={handleCopyEmail}
-                    title="Copy Email"
-                  >
+                  <button type="button" className="email-copy-btn" onClick={handleCopyEmail} title="Copy Email">
                     {copiedEmail ? <Check size={16} className="text-green" /> : <Copy size={16} />}
                   </button>
                 </div>
@@ -216,13 +202,9 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
                 <p className="location-text">Mawanella, Sri Lanka</p>
               </div>
 
-              {/* Brand Review CTA Action */}
+              {/* CTA */}
               <div className="nav-login cta-action-wrapper">
-                <button
-                  type="button"
-                  className="panel-cta-btn"
-                  onClick={() => handleNavClick('/brand-review')}
-                >
+                <button type="button" className="panel-cta-btn" onClick={() => handleNavClick('/brand-review')}>
                   <Calendar size={18} />
                   <span>Reserve 120-Min Review</span>
                 </button>
@@ -230,7 +212,7 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Block 3 / Panel 3: Brand Wordmark Block (Separate Block Below Connect & Reach) */}
+          {/* Panel 3: Brand Wordmark */}
           <div className="nav-panel nav-panel-brand">
             <div className="brand-block-badge">
               <span className="badge-dot light" />
@@ -245,6 +227,7 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
               />
             </div>
           </div>
+
         </div>
       </div>
     </div>
