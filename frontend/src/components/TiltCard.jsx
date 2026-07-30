@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { getTagStyle } from '../utils/tagColors';
 import './TiltCard.css';
 
 const MAX_TILT = 9;
@@ -38,7 +39,9 @@ const TiltCard = ({ project, onClick }) => {
       >
         <div className="tilt-tags">
           {project.tags.slice(0, 2).map((tag, i) => (
-            <span key={i} className="tilt-tag">{tag}</span>
+            <span key={i} className="tilt-tag" style={getTagStyle(tag)}>
+              {tag}
+            </span>
           ))}
         </div>
       </div>

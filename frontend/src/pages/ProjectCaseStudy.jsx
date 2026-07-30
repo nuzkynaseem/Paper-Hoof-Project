@@ -4,6 +4,7 @@ import { ChevronDown, Plus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { projects, slugify } from '../mock';
 import MacDockNavigation from '../components/MacDockNavigation';
+import { getTagStyle } from '../utils/tagColors';
 import './ProjectCaseStudy.css';
 
 const componentDetails = [
@@ -23,106 +24,39 @@ const componentDetails = [
     summary: 'Curated color palettes balance functional clarity with emotional depth. The tones shift dynamically from subtle warm neutrals to high-contrast focal accents.',
   },
   {
-    id: 'brand-touchpoints',
-    title: 'Brand Touchpoints',
-    summary: 'From interactive digital platforms to physical environmental assets, every component is systematically engineered for consistency, speed, and lasting impact.',
+    id: 'digital-experience',
+    title: 'Digital Experience',
+    summary: 'Interactive components engineered with zero layout layout latency. Every transition is calibrated for spatial feel and intuitive touch response.',
   }
 ];
 
-const CaseStudyComponent = ({ imgUrl, index, project }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const detail = componentDetails[index % componentDetails.length];
-  const title = detail ? detail.title : `Component 0${index + 1}`;
-  const summary = detail
-    ? detail.summary
-    : `Built on refined geometry and systematic layout rules, this component defines ${project.name}'s visual identity and brand architecture.`;
-
-  return (
-    <div className="case-study-component-item">
-      {/* Component Media (Always fills 100% viewport width) */}
-      <img
-        src={imgUrl}
-        alt={`${project.name} ${title}`}
-        className="component-media-img"
-      />
-
-      {/* Bottom-Left Pill Badge & Smooth Non-Liquid Expandable Modal */}
-      <div className="component-insight-container">
-        <AnimatePresence mode="wait">
-          {!isOpen ? (
-            <motion.button
-              key="pill"
-              type="button"
-              className="component-insight-pill"
-              onClick={() => setIsOpen(true)}
-              aria-expanded="false"
-              initial={{ opacity: 0, scale: 0.94, y: 4 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.94, y: 4 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              data-testid={`insight-pill-${index}`}
-            >
-              <span className="pill-title-text">{title}</span>
-              <div className="pill-plus-icon">
-                <Plus size={14} />
-              </div>
-            </motion.button>
-          ) : (
-            <motion.div
-              key="modal"
-              className="component-insight-modal"
-              initial={{ opacity: 0, scale: 0.95, y: 8 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 8 }}
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <div className="insight-modal-header">
-                <h3 className="insight-modal-title">{title}</h3>
-                <button
-                  type="button"
-                  className="insight-modal-close"
-                  onClick={() => setIsOpen(false)}
-                  aria-label="Close component details"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-              <p className="insight-modal-body">{summary}</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-};
-
 const ProjectCaseStudy = () => {
-  const { projectId } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [activeInsight, setActiveInsight] = useState(null);
 
-  const projectList = projects.map((p) => ({ ...p, slug: slugify(p.name) }));
-  const currentIndex = Math.max(
-    0,
-    projectList.findIndex((p) => p.slug === projectId)
+  // Find target project or fallback to first
+  const projectIndex = projects.findIndex(
+    (p) => (p.slug || slugify(p.name)) === slug
   );
-  const project = projectList[currentIndex];
+  const currentProjectIndex = projectIndex >= 0 ? projectIndex : 0;
+  const project = projects[currentProjectIndex];
 
-  const handleSelect = (p) => {
-    if (p.slug !== project.slug) {
-      setIsExpanded(false);
-      navigate(`/work/${p.slug}`);
-    }
-  };
-
-  const presentationImages = project.images && project.images.length > 0
-    ? project.images
+  // Map showcase images or provide high quality fallbacks
+  const showcaseImages = (project.gallery && project.gallery.length > 0)
+    ? project.gallery
     : [
         project.image,
-        'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1600&h=1200&fit=crop',
-        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&h=1200&fit=crop',
-        'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=1600&h=1200&fit=crop'
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80&w=1600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=1600&auto=format&fit=crop"
       ];
+
+  const handleSelectProject = (selected) => {
+    const targetSlug = selected.slug || slugify(selected.name);
+    navigate(`/work/${targetSlug}`);
+  };
 
   return (
     <div className="case-study-page">
@@ -145,7 +79,9 @@ const ProjectCaseStudy = () => {
             <span className="overview-section-label">OVERVIEW</span>
             <div className="overview-tags-list">
               {project.tags.map((tag, index) => (
-                <span key={index} className="overview-tag-pill">{tag}</span>
+                <span key={index} className="overview-tag-pill" style={getTagStyle(tag)}>
+                  {tag}
+                </span>
               ))}
             </div>
           </div>
@@ -168,37 +104,86 @@ const ProjectCaseStudy = () => {
             )}
 
             <button
-              type="button"
               className="read-more-toggle-btn"
               onClick={() => setIsExpanded(!isExpanded)}
               aria-expanded={isExpanded}
             >
               <span>{isExpanded ? 'Read Less' : 'Read More'}</span>
-              <ChevronDown className={`toggle-icon ${isExpanded ? 'rotated' : ''}`} size={16} />
+              <ChevronDown className={`toggle-icon ${isExpanded ? 'rotated' : ''}`} size={18} />
             </button>
           </div>
         </div>
       </section>
 
-      {/* 4: Full-Width Presentation Media Showcase (Edge-to-Edge 100% Viewport Width, 0px Gap) */}
+      {/* 4: Full Viewport Width Presentation Components (0px Gap Edge-to-Edge Stack) */}
       <section className="case-study-presentation-section">
         <div className="presentation-media-stack">
-          {presentationImages.map((imgUrl, index) => (
-            <CaseStudyComponent
-              key={index}
-              imgUrl={imgUrl}
-              index={index}
-              project={project}
-            />
-          ))}
+          {showcaseImages.map((imgUrl, index) => {
+            const detail = componentDetails[index % componentDetails.length];
+            const isInsightOpen = activeInsight === index;
+
+            return (
+              <div key={index} className="case-study-component-item">
+                <img
+                  src={imgUrl}
+                  alt={`${project.name} showcase ${index + 1}`}
+                  className="component-media-img"
+                />
+
+                {/* Bottom-Left Expandable Insight Button */}
+                <div className="component-insight-container">
+                  <AnimatePresence mode="wait">
+                    {!isInsightOpen ? (
+                      <motion.button
+                        key="pill-btn"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className="component-insight-pill"
+                        onClick={() => setActiveInsight(index)}
+                        aria-label={`View detail for ${detail.title}`}
+                      >
+                        <span className="pill-title-text">{detail.title}</span>
+                        <div className="pill-plus-icon">
+                          <Plus size={14} />
+                        </div>
+                      </motion.button>
+                    ) : (
+                      <motion.div
+                        key="insight-modal"
+                        initial={{ opacity: 0, scale: 0.92, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.92, y: 10 }}
+                        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                        className="component-insight-modal"
+                      >
+                        <div className="insight-modal-header">
+                          <h4 className="insight-modal-title">{detail.title}</h4>
+                          <button
+                            className="insight-modal-close"
+                            onClick={() => setActiveInsight(null)}
+                            aria-label="Close insight detail"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                        <p className="insight-modal-body">{detail.summary}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* macOS Animated Dock at the Bottom */}
+      {/* 5: Bottom Dock Carousel Navigation */}
       <MacDockNavigation
-        projects={projectList}
-        activeSlug={project.slug}
-        onSelect={handleSelect}
+        projects={projects}
+        activeSlug={project.slug || slugify(project.name)}
+        onSelect={handleSelectProject}
       />
     </div>
   );
