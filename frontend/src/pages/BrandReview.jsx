@@ -13,7 +13,7 @@ import {
 } from '../components/ui/select';
 import './BrandReview.css';
 
-const brandCards = [
+const defaultBrandCards = [
   {
     title: "Nordic Light",
     minutes: "120 minutes",
@@ -104,6 +104,35 @@ const BrandReview = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [stepError, setStepError] = useState('');
+  const [cardsList, setCardsList] = useState(defaultBrandCards);
+
+  useEffect(() => {
+    fetchCards();
+  }, []);
+
+  const fetchCards = async () => {
+    try {
+      const res = await fetch("/api/brand-review-cards");
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.length > 0) {
+          const merged = defaultBrandCards.map((def, idx) => {
+            const apiCard = data.find((c) => c.cardIndex === idx + 1);
+            if (!apiCard) return def;
+            return {
+              ...def,
+              title: apiCard.title || def.title,
+              minutes: apiCard.minutes ? `${apiCard.minutes} minutes` : def.minutes,
+              image: apiCard.imageUrl || def.image,
+            };
+          });
+          setCardsList(merged);
+        }
+      }
+    } catch (e) {
+      console.warn("Using default brand review cards");
+    }
+  };
 
   const formSectionRef = useRef(null);
 
@@ -414,7 +443,7 @@ const BrandReview = () => {
             </p>
           </div>
 
-          {brandCards.map((item) => (
+          {cardsList.map((item) => (
             <BrandTiltCardItem key={item.title} item={item} />
           ))}
         </DraggableCardContainer>

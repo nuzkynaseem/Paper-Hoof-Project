@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
-import { X, Share2, ArrowUpRight, Copy, Check, Calendar } from 'lucide-react';
+import { X, ArrowUpRight, Copy, Check, Calendar } from 'lucide-react';
 import { InstagramIcon, LinkedinIcon } from './SocialIcons';
 import { navigationLinks } from '../mock';
 import './HamburgerMenu.css';
@@ -9,146 +9,69 @@ import './HamburgerMenu.css';
 const HamburgerMenu = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isSocialsOpen, setIsSocialsOpen] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
 
-  const socialsRef = useRef(null);
-  const tlRef = useRef(null);
-  const enterEndTimeRef = useRef(0);
-  const isMountedRef = useRef(false);
-
-  // Initialize GSAP Timeline
+  // Robust GSAP animation on isOpen prop change
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.set("#nav", { visibility: "hidden", pointerEvents: "none" });
-      gsap.set(".nav-bg", { opacity: 0 });
-      gsap.set(".nav-login", { opacity: 0, y: 8 });
+    if (isOpen) {
+      // Kill any running tweens to prevent stale animation states
+      gsap.killTweensOf(['#nav', '.nav-bg', '.nav-panel', '.nav-item', '.nav-login']);
 
-      const tl = gsap.timeline({ paused: true })
-        .set("#nav", { visibility: "visible", pointerEvents: "auto" })
-        
-        // ═══ ENTER ═══
-        .to(".nav-bg", {
-          opacity: 1,
-          duration: 0.4,
-          ease: "power2.out"
-        }, 0)
+      // Ensure menu container is visible & interactive
+      gsap.set('#nav', { visibility: 'visible', pointerEvents: 'auto' });
+      gsap.set('.nav-panel', { y: 0, rotation: 0, opacity: 1 });
 
-        .fromTo(".nav-panel", 
-          { x: "110%", y: 0, rotation: 0 },
-          {
-            x: "0%",
-            y: 0,
-            duration: 0.6,
-            ease: "back.out(1.1)",
-            stagger: 0.1,
-          }, 
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+      tl.fromTo(
+        '.nav-bg',
+        { opacity: 0 },
+        { opacity: 1, duration: 0.35, ease: 'power2.out' },
+        0
+      )
+        .fromTo(
+          '.nav-panel',
+          { x: '105%', opacity: 1 },
+          { x: '0%', opacity: 1, duration: 0.55, ease: 'back.out(1.1)', stagger: 0.08 },
           0
         )
-
-        .fromTo(".nav-item",
-          { opacity: 0, x: -20 },
-          {
-            opacity: 1,
-            x: 0,
-            duration: 0.8,
-            ease: "expo.out",
-            stagger: 0.03
-          },
+        .fromTo(
+          '.nav-item',
+          { opacity: 0, x: -16 },
+          { opacity: 1, x: 0, duration: 0.45, ease: 'power2.out', stagger: 0.04 },
           0.12
         )
-
-        .fromTo(".bar-top",
-          { attr: { x1: 3, y1: 10, x2: 17, y2: 10 } },
-          {
-            attr: { x1: 4, y1: 4, x2: 16, y2: 16 },
-            duration: 0.35,
-            ease: "back.out(1.4)"
-          },
-          0.06
-        )
-        .fromTo(".bar-bot",
-          { attr: { x1: 10, y1: 3, x2: 10, y2: 17 } },
-          {
-            attr: { x1: 16, y1: 4, x2: 4, y2: 16 },
-            duration: 0.35,
-            ease: "back.out(1.4)"
-          },
-          0.06
-        )
-
-        .to(".nav-login", {
-          opacity: 1,
-          y: 0,
-          duration: 0.35,
-          ease: "power3.out"
-        }, 0.35)
-
-        // ═══ PAUSE ═══
-        .addPause();
-
-      enterEndTimeRef.current = tl.duration();
-
-      // ═══ EXIT — panels fall down with stagger, bottom first ═══
-      tl
-        .to(".bar-top", {
-          attr: { x1: 3, y1: 10, x2: 17, y2: 10 },
-          duration: 0.25,
-          ease: "power3.in"
-        }, "<")
-        .to(".bar-bot", {
-          attr: { x1: 10, y1: 3, x2: 10, y2: 17 },
-          duration: 0.25,
-          ease: "power3.in"
-        }, "<")
-
-        .to(".nav-panel", {
-          y: "110vh",
-          rotation: () => (Math.random() - 0.5) * 35,
-          duration: 0.75,
-          ease: "power3.in",
-          stagger: {
-            from: "end",
-            each: 0.04
-          }
-        }, "<")
-
-        .to(".nav-bg", {
-          opacity: 0,
-          duration: 0.3,
-          ease: "power2.in"
-        }, "<0.1")
-
-        .set("#nav", { visibility: "hidden", pointerEvents: "none" });
-
-      tlRef.current = tl;
-    });
-
-    return () => ctx.revert();
-  }, []);
-
-  // Trigger GSAP Timeline Play/Reverse on `isOpen` prop change
-  useEffect(() => {
-    const tl = tlRef.current;
-    if (!tl) return;
-
-    const enterEndTime = enterEndTimeRef.current;
-
-    if (isOpen) {
-      isMountedRef.current = true;
-      if (tl.time() >= enterEndTime) {
-        tl.timeScale(1).restart();
-      } else {
-        tl.timeScale(1).play();
-      }
+        .fromTo(
+          '.nav-login',
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out', stagger: 0.04 },
+          0.22
+        );
     } else {
-      if (isMountedRef.current) {
-        if (tl.time() < enterEndTime) {
-          tl.timeScale(1.5).reverse();
-        } else {
-          tl.timeScale(1).play();
-        }
-      }
+      gsap.killTweensOf(['#nav', '.nav-bg', '.nav-panel', '.nav-item', '.nav-login']);
+
+      const tl = gsap.timeline({
+        onComplete: () => {
+          gsap.set('#nav', { visibility: 'hidden', pointerEvents: 'none' });
+          gsap.set('.nav-panel', { x: '105%', y: 0, rotation: 0, opacity: 1 });
+        },
+      });
+
+      tl.to(
+        '.nav-panel',
+        {
+          y: '100vh',
+          opacity: 0,
+          duration: 0.45,
+          ease: 'power2.in',
+          stagger: { from: 'end', each: 0.04 },
+        },
+        0
+      ).to(
+        '.nav-bg',
+        { opacity: 0, duration: 0.3, ease: 'power2.in' },
+        0.1
+      );
     }
   }, [isOpen]);
 
@@ -268,7 +191,7 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Email Contact Block (.nav-login for staggered entrance) */}
+              {/* Email Contact Block */}
               <div className="nav-login secondary-section">
                 <span className="section-small-title">DIRECT INQUIRIES</span>
                 <div className="email-box" onClick={handleCopyEmail}>
@@ -287,13 +210,13 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
                 {copiedEmail && <span className="copied-toast">Email copied to clipboard!</span>}
               </div>
 
-              {/* Location & CTAs (.nav-login) */}
+              {/* Location */}
               <div className="nav-login secondary-section">
                 <span className="section-small-title">STUDIO LOCATION</span>
                 <p className="location-text">Mawanella, Sri Lanka</p>
               </div>
 
-              {/* Brand Review CTA Action (.nav-login) */}
+              {/* Brand Review CTA Action */}
               <div className="nav-login cta-action-wrapper">
                 <button
                   type="button"
@@ -320,7 +243,6 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
                 alt="Paper Hoof"
                 className="brand-block-logo"
               />
-              <span className="brand-block-tagline">CRAFTING BOLD DIGITAL EXPERIENCES</span>
             </div>
           </div>
         </div>

@@ -130,7 +130,7 @@
   font-family: var(--font-heading);
   font-size: clamp(1.4rem, 2.5vw, 1.9rem);
   font-weight: 700;
-  color: var(--horse-black);
+  color: var(--horse-black, #222220);
   text-decoration: none;
   background: transparent;
   border: none;
@@ -140,6 +140,13 @@
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
   width: 100%;
+}
+
+.nav-link-item .item-label {
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+  font-weight: 700;
+  color: inherit;
 }
 
 .nav-link-item:hover {
