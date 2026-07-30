@@ -74,7 +74,7 @@
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  color: var(--mane-orange);
+  color: var(--mint-sprig, #97D9AF);
   text-transform: uppercase;
 }
 
@@ -106,8 +106,9 @@
 }
 
 .jkr-fullscreen-btn:hover {
-  background: var(--mane-orange);
-  border-color: var(--mane-orange);
+  background: var(--primary-green, #123524);
+  border-color: var(--mint-sprig, #97D9AF);
+  color: var(--mint-sprig, #97D9AF);
   transform: scale(1.06);
 }
 
@@ -142,8 +143,9 @@
 }
 
 .jkr-slide-arrow:hover {
-  background: var(--mane-orange);
-  border-color: var(--mane-orange);
+  background: var(--primary-green, #123524);
+  border-color: var(--mint-sprig, #97D9AF);
+  color: var(--mint-sprig, #97D9AF);
   transform: translateY(-50%) scale(1.1);
 }
 
@@ -169,7 +171,7 @@
 }
 
 .jkr-slide-counter .current-num {
-  color: var(--mane-orange);
+  color: var(--mint-sprig, #97D9AF);
   font-weight: 800;
 }
 
@@ -193,7 +195,7 @@
 .jkr-dot.active {
   width: 28px;
   border-radius: 999px;
-  background: var(--mane-orange);
+  background: var(--mint-sprig, #97D9AF);
 }
 
 .jkr-slide-hint {

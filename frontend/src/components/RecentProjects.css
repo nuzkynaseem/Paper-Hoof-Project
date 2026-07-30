@@ -188,8 +188,8 @@
   display: inline-flex;
   align-items: center;
   padding: 0 20px;
-  background: var(--mane-orange);
-  color: var(--sheep-white);
+  background: var(--primary-green, #123524);
+  color: var(--mint-sprig, #97D9AF);
   font-family: var(--font-primary);
   font-size: 12px;
   font-weight: 700;
@@ -199,7 +199,7 @@
   border-bottom-left-radius: 12px;
   border-top-left-radius: 0;
   border-bottom-right-radius: 0;
-  box-shadow: -2px 4px 14px rgba(227, 76, 24, 0.35);
+  box-shadow: -2px 4px 14px rgba(18, 53, 36, 0.35);
   pointer-events: none;
 }
 

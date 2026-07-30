@@ -163,11 +163,11 @@
 }
 
 .read-more-toggle-btn:hover {
-  background: var(--mane-orange);
-  border-color: var(--mane-orange);
+  background: var(--primary-green, #123524);
+  border-color: var(--primary-green, #123524);
   color: #FFFFFF;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(227, 76, 24, 0.3);
+  box-shadow: 0 6px 16px rgba(18, 53, 36, 0.3);
 }
 
 .toggle-icon {

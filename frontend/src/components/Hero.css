@@ -91,7 +91,7 @@
 }
 
 .hero-indicators .indicator.active {
-  background: var(--mane-orange);
+  background: var(--mint-sprig, #97D9AF);
   width: 24px;
   border-radius: var(--radius-full);
 }

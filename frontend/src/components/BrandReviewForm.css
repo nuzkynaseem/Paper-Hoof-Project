@@ -43,7 +43,7 @@
 }
 
 .modal-close-btn:hover {
-  color: var(--mane-orange);
+  color: var(--primary-green, #123524);
 }
 
 .modal-header {
@@ -155,8 +155,8 @@
 }
 
 .btn-cancel:hover {
-  background: rgba(227, 76, 24, 0.06);
-  border-color: var(--mane-orange);
+  background: rgba(18, 53, 36, 0.06);
+  border-color: var(--primary-green, #123524);
   color: var(--black);
 }
 
@@ -166,9 +166,10 @@
 }
 
 .btn-submit:hover {
-  background: var(--tangerine-blaze, #FD6D1E);
+  background: var(--mint-sprig, #97D9AF);
+  color: var(--dark-soot, #222220);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(18, 53, 36, 0.3);
+  box-shadow: 0 4px 16px rgba(151, 217, 175, 0.35);
 }
 
 @media (max-width: 768px) {

@@ -19,8 +19,8 @@ code {
     position: absolute;
     top: -100px;
     left: 16px;
-    background: var(--tangerine-blaze, #FD6D1E);
-    color: #FFF6E9;
+    background: var(--primary-green, #123524);
+    color: var(--mint-sprig, #97D9AF);
     padding: 12px 20px;
     border-radius: 8px;
     z-index: 10001;
@@ -36,7 +36,7 @@ code {
 
 /* Accessible focus visible outlines */
 :focus-visible {
-    outline: 3px solid var(--tangerine-blaze, #FD6D1E) !important;
+    outline: 3px solid var(--primary-green, #123524) !important;
     outline-offset: 2px !important;
 }
 
@@ -54,18 +54,18 @@ code {
         --secondary-foreground: 60 3% 13%;
         --muted: 0 0% 96.1%;
         --muted-foreground: 0 0% 45.1%;
-        --accent: 21 98% 55%; /* Tangerine Blaze #FD6D1E */
-        --accent-foreground: 36 100% 96%;
+        --accent: 151 49% 14%; /* Phthalo Green #123524 */
+        --accent-foreground: 141 39% 72%;
         --destructive: 3 71% 50%; /* Barn Red #D92B24 */
         --destructive-foreground: 0 0% 98%;
         --border: 0 0% 89.8%;
         --input: 0 0% 89.8%;
         --ring: 151 49% 14%;
-        --chart-1: 21 98% 55%;  /* Tangerine Blaze */
-        --chart-2: 151 49% 14%; /* Phthalo Green */
+        --chart-1: 151 49% 14%; /* Phthalo Green */
+        --chart-2: 141 39% 72%; /* Mint Sprig */
         --chart-3: 221 62% 25%; /* Midnight Harbor */
         --chart-4: 47 100% 56%; /* Golden Straw */
-        --chart-5: 141 39% 72%; /* Mint Sprig */
+        --chart-5: 326 91% 85%; /* Bubblegum Bloom */
         --radius: 0.5rem;
     }
     .dark {
@@ -81,14 +81,14 @@ code {
         --secondary-foreground: 36 100% 96%;
         --muted: 0 0% 14.9%;
         --muted-foreground: 0 0% 63.9%;
-        --accent: 21 98% 55%;
-        --accent-foreground: 36 100% 96%;
+        --accent: 151 49% 14%;
+        --accent-foreground: 141 39% 72%;
         --destructive: 3 71% 50%;
         --destructive-foreground: 36 100% 96%;
         --border: 0 0% 14.9%;
         --input: 0 0% 14.9%;
         --ring: 36 100% 96%;
-        --chart-1: 21 98% 55%;
+        --chart-1: 151 49% 14%;
         --chart-2: 141 39% 72%;
         --chart-3: 47 100% 56%;
         --chart-4: 326 91% 85%;

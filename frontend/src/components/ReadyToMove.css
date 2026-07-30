@@ -90,11 +90,11 @@
 }
 
 .ready-contact-btn:hover {
-  background: var(--tangerine-blaze, #FD6D1E);
-  border-color: var(--tangerine-blaze, #FD6D1E);
+  background: var(--primary-green, #123524);
+  border-color: var(--primary-green, #123524);
   color: #FFFFFF;
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(253, 109, 30, 0.45);
+  box-shadow: 0 12px 30px rgba(18, 53, 36, 0.45);
 }
 
 @media (prefers-reduced-motion: reduce) {

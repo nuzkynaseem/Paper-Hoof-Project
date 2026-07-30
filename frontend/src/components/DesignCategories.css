@@ -60,12 +60,12 @@
 }
 
 .design-categories-trigger .bullet {
-  color: var(--mane-orange);
+  color: var(--primary-green);
   font-weight: 700;
 }
 
 .design-categories-trigger .arrow-icon {
-  color: var(--mane-orange);
+  color: var(--primary-green);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -205,9 +205,9 @@
 
 .category-item:hover,
 .category-item.active {
-  background: var(--mane-orange);
+  background: var(--primary-green);
   color: var(--sheep-white);
-  border-color: var(--mane-orange);
+  border-color: var(--primary-green);
 }
 
 .category-item .plus {
@@ -404,12 +404,12 @@
 }
 
 .expanded-title .bullet {
-  color: var(--mane-orange);
+  color: var(--primary-green);
   font-weight: 700;
 }
 
 .expanded-title .arrow-icon-title {
-  color: var(--mane-orange);
+  color: var(--primary-green);
 }
 
 .categories-grid {
@@ -440,9 +440,9 @@
 
 .category-btn:hover,
 .category-btn.active {
-  background: var(--mane-orange);
+  background: var(--primary-green);
   color: var(--sheep-white);
-  border-color: var(--mane-orange);
+  border-color: var(--primary-green);
 }
 
 .preview-container {
