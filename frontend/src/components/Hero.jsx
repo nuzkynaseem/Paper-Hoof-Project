@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { showreelSlides } from '../mock';
 import ScrollIndicator from './ScrollIndicator';
+import { API_BASE } from '../utils/api';
 import './Hero.css';
 
 const Hero = () => {
@@ -13,7 +14,7 @@ const Hero = () => {
 
   const fetchHeroData = async () => {
     try {
-      const res = await fetch("/api/site/homepage");
+      const res = await fetch(`${API_BASE}/site/homepage`);
       if (res.ok) {
         const data = await res.json();
         setHeroContent(data);
@@ -36,16 +37,19 @@ const Hero = () => {
       {heroContent?.heroVideoUrl ? (
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <video
-            src={heroContent.heroVideoUrl}
             autoPlay
             muted
             loop
             playsInline
+            crossOrigin="anonymous"
             className="w-full h-full object-cover opacity-60"
-          />
+          >
+            <source src={heroContent.heroVideoUrl} type="video/mp4" />
+          </video>
           <div className="absolute inset-0 bg-gradient-to-t from-[#123524] via-transparent to-black/40" />
         </div>
       ) : null}
+
 
       <div className="hero-inner relative z-10">
         <div className="hero-content" data-testid="hero-content">
