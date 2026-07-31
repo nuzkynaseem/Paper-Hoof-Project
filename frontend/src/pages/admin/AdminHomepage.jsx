@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Video, FileText, Save, CheckCircle, Upload, Play, Eye } from "lucide-react";
+import { Video, FileText, Save, Upload, Play, Eye } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 
 export default function AdminHomepage({ showToast }) {
@@ -7,7 +7,6 @@ export default function AdminHomepage({ showToast }) {
   const [introText, setIntroText] = useState("");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState("");
 
   const token = localStorage.getItem("paperhoof_admin_token");
 
@@ -41,8 +40,9 @@ export default function AdminHomepage({ showToast }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Upload failed");
       setHeroVideoUrl(data.url);
+      if (showToast) showToast("success", "Video uploaded", file.name);
     } catch (err) {
-      alert("Error uploading file: " + err.message);
+      if (showToast) showToast("error", "Upload failed", err.message);
     } finally {
       setUploading(false);
     }
@@ -51,7 +51,6 @@ export default function AdminHomepage({ showToast }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setMessage("");
     try {
       const res = await fetch(`${API_BASE}/site/homepage`, {
         method: "PUT",
@@ -65,10 +64,13 @@ export default function AdminHomepage({ showToast }) {
           secondSectionDescription: introText,
         }),
       });
-      if (!res.ok) throw new Error("Failed to save homepage content");
-      if (showToast) showToast("Homepage hero video & intro text updated successfully!", "success");
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to save homepage content");
+      }
+      if (showToast) showToast("success", "Homepage updated", "Hero video and intro text saved successfully.");
     } catch (err) {
-      if (showToast) showToast("Error saving homepage content: " + err.message, "error");
+      if (showToast) showToast("error", "Save failed", err.message);
     } finally {
       setSaving(false);
     }
@@ -78,13 +80,11 @@ export default function AdminHomepage({ showToast }) {
 
   return (
     <div className="space-y-8 max-w-4xl">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-[#123524]">Homepage & Hero Media</h1>
-          <p className="text-sm text-gray-600">
-            Configure the main background hero video and the studio scroll-reveal introduction text.
-          </p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold text-[#123524]">Homepage & Hero Media</h1>
+        <p className="text-sm text-gray-600">
+          Configure the main background hero video and the studio scroll-reveal introduction text.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -92,7 +92,7 @@ export default function AdminHomepage({ showToast }) {
         <div className="editor-card">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2.5 rounded-lg bg-[#f0fdf4] text-[#166534] border border-[#bbf7d0]">
-              <Video className="w-5 h-5" />
+              <Video style={{ width: 18, height: 18 }} />
             </div>
             <div>
               <h2 className="text-lg font-bold text-[#123524]">1: Homepage Hero Section (Video)</h2>
@@ -112,7 +112,7 @@ export default function AdminHomepage({ showToast }) {
                   className="custom-input flex-1"
                 />
                 <label className="upload-btn">
-                  <Upload className="w-4 h-4" />
+                  <Upload style={{ width: 15, height: 15 }} />
                   <span>{uploading ? "Uploading..." : "Upload (Cloudflare R2)"}</span>
                   <input
                     type="file"
@@ -128,7 +128,7 @@ export default function AdminHomepage({ showToast }) {
             {heroVideoUrl && (
               <div className="video-preview-wrapper">
                 <div className="flex items-center gap-2 mb-2 text-xs text-gray-600 font-semibold">
-                  <Play className="w-3.5 h-3.5 text-[#166534]" />
+                  <Play style={{ width: 13, height: 13, color: "#166534" }} />
                   <span>Video Preview</span>
                 </div>
                 <video
@@ -144,11 +144,11 @@ export default function AdminHomepage({ showToast }) {
           </div>
         </div>
 
-        {/* Section 2: Intro Story Text (Single Field) */}
+        {/* Section 2: Intro Text */}
         <div className="editor-card">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-2.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200">
-              <FileText className="w-5 h-5" />
+            <div style={{ padding: "10px", borderRadius: "0.5rem", background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe" }}>
+              <FileText style={{ width: 18, height: 18 }} />
             </div>
             <div>
               <h2 className="text-lg font-bold text-[#123524]">2: Scroll-Reveal Introduction Text</h2>
@@ -157,27 +157,24 @@ export default function AdminHomepage({ showToast }) {
               </p>
             </div>
           </div>
-
-          <div className="space-y-4">
-            <div className="input-group">
-              <label>Introduction Statement Text</label>
-              <textarea
-                rows={4}
-                value={introText}
-                onChange={(e) => setIntroText(e.target.value)}
-                placeholder="We are here to design for you, that's what makes us distinctive..."
-                className="custom-input"
-              />
-            </div>
+          <div className="input-group">
+            <label>Introduction Statement Text</label>
+            <textarea
+              rows={4}
+              value={introText}
+              onChange={(e) => setIntroText(e.target.value)}
+              placeholder="We are here to design for you, that's what makes us distinctive..."
+              className="custom-input"
+            />
           </div>
         </div>
 
-        {/* Live Preview: Scroll Reveal Effect */}
+        {/* Live Preview */}
         {previewWords.length > 0 && (
           <div className="editor-card">
             <div className="flex items-center gap-3 mb-5">
-              <div className="p-2.5 rounded-lg bg-purple-50 text-purple-700 border border-purple-200">
-                <Eye className="w-5 h-5" />
+              <div style={{ padding: "10px", borderRadius: "0.5rem", background: "#f5f3ff", color: "#7c3aed", border: "1px solid #ddd6fe" }}>
+                <Eye style={{ width: 18, height: 18 }} />
               </div>
               <div>
                 <h2 className="text-lg font-bold text-[#123524]">Live Preview — Scroll Reveal Effect</h2>
@@ -224,7 +221,7 @@ export default function AdminHomepage({ showToast }) {
 
         <div className="flex justify-end">
           <button type="submit" disabled={saving} className="action-btn-primary px-6 py-3">
-            <Save className="w-4 h-4" />
+            <Save style={{ width: 15, height: 15 }} />
             <span>{saving ? "Saving Changes..." : "Save Homepage Content"}</span>
           </button>
         </div>

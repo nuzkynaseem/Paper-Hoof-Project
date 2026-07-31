@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Mail, Instagram, Linkedin, Save, CheckCircle } from "lucide-react";
+import { Mail, Instagram, Linkedin, Save } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 
 export default function AdminSocials({ showToast }) {
@@ -29,7 +29,6 @@ export default function AdminSocials({ showToast }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-
     try {
       const res = await fetch(`${API_BASE}/site/socials`, {
         method: "PUT",
@@ -39,11 +38,13 @@ export default function AdminSocials({ showToast }) {
         },
         body: JSON.stringify({ email, instagramUrl, linkedinUrl }),
       });
-
-      if (!res.ok) throw new Error("Failed to save social links");
-      if (showToast) showToast("Social & contact details saved successfully!", "success");
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to save social links");
+      }
+      if (showToast) showToast("success", "Socials updated", "Contact & social links saved successfully.");
     } catch (err) {
-      if (showToast) showToast("Error saving socials: " + err.message, "error");
+      if (showToast) showToast("error", "Save failed", err.message);
     } finally {
       setSaving(false);
     }
@@ -51,20 +52,18 @@ export default function AdminSocials({ showToast }) {
 
   return (
     <div className="space-y-8 max-w-3xl">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-[#123524]">Socials & Contact Details</h1>
-          <p className="text-sm text-gray-600">
-            Manage contact emails and social media channel links rendered in the website footer and contact overlay.
-          </p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold text-[#123524]">Socials & Contact Details</h1>
+        <p className="text-sm text-gray-600">
+          Manage contact emails and social media channel links rendered in the website footer and contact overlay.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="editor-card space-y-6">
         <div className="space-y-4">
           <div className="input-group">
             <label className="flex items-center gap-2">
-              <Mail className="w-4 h-4 text-[#166534]" />
+              <Mail style={{ width: 15, height: 15, color: "#166534" }} />
               <span>Studio Contact Email</span>
             </label>
             <input
@@ -79,7 +78,7 @@ export default function AdminSocials({ showToast }) {
 
           <div className="input-group">
             <label className="flex items-center gap-2">
-              <Instagram className="w-4 h-4 text-pink-600" />
+              <Instagram style={{ width: 15, height: 15, color: "#be185d" }} />
               <span>Instagram Profile URL</span>
             </label>
             <input
@@ -93,7 +92,7 @@ export default function AdminSocials({ showToast }) {
 
           <div className="input-group">
             <label className="flex items-center gap-2">
-              <Linkedin className="w-4 h-4 text-blue-600" />
+              <Linkedin style={{ width: 15, height: 15, color: "#2563eb" }} />
               <span>LinkedIn Page URL</span>
             </label>
             <input
@@ -106,9 +105,9 @@ export default function AdminSocials({ showToast }) {
           </div>
         </div>
 
-        <div className="flex justify-end pt-4 border-t border-gray-200">
+        <div className="flex justify-end pt-4" style={{ borderTop: "1px solid #e5e7eb" }}>
           <button type="submit" disabled={saving} className="action-btn-primary px-6 py-2.5">
-            <Save className="w-4 h-4" />
+            <Save style={{ width: 15, height: 15 }} />
             <span>{saving ? "Saving Changes..." : "Save Contact Info"}</span>
           </button>
         </div>

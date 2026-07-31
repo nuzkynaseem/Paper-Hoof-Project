@@ -134,8 +134,11 @@ class ProjectComponentInsight(BaseModel):
 
 class ProjectComponent(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    type: str  # "image" | "video" | "html"
-    contentUrl: str
+    type: str = "image"  # "image" | "video" | "html" | "quote" | "grid"
+    contentUrl: Optional[str] = ""
+    quoteText: Optional[str] = ""
+    author: Optional[str] = ""
+    gridUrls: Optional[List[str]] = []
     insight: Optional[ProjectComponentInsight] = None
 
 class ProjectModel(BaseModel):

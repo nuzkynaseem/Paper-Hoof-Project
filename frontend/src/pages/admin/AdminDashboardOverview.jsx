@@ -59,14 +59,17 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
         },
       });
 
-      if (!res.ok) throw new Error("Failed to set featured project");
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to set featured project");
+      }
 
-      const chosenProj = projects.find((p) => p.id === projId);
-      if (showToast) showToast(`Featured project updated to "${chosenProj?.name || "Project"}"!`, "success");
+      const proj = projects.find((p) => p.id === projId);
+      if (showToast) showToast("success", "Featured project updated", `"${proj?.name || projId}" is now the spotlight project.`);
       fetchStats();
       if (onProjectsChange) onProjectsChange();
     } catch (err) {
-      if (showToast) showToast("Error updating featured project: " + err.message, "error");
+      if (showToast) showToast("error", "Update failed", err.message);
     } finally {
       setSavingFeatured(false);
     }
@@ -93,11 +96,14 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to update homepage projects limit");
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to update homepage projects limit");
+      }
 
-      if (showToast) showToast(`Homepage now displays ${limit === 100 ? "all" : limit} recent projects!`, "success");
+      if (showToast) showToast("success", "Homepage limit updated", `Now displaying ${limit === 100 ? "all" : limit} recent projects.`);
     } catch (err) {
-      if (showToast) showToast("Error updating homepage limit: " + err.message, "error");
+      if (showToast) showToast("error", "Update failed", err.message);
     } finally {
       setSavingLimit(false);
     }
@@ -203,21 +209,23 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
               </div>
             </div>
 
-            <select
-              value={selectedFeaturedId}
-              onChange={handleSetFeatured}
-              disabled={savingFeatured}
-              className="featured-select-input"
-            >
-              <option value="" disabled>
-                Select a project...
-              </option>
-              {projects.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name} ({p.category || "Project"})
+            <div className="flex items-center gap-3">
+              <select
+                value={selectedFeaturedId}
+                onChange={handleSetFeatured}
+                disabled={savingFeatured}
+                className="featured-select-input custom-input"
+              >
+                <option value="" disabled>
+                  Select a project...
                 </option>
-              ))}
-            </select>
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} ({p.category || "Project"})
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {currentFeatured && (

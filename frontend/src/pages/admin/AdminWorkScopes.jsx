@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Tag, Plus, Trash2, CheckCircle, Palette } from "lucide-react";
+import { Tag, Plus, Trash2, Palette } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 
 const SECONDARY_PALETTE = [
@@ -38,11 +38,8 @@ export default function AdminWorkScopes({ showToast }) {
   const handleCreate = async (e) => {
     e.preventDefault();
     if (!newName.trim()) return;
-
     setLoading(true);
-
     try {
-      const formattedName = newName.toUpperCase().trim();
       const res = await fetch(`${API_BASE}/work-scopes`, {
         method: "POST",
         headers: {
@@ -50,56 +47,53 @@ export default function AdminWorkScopes({ showToast }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: formattedName,
+          name: newName.toUpperCase().trim(),
           color: selectedColor,
         }),
       });
-
-      if (!res.ok) throw new Error("Failed to create work scope pill");
-
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to create work scope pill");
+      }
       setNewName("");
-      if (showToast) showToast(`Work scope pill "${formattedName}" created successfully!`, "success");
+      if (showToast) showToast("success", "Pill created", `"${newName.toUpperCase().trim()}" added to work scopes.`);
       fetchWorkScopes();
     } catch (err) {
-      if (showToast) showToast("Error creating pill: " + err.message, "error");
+      if (showToast) showToast("error", "Create failed", err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id, pillName) => {
-    if (!window.confirm(`Are you sure you want to delete "${pillName}"?`)) return;
-
+  const handleDelete = async (id, name) => {
+    if (!window.confirm(`Delete "${name}"? This cannot be undone.`)) return;
     try {
       const res = await fetch(`${API_BASE}/work-scopes/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-
       if (!res.ok) throw new Error("Failed to delete pill");
-      if (showToast) showToast(`Work scope pill "${pillName}" deleted`, "success");
+      if (showToast) showToast("success", "Pill deleted", `"${name}" was removed.`);
       fetchWorkScopes();
     } catch (err) {
-      if (showToast) showToast("Error deleting pill: " + err.message, "error");
+      if (showToast) showToast("error", "Delete failed", err.message);
     }
   };
 
   return (
     <div className="space-y-8 max-w-4xl">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-[#123524]">Work Scope Pills</h1>
-          <p className="text-sm text-gray-600">
-            Create or delete discipline tags shown on project covers and case study overviews. Assign a secondary accent color per pill.
-          </p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold text-[#123524]">Work Scope Pills</h1>
+        <p className="text-sm text-gray-600">
+          Create or delete discipline tags shown on project covers and case study overviews. Assign a secondary accent color per pill.
+        </p>
       </div>
 
       {/* Create Form Card */}
       <div className="editor-card">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2.5 rounded-lg bg-[#f0fdf4] text-[#166534] border border-[#bbf7d0]">
-            <Tag className="w-5 h-5" />
+            <Tag style={{ width: 18, height: 18 }} />
           </div>
           <div>
             <h2 className="text-lg font-bold text-[#123524]">Create New Work Scope Pill</h2>
@@ -128,7 +122,7 @@ export default function AdminWorkScopes({ showToast }) {
                   type="color"
                   value={selectedColor}
                   onChange={(e) => setSelectedColor(e.target.value)}
-                  className="w-10 h-10 rounded-lg cursor-pointer border border-gray-300 bg-transparent p-0"
+                  style={{ width: 40, height: 40, borderRadius: 8, border: "1px solid #d1d5db", background: "transparent", padding: 0, cursor: "pointer" }}
                 />
                 <input
                   type="text"
@@ -143,7 +137,7 @@ export default function AdminWorkScopes({ showToast }) {
           {/* Preset Color Swatches */}
           <div className="space-y-2">
             <label className="text-xs text-gray-600 flex items-center gap-1 font-bold">
-              <Palette className="w-3.5 h-3.5" />
+              <Palette style={{ width: 13, height: 13 }} />
               <span>Select from Studio Secondary Palette:</span>
             </label>
             <div className="flex flex-wrap gap-2">
@@ -159,9 +153,8 @@ export default function AdminWorkScopes({ showToast }) {
                   }`}
                 >
                   <span
-                    className="w-3.5 h-3.5 rounded-full border border-gray-300 shrink-0"
-                    style={{ backgroundColor: c.hex }}
-                  ></span>
+                    style={{ backgroundColor: c.hex, width: 14, height: 14, borderRadius: "50%", border: "1px solid rgba(0,0,0,0.1)", display: "inline-block", flexShrink: 0 }}
+                  />
                   <span>{c.name}</span>
                 </button>
               ))}
@@ -173,7 +166,7 @@ export default function AdminWorkScopes({ showToast }) {
             disabled={loading || !newName.trim()}
             className="action-btn-primary px-6 py-2.5 mt-2"
           >
-            <Plus className="w-4 h-4" />
+            <Plus style={{ width: 15, height: 15 }} />
             <span>{loading ? "Creating..." : "Add Work Scope Pill"}</span>
           </button>
         </form>
@@ -182,7 +175,6 @@ export default function AdminWorkScopes({ showToast }) {
       {/* Active Scope Pills List */}
       <div className="editor-card">
         <h2 className="text-lg font-bold text-[#123524] mb-4">Active Work Scope Pills ({scopes.length})</h2>
-
         {scopes.length === 0 ? (
           <p className="text-sm text-gray-500 py-4 font-medium">No work scope pills found. Create your first pill above.</p>
         ) : (
@@ -190,23 +182,28 @@ export default function AdminWorkScopes({ showToast }) {
             {scopes.map((scope) => (
               <div
                 key={scope.id}
-                className="flex items-center justify-between p-3.5 rounded-xl bg-[#f9fafb] border border-gray-200 hover:border-gray-300 transition-all"
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px", borderRadius: 12, background: "#f9fafb", border: "1px solid #e5e7eb", transition: "all 0.2s" }}
               >
-                <div className="flex items-center gap-3">
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <span
-                    className="w-4 h-4 rounded-full border border-gray-300 shrink-0"
-                    style={{ backgroundColor: scope.color }}
-                  ></span>
-                  <span className="font-bold text-sm tracking-wider text-[#123524]">
-                    {scope.name}
-                  </span>
+                    style={{ width: 16, height: 16, borderRadius: "50%", border: "1px solid rgba(0,0,0,0.1)", background: scope.color, display: "inline-block", flexShrink: 0 }}
+                  />
+                  <span style={{ fontWeight: 700, fontSize: 13, letterSpacing: "0.04em", color: "#123524" }}>{scope.name}</span>
                 </div>
                 <button
                   onClick={() => handleDelete(scope.id, scope.name)}
-                  className="p-1.5 text-gray-400 hover:text-red-600 transition-colors"
+                  style={{ padding: "6px", color: "#9ca3af", borderRadius: 6, background: "none", border: "none", transition: "color 0.15s" }}
                   title="Delete Pill"
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "#dc2626")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "#9ca3af")}
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <svg style={{ width: 15, height: 15 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M10 11v6" />
+                    <path d="M14 11v6" />
+                    <path d="M9 6V4h6v2" />
+                  </svg>
                 </button>
               </div>
             ))}

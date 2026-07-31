@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layers, Save, CheckCircle, Upload, Clock } from "lucide-react";
+import { Layers, Save, Upload, Clock } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 
 export default function AdminBrandReviewCards({ showToast }) {
@@ -34,25 +34,21 @@ export default function AdminBrandReviewCards({ showToast }) {
   const handleFileUpload = async (e, index) => {
     const file = e.target.files[0];
     if (!file) return;
-
     setUploadingIndex(index);
     const body = new FormData();
     body.append("file", file);
-
     try {
       const res = await fetch(`${API_BASE}/upload`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body,
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Upload failed");
-
       handleCardChange(index, "imageUrl", data.url);
-      if (showToast) showToast(`Image uploaded for Card #${cards[index]?.cardIndex}`, "success");
+      if (showToast) showToast("success", "Image uploaded", file.name);
     } catch (err) {
-      if (showToast) showToast("Error uploading image: " + err.message, "error");
+      if (showToast) showToast("error", "Upload failed", err.message);
     } finally {
       setUploadingIndex(null);
     }
@@ -61,7 +57,6 @@ export default function AdminBrandReviewCards({ showToast }) {
   const handleSaveCard = async (index) => {
     const card = cards[index];
     setSavingIndex(index);
-
     try {
       const res = await fetch(`${API_BASE}/brand-review-cards/${card.cardIndex}`, {
         method: "PUT",
@@ -71,12 +66,13 @@ export default function AdminBrandReviewCards({ showToast }) {
         },
         body: JSON.stringify(card),
       });
-
-      if (!res.ok) throw new Error("Failed to save card");
-
-      if (showToast) showToast(`Brand review Card #${card.cardIndex} saved successfully!`, "success");
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to save card");
+      }
+      if (showToast) showToast("success", `Card #${card.cardIndex} updated`, `"${card.title}" saved successfully.`);
     } catch (err) {
-      if (showToast) showToast("Error saving card: " + err.message, "error");
+      if (showToast) showToast("error", "Save failed", err.message);
     } finally {
       setSavingIndex(null);
     }
@@ -84,26 +80,24 @@ export default function AdminBrandReviewCards({ showToast }) {
 
   return (
     <div className="space-y-8 max-w-5xl">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-[#123524]">Brand Review Cards (6 Stack Cards)</h1>
-          <p className="text-sm text-gray-600">
-            Configure the 6 interactive cards rendered inside the Brand Review page swipe/stack interface.
-          </p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold text-[#123524]">Brand Review Cards (6 Stack Cards)</h1>
+        <p className="text-sm text-gray-600">
+          Configure the 6 interactive cards rendered inside the Brand Review page swipe/stack interface.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {cards.map((card, idx) => (
           <div key={card.cardIndex || idx} className="editor-card space-y-4 flex flex-col justify-between">
             <div className="space-y-4">
-              <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+              <div className="flex justify-between items-center" style={{ borderBottom: "1px solid #f0f0eb", paddingBottom: 12 }}>
                 <span className="flex items-center gap-2 font-bold text-[#123524] text-sm">
-                  <Layers className="w-4 h-4 text-[#166534]" />
+                  <Layers style={{ width: 15, height: 15, color: "#166534" }} />
                   Card #{card.cardIndex}
                 </span>
                 <span className="flex items-center gap-1 text-xs text-gray-500 font-semibold">
-                  <Clock className="w-3.5 h-3.5" />
+                  <Clock style={{ width: 13, height: 13 }} />
                   {card.minutes} Minutes
                 </span>
               </div>
@@ -129,11 +123,10 @@ export default function AdminBrandReviewCards({ showToast }) {
                     className="custom-input"
                   />
                 </div>
-
                 <div className="input-group">
                   <label>Cover Image</label>
-                  <label className="upload-btn justify-center h-[42px]">
-                    <Upload className="w-3.5 h-3.5" />
+                  <label className="upload-btn justify-center" style={{ height: 42 }}>
+                    <Upload style={{ width: 13, height: 13 }} />
                     <span>{uploadingIndex === idx ? "Uploading..." : "Upload File"}</span>
                     <input
                       type="file"
@@ -147,12 +140,8 @@ export default function AdminBrandReviewCards({ showToast }) {
               </div>
 
               {card.imageUrl && (
-                <div className="relative rounded-lg overflow-hidden h-36 border border-gray-200">
-                  <img
-                    src={card.imageUrl}
-                    alt={card.title}
-                    className="w-full h-full object-cover"
-                  />
+                <div style={{ borderRadius: 10, overflow: "hidden", height: 140, border: "1px solid #e5e7eb" }}>
+                  <img src={card.imageUrl} alt={card.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
               )}
             </div>
@@ -164,7 +153,7 @@ export default function AdminBrandReviewCards({ showToast }) {
                 disabled={savingIndex === idx}
                 className="action-btn-primary w-full justify-center py-2.5"
               >
-                <Save className="w-4 h-4" />
+                <Save style={{ width: 15, height: 15 }} />
                 <span>{savingIndex === idx ? "Saving..." : `Save Card #${card.cardIndex}`}</span>
               </button>
             </div>

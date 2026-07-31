@@ -19,11 +19,8 @@ const IntroReveal = () => {
       const res = await fetch(`${API_BASE}/site/homepage`);
       if (res.ok) {
         const data = await res.json();
-        if (data.secondSectionTitle || data.secondSectionDescription) {
-          const combined = [data.secondSectionTitle, data.secondSectionDescription]
-            .filter(Boolean)
-            .join(" ");
-          setStatementText(combined);
+        if (data.secondSectionDescription || data.secondSectionTitle) {
+          setStatementText(data.secondSectionDescription || data.secondSectionTitle);
         }
       }
     } catch (e) {

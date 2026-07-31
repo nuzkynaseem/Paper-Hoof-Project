@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -12,6 +12,9 @@ import {
   ExternalLink,
   Menu,
   X,
+  CheckCircle,
+  AlertCircle,
+  Info,
 } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 import AdminDashboardOverview from "./AdminDashboardOverview";
@@ -21,30 +24,89 @@ import AdminHomepage from "./AdminHomepage";
 import AdminBrandReviewCards from "./AdminBrandReviewCards";
 import AdminSocials from "./AdminSocials";
 import AdminBookings from "./AdminBookings";
-import Toast from "../../components/Toast";
-import "../../components/Toast.css";
+import "./AdminLayout.css";
 
+// ─── Toast Notification Component ─────────────────────────────────────────────
+function ToastContainer({ toasts, onDismiss }) {
+  return (
+    <div className="toast-container">
+      {toasts.map((t) => {
+        const Icon =
+          t.type === "success"
+            ? CheckCircle
+            : t.type === "error"
+            ? AlertCircle
+            : Info;
+        return (
+          <div
+            key={t.id}
+            className={`toast-item toast-${t.type} ${t.exiting ? "toast-exit" : ""}`}
+          >
+            <div className="toast-icon">
+              <Icon style={{ width: 16, height: 16 }} />
+            </div>
+            <div className="toast-content">
+              <div className="toast-title">{t.title}</div>
+              {t.message && (
+                <div className="toast-message">{t.message}</div>
+              )}
+            </div>
+            <button
+              className="toast-close"
+              onClick={() => onDismiss(t.id)}
+              aria-label="Dismiss notification"
+            >
+              <X style={{ width: 14, height: 14 }} />
+            </button>
+            <div className="toast-progress" />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Admin Layout Root ──────────────────────────────────────────────────────────
 export default function AdminLayout() {
   const [activeTab, setActiveTab] = useState("overview");
   const [projects, setProjects] = useState([]);
   const [workScopes, setWorkScopes] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
-  const [toast, setToast] = useState(null);
-
-  const showToast = (message, type = "success") => {
-    setToast({ message, type });
-  };
+  const [toasts, setToasts] = useState([]);
 
   const navigate = useNavigate();
   const token = localStorage.getItem("paperhoof_admin_token");
 
+  // ── Toast system ────────────────────────────────────────────────────────────
+  const showToast = useCallback((type, title, message = "") => {
+    const id = Date.now() + Math.random();
+    setToasts((prev) => [...prev, { id, type, title, message, exiting: false }]);
+    setTimeout(() => {
+      setToasts((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, exiting: true } : t))
+      );
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, 300);
+    }, 4000);
+  }, []);
+
+  const dismissToast = useCallback((id) => {
+    setToasts((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, exiting: true } : t))
+    );
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 300);
+  }, []);
+
+  // ── Data fetching ───────────────────────────────────────────────────────────
   useEffect(() => {
     if (!token) {
       navigate("/admin/login");
       return;
     }
-
     const savedUser = localStorage.getItem("paperhoof_admin_user");
     if (savedUser) {
       try {
@@ -53,7 +115,6 @@ export default function AdminLayout() {
         setUser({ name: "Paper Hoof Team", email: "admin@paperhoof.com" });
       }
     }
-
     fetchProjects();
     fetchWorkScopes();
   }, [token, navigate]);
@@ -104,6 +165,9 @@ export default function AdminLayout() {
 
   return (
     <div className="admin-layout-wrapper">
+      {/* Global Toast Notification System */}
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
@@ -118,7 +182,6 @@ export default function AdminLayout() {
               src="/paperhoof-horse.svg"
               alt="Paper Hoof"
               className="sidebar-logo-img"
-              style={{ height: 32, width: 32, minWidth: 32, maxWidth: 32, maxHeight: 32, objectFit: "contain" }}
             />
             <div className="sidebar-brand-text">
               <div className="sidebar-brand-name">Paper Hoof</div>
@@ -128,9 +191,9 @@ export default function AdminLayout() {
           <button
             className="md:hidden"
             onClick={() => setSidebarOpen(false)}
-            style={{ color: "rgba(151,217,175,0.8)", background: "none", border: "none", cursor: "pointer", padding: 4 }}
+            style={{ color: "rgba(151,217,175,0.6)", background: "none", border: "none" }}
           >
-            <X style={{ width: 20, height: 20 }} />
+            <X style={{ width: 18, height: 18 }} />
           </button>
         </div>
 
@@ -184,11 +247,16 @@ export default function AdminLayout() {
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="md:hidden text-gray-700 hover:text-[#123524] p-1.5 rounded-lg bg-gray-100 border border-gray-200"
-              style={{ cursor: "pointer" }}
-              aria-label="Toggle Menu"
+              style={{
+                display: "none",
+                color: "#6b7280",
+                background: "none",
+                border: "none",
+                padding: 4,
+              }}
+              className="mobile-menu-btn"
             >
-              {sidebarOpen ? <X style={{ width: 20, height: 20 }} /> : <Menu style={{ width: 20, height: 20 }} />}
+              <Menu style={{ width: 22, height: 22 }} />
             </button>
             <div className="header-breadcrumb">
               <span>Paper Hoof CMS</span>
@@ -251,11 +319,6 @@ export default function AdminLayout() {
           {activeTab === "socials" && <AdminSocials showToast={showToast} />}
           {activeTab === "bookings" && <AdminBookings showToast={showToast} />}
         </main>
-
-        {/* Global Toast Notification Container in Top-Right Corner */}
-        <div className="toast-container-fixed">
-          <Toast toast={toast} onClose={() => setToast(null)} />
-        </div>
       </div>
     </div>
   );

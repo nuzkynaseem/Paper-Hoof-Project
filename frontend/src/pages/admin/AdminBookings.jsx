@@ -30,7 +30,7 @@ export default function AdminBookings({ showToast }) {
     }
   };
 
-  const handleStatusChange = async (bookingId, newStatus) => {
+  const handleStatusChange = async (bookingId, newStatus, clientName) => {
     setUpdatingId(bookingId);
     try {
       const res = await fetch(`${API_BASE}/bookings/${bookingId}/status?status=${newStatus}`, {
@@ -38,14 +38,17 @@ export default function AdminBookings({ showToast }) {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) throw new Error("Failed to update status");
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to update status");
+      }
 
       setBookings((prev) =>
         prev.map((b) => (b.id === bookingId ? { ...b, status: newStatus } : b))
       );
-      if (showToast) showToast(`Booking status updated to ${newStatus}`, "success");
+      if (showToast) showToast("success", `Booking ${newStatus}`, `${clientName}'s session marked as ${newStatus}.`);
     } catch (err) {
-      if (showToast) showToast("Error updating booking status: " + err.message, "error");
+      if (showToast) showToast("error", "Update failed", err.message);
     } finally {
       setUpdatingId(null);
     }
@@ -220,7 +223,7 @@ export default function AdminBookings({ showToast }) {
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <button
-                          onClick={() => handleStatusChange(item.id, "confirmed")}
+                          onClick={() => handleStatusChange(item.id, "confirmed", `${item.firstName} ${item.lastName}`)}
                           disabled={updatingId === item.id}
                           className="p-1.5 rounded-lg hover:bg-emerald-100 text-[#166534] transition-colors"
                           title="Mark Confirmed"
@@ -228,7 +231,7 @@ export default function AdminBookings({ showToast }) {
                           <CheckCircle className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleStatusChange(item.id, "pending")}
+                          onClick={() => handleStatusChange(item.id, "pending", `${item.firstName} ${item.lastName}`)}
                           disabled={updatingId === item.id}
                           className="p-1.5 rounded-lg hover:bg-amber-100 text-amber-600 transition-colors"
                           title="Mark Pending"
@@ -236,7 +239,7 @@ export default function AdminBookings({ showToast }) {
                           <Clock3 className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleStatusChange(item.id, "archived")}
+                          onClick={() => handleStatusChange(item.id, "archived", `${item.firstName} ${item.lastName}`)}
                           disabled={updatingId === item.id}
                           className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
                           title="Archive Booking"
