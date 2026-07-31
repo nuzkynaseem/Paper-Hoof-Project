@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Layers, Save, CheckCircle, Upload, Clock } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 
-export default function AdminBrandReviewCards() {
+export default function AdminBrandReviewCards({ showToast }) {
   const [cards, setCards] = useState([]);
   const [savingIndex, setSavingIndex] = useState(null);
-  const [message, setMessage] = useState("");
   const [uploadingIndex, setUploadingIndex] = useState(null);
 
   const token = localStorage.getItem("paperhoof_admin_token");
@@ -51,8 +50,9 @@ export default function AdminBrandReviewCards() {
       if (!res.ok) throw new Error(data.detail || "Upload failed");
 
       handleCardChange(index, "imageUrl", data.url);
+      if (showToast) showToast(`Image uploaded for Card #${cards[index]?.cardIndex}`, "success");
     } catch (err) {
-      alert("Error uploading image: " + err.message);
+      if (showToast) showToast("Error uploading image: " + err.message, "error");
     } finally {
       setUploadingIndex(null);
     }
@@ -61,7 +61,6 @@ export default function AdminBrandReviewCards() {
   const handleSaveCard = async (index) => {
     const card = cards[index];
     setSavingIndex(index);
-    setMessage("");
 
     try {
       const res = await fetch(`${API_BASE}/brand-review-cards/${card.cardIndex}`, {
@@ -75,10 +74,9 @@ export default function AdminBrandReviewCards() {
 
       if (!res.ok) throw new Error("Failed to save card");
 
-      setMessage(`Card #${card.cardIndex} updated successfully!`);
-      setTimeout(() => setMessage(""), 3000);
+      if (showToast) showToast(`Brand review Card #${card.cardIndex} saved successfully!`, "success");
     } catch (err) {
-      alert("Error saving card: " + err.message);
+      if (showToast) showToast("Error saving card: " + err.message, "error");
     } finally {
       setSavingIndex(null);
     }
@@ -93,12 +91,6 @@ export default function AdminBrandReviewCards() {
             Configure the 6 interactive cards rendered inside the Brand Review page swipe/stack interface.
           </p>
         </div>
-        {message && (
-          <span className="flex items-center gap-1.5 text-xs text-[#166534] bg-[#f0fdf4] px-3 py-1.5 rounded-full border border-[#bbf7d0] font-semibold">
-            <CheckCircle className="w-3.5 h-3.5" />
-            {message}
-          </span>
-        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

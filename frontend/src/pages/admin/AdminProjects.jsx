@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Plus, Edit2, Trash2, Upload, X, CheckCircle, Lightbulb, Star } from "lucide-react";
+import { Plus, Edit2, Trash2, Upload, X, CheckCircle, Lightbulb, Star, Image, Video, Code } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 
-export default function AdminProjects({ projects = [], onProjectsChange, workScopes = [] }) {
+export default function AdminProjects({ projects = [], onProjectsChange, workScopes = [], showToast }) {
   const [editingProject, setEditingProject] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState("");
+  const [uploadingCompIndex, setUploadingCompIndex] = useState(null);
 
   const token = localStorage.getItem("paperhoof_admin_token");
 
@@ -107,10 +107,39 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
       if (!res.ok) throw new Error(data.detail || "Upload failed");
       
       setFormData((prev) => ({ ...prev, [field]: data.url }));
+      if (showToast) showToast(`File uploaded successfully for ${field}`, "success");
     } catch (err) {
-      alert("Error uploading file: " + err.message);
+      if (showToast) showToast("Upload error: " + err.message, "error");
     } finally {
       setUploading(false);
+    }
+  };
+
+  // Component Upload Handling
+  const handleComponentFileUpload = async (e, index) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingCompIndex(index);
+    const body = new FormData();
+    body.append("file", file);
+
+    try {
+      const res = await fetch(`${API_BASE}/upload`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body,
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Upload failed");
+
+      handleUpdateComponent(index, "contentUrl", data.url);
+      if (showToast) showToast(`Case study component asset #${index + 1} uploaded!`, "success");
+    } catch (err) {
+      if (showToast) showToast("Component asset upload error: " + err.message, "error");
+    } finally {
+      setUploadingCompIndex(null);
     }
   };
 
@@ -151,12 +180,11 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.coverImage.trim()) {
-      alert("Please provide at least a project name and cover image.");
+      if (showToast) showToast("Please provide a project name and cover image.", "error");
       return;
     }
 
     setSaving(true);
-    setMessage("");
 
     try {
       const isNew = !editingProject;
@@ -172,14 +200,14 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
         body: JSON.stringify(formData),
       });
 
-      if (!res.ok) throw new Error("Failed to save project");
+      if (!res.ok) throw new Error("Failed to save project content");
 
-      setMessage(`Project ${isNew ? "created" : "updated"} successfully!`);
+      const successMsg = `Project "${formData.name}" ${isNew ? "created" : "updated"} successfully!`;
+      if (showToast) showToast(successMsg, "success");
       setModalOpen(false);
       if (onProjectsChange) onProjectsChange();
-      setTimeout(() => setMessage(""), 3000);
     } catch (err) {
-      alert("Error saving project: " + err.message);
+      if (showToast) showToast("Error saving project: " + err.message, "error");
     } finally {
       setSaving(false);
     }
@@ -195,9 +223,10 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
       });
 
       if (!res.ok) throw new Error("Failed to delete project");
+      if (showToast) showToast("Project deleted successfully", "success");
       if (onProjectsChange) onProjectsChange();
     } catch (err) {
-      alert("Error deleting project: " + err.message);
+      if (showToast) showToast("Error deleting project: " + err.message, "error");
     }
   };
 
@@ -211,18 +240,10 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
             Add, update, or remove studio projects displayed across the homepage, works catalog, and case study pages.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          {message && (
-            <span className="flex items-center gap-1.5 text-xs text-[#166534] bg-[#f0fdf4] px-3 py-1.5 rounded-full border border-[#bbf7d0] font-semibold">
-              <CheckCircle className="w-3.5 h-3.5" />
-              {message}
-            </span>
-          )}
-          <button onClick={handleOpenNew} className="action-btn-primary px-4 py-2.5">
-            <Plus className="w-4 h-4" />
-            <span>Add New Project</span>
-          </button>
-        </div>
+        <button onClick={handleOpenNew} className="action-btn-primary px-4 py-2.5">
+          <Plus className="w-4 h-4" />
+          <span>Add New Project</span>
+        </button>
       </div>
 
       {/* Projects Grid */}
@@ -287,20 +308,28 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
       {/* Project Editor Modal */}
       {modalOpen && (
         <div className="modal-backdrop">
-          <div className="modal-card max-w-3xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-gray-200 pb-4 mb-6">
-              <h2 className="text-xl font-bold text-[#123524]">
-                {editingProject ? "Edit Project" : "Create New Project"}
-              </h2>
+          <div className="modal-card max-w-3xl max-h-[90vh] overflow-y-auto relative">
+            {/* STICKY Header with close icon pinned to top at all times when scrolling */}
+            <div className="sticky top-0 bg-white z-30 pb-4 pt-2 -mx-8 px-8 border-b border-gray-200 flex justify-between items-center shadow-xs">
+              <div>
+                <h2 className="text-xl font-bold text-[#123524]">
+                  {editingProject ? "Edit Project" : "Create New Project"}
+                </h2>
+                <p className="text-xs text-gray-500">
+                  {editingProject ? `Updating details for ${editingProject.name}` : "Configure new case study showcase"}
+                </p>
+              </div>
               <button
+                type="button"
                 onClick={() => setModalOpen(false)}
-                className="text-gray-400 hover:text-gray-700"
+                className="p-2 rounded-lg text-gray-400 hover:text-[#123524] hover:bg-gray-100 transition-all"
+                title="Close Window"
               >
-                <X className="w-5 h-5" />
+                <X className="w-6 h-6" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6 pt-4">
               {/* Basic Details */}
               <div className="space-y-4">
                 <h3 className="text-xs uppercase tracking-wider text-[#166534] font-bold">
@@ -490,21 +519,21 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                 </div>
               </div>
 
-              {/* Dynamic Components Section */}
+              {/* Dynamic Case Study Components Section */}
               <div className="space-y-4 pt-4 border-t border-gray-200">
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="text-xs uppercase tracking-wider text-[#166534] font-bold">
-                      4. Case Study Content Components
+                      4. Case Study Presentation Components
                     </h3>
                     <p className="text-xs text-gray-500">
-                      Add rich interactive components (Image, Video, HTML/Code) with optional Insights.
+                      Add rich interactive components (Image, Video, HTML/Code) with direct file uploads & optional Insights.
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={handleAddComponent}
-                    className="action-btn-secondary py-1.5 px-3 text-xs text-[#123524] bg-gray-100 hover:bg-gray-200 border-gray-200"
+                    className="action-btn-primary py-1.5 px-3 text-xs"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Component</span>
@@ -515,62 +544,89 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                   {formData.components.map((comp, index) => (
                     <div key={comp.id || index} className="p-4 rounded-xl bg-[#f9fafb] border border-gray-200 space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-xs font-bold text-[#123524]">
-                          Component #{index + 1}
+                        <span className="text-xs font-bold text-[#123524] flex items-center gap-1.5">
+                          {comp.type === "video" ? <Video className="w-3.5 h-3.5 text-[#166534]" /> : comp.type === "html" ? <Code className="w-3.5 h-3.5 text-blue-600" /> : <Image className="w-3.5 h-3.5 text-emerald-600" />}
+                          Case Study Component #{index + 1}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveComponent(index)}
-                          className="text-gray-400 hover:text-red-600 text-xs"
+                          className="text-gray-400 hover:text-red-600 text-xs flex items-center gap-1"
                         >
-                          <X className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5" /> Remove
                         </button>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div className="input-group">
-                          <label>Type</label>
+                          <label>Asset Type</label>
                           <select
                             value={comp.type}
                             onChange={(e) => handleUpdateComponent(index, "type", e.target.value)}
                             className="custom-input"
                           >
-                            <option value="image">Image</option>
-                            <option value="video">Video</option>
+                            <option value="image">Image Asset</option>
+                            <option value="video">Video Stream</option>
                             <option value="html">Interactive HTML / Code</option>
                           </select>
                         </div>
 
                         <div className="sm:col-span-2 input-group">
-                          <label>Content URL or Code Snippet</label>
-                          <input
-                            type="text"
-                            value={comp.contentUrl}
-                            onChange={(e) => handleUpdateComponent(index, "contentUrl", e.target.value)}
-                            placeholder="https://... or <div>..."
-                            className="custom-input"
-                          />
+                          <label>Media File / Content URL</label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={comp.contentUrl}
+                              onChange={(e) => handleUpdateComponent(index, "contentUrl", e.target.value)}
+                              placeholder={comp.type === "html" ? "<div>HTML code...</div>" : "https://domain.com/image.jpg"}
+                              className="custom-input flex-1"
+                            />
+                            {comp.type !== "html" && (
+                              <label className="upload-btn">
+                                <Upload className="w-3.5 h-3.5" />
+                                <span>{uploadingCompIndex === index ? "Uploading..." : "Upload"}</span>
+                                <input
+                                  type="file"
+                                  accept={comp.type === "video" ? "video/*" : "image/*"}
+                                  onChange={(e) => handleComponentFileUpload(e, index)}
+                                  className="hidden"
+                                  disabled={uploadingCompIndex === index}
+                                />
+                              </label>
+                            )}
+                          </div>
                         </div>
                       </div>
+
+                      {/* Preview Box */}
+                      {comp.contentUrl && comp.type !== "html" && (
+                        <div className="rounded-lg overflow-hidden border border-gray-200 max-h-40 bg-white">
+                          {comp.type === "video" ? (
+                            <video src={comp.contentUrl} controls className="w-full max-h-36 object-cover" />
+                          ) : (
+                            <img src={comp.contentUrl} alt="Preview" className="w-full max-h-36 object-cover" />
+                          )}
+                        </div>
+                      )}
 
                       {/* Optional Insight */}
                       <div className="p-3 rounded-lg bg-white border border-gray-200 space-y-2">
                         <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700 flex items-center gap-1">
-                          <Lightbulb className="w-3 h-3" /> Optional Component Insight
+                          <Lightbulb className="w-3.5 h-3.5 text-amber-600" /> Optional Component Insight Pill (Shows on click inside case study)
                         </span>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           <input
                             type="text"
                             value={comp.insight?.title || ""}
                             onChange={(e) => handleUpdateComponent(index, "insight.title", e.target.value)}
-                            placeholder="Insight Title"
+                            placeholder="Insight Title (e.g. Tactile Packaging)"
                             className="custom-input text-xs"
                           />
                           <input
                             type="text"
                             value={comp.insight?.description || ""}
                             onChange={(e) => handleUpdateComponent(index, "insight.description", e.target.value)}
-                            placeholder="Insight Description"
+                            placeholder="Insight Description (e.g. Eco-conscious kraft paper boxes)"
                             className="custom-input text-xs"
                           />
                         </div>

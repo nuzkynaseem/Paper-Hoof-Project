@@ -13,12 +13,11 @@ const SECONDARY_PALETTE = [
   { name: "Barn Red", hex: "#D92B24" },
 ];
 
-export default function AdminWorkScopes() {
+export default function AdminWorkScopes({ showToast }) {
   const [scopes, setScopes] = useState([]);
   const [newName, setNewName] = useState("");
   const [selectedColor, setSelectedColor] = useState("#97D9AF");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
 
   const token = localStorage.getItem("paperhoof_admin_token");
 
@@ -41,9 +40,9 @@ export default function AdminWorkScopes() {
     if (!newName.trim()) return;
 
     setLoading(true);
-    setMessage("");
 
     try {
+      const formattedName = newName.toUpperCase().trim();
       const res = await fetch(`${API_BASE}/work-scopes`, {
         method: "POST",
         headers: {
@@ -51,7 +50,7 @@ export default function AdminWorkScopes() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: newName.toUpperCase().trim(),
+          name: formattedName,
           color: selectedColor,
         }),
       });
@@ -59,18 +58,17 @@ export default function AdminWorkScopes() {
       if (!res.ok) throw new Error("Failed to create work scope pill");
 
       setNewName("");
-      setMessage("Work scope pill created successfully!");
+      if (showToast) showToast(`Work scope pill "${formattedName}" created successfully!`, "success");
       fetchWorkScopes();
-      setTimeout(() => setMessage(""), 3000);
     } catch (err) {
-      alert("Error creating pill: " + err.message);
+      if (showToast) showToast("Error creating pill: " + err.message, "error");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this work scope pill?")) return;
+  const handleDelete = async (id, pillName) => {
+    if (!window.confirm(`Are you sure you want to delete "${pillName}"?`)) return;
 
     try {
       const res = await fetch(`${API_BASE}/work-scopes/${id}`, {
@@ -79,9 +77,10 @@ export default function AdminWorkScopes() {
       });
 
       if (!res.ok) throw new Error("Failed to delete pill");
+      if (showToast) showToast(`Work scope pill "${pillName}" deleted`, "success");
       fetchWorkScopes();
     } catch (err) {
-      alert("Error deleting pill: " + err.message);
+      if (showToast) showToast("Error deleting pill: " + err.message, "error");
     }
   };
 
@@ -94,12 +93,6 @@ export default function AdminWorkScopes() {
             Create or delete discipline tags shown on project covers and case study overviews. Assign a secondary accent color per pill.
           </p>
         </div>
-        {message && (
-          <span className="flex items-center gap-1.5 text-xs text-[#166534] bg-[#f0fdf4] px-3 py-1.5 rounded-full border border-[#bbf7d0] font-semibold">
-            <CheckCircle className="w-3.5 h-3.5" />
-            {message}
-          </span>
-        )}
       </div>
 
       {/* Create Form Card */}
@@ -209,7 +202,7 @@ export default function AdminWorkScopes() {
                   </span>
                 </div>
                 <button
-                  onClick={() => handleDelete(scope.id)}
+                  onClick={() => handleDelete(scope.id, scope.name)}
                   className="p-1.5 text-gray-400 hover:text-red-600 transition-colors"
                   title="Delete Pill"
                 >

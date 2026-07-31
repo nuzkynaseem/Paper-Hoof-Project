@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Mail, Instagram, Linkedin, Save, CheckCircle } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 
-export default function AdminSocials() {
+export default function AdminSocials({ showToast }) {
   const [email, setEmail] = useState("");
   const [instagramUrl, setInstagramUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState("");
 
   const token = localStorage.getItem("paperhoof_admin_token");
 
@@ -30,7 +29,6 @@ export default function AdminSocials() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setMessage("");
 
     try {
       const res = await fetch(`${API_BASE}/site/socials`, {
@@ -43,10 +41,9 @@ export default function AdminSocials() {
       });
 
       if (!res.ok) throw new Error("Failed to save social links");
-      setMessage("Social & Contact details updated successfully!");
-      setTimeout(() => setMessage(""), 3000);
+      if (showToast) showToast("Social & contact details saved successfully!", "success");
     } catch (err) {
-      alert("Error saving socials: " + err.message);
+      if (showToast) showToast("Error saving socials: " + err.message, "error");
     } finally {
       setSaving(false);
     }
@@ -61,12 +58,6 @@ export default function AdminSocials() {
             Manage contact emails and social media channel links rendered in the website footer and contact overlay.
           </p>
         </div>
-        {message && (
-          <span className="flex items-center gap-1.5 text-xs text-[#166534] bg-[#f0fdf4] px-3 py-1.5 rounded-full border border-[#bbf7d0] font-semibold">
-            <CheckCircle className="w-3.5 h-3.5" />
-            {message}
-          </span>
-        )}
       </div>
 
       <form onSubmit={handleSubmit} className="editor-card space-y-6">

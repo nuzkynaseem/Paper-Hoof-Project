@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Calendar, Clock, Building2, Instagram, CheckCircle, Clock3, Archive, Search, Mail, Phone } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 
-export default function AdminBookings() {
+export default function AdminBookings({ showToast }) {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -43,8 +43,9 @@ export default function AdminBookings() {
       setBookings((prev) =>
         prev.map((b) => (b.id === bookingId ? { ...b, status: newStatus } : b))
       );
+      if (showToast) showToast(`Booking status updated to ${newStatus}`, "success");
     } catch (err) {
-      alert("Error updating status: " + err.message);
+      if (showToast) showToast("Error updating booking status: " + err.message, "error");
     } finally {
       setUpdatingId(null);
     }

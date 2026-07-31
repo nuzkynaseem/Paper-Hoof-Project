@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Video, FileText, Save, CheckCircle, Upload, Play, Eye } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 
-export default function AdminHomepage() {
+export default function AdminHomepage({ showToast }) {
   const [heroVideoUrl, setHeroVideoUrl] = useState("");
   const [introText, setIntroText] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -66,10 +66,9 @@ export default function AdminHomepage() {
         }),
       });
       if (!res.ok) throw new Error("Failed to save homepage content");
-      setMessage("Homepage hero & intro text updated successfully!");
-      setTimeout(() => setMessage(""), 3000);
+      if (showToast) showToast("Homepage hero video & intro text updated successfully!", "success");
     } catch (err) {
-      alert("Error saving content: " + err.message);
+      if (showToast) showToast("Error saving homepage content: " + err.message, "error");
     } finally {
       setSaving(false);
     }
@@ -86,12 +85,6 @@ export default function AdminHomepage() {
             Configure the main background hero video and the studio scroll-reveal introduction text.
           </p>
         </div>
-        {message && (
-          <span className="flex items-center gap-1.5 text-xs text-[#166534] bg-[#f0fdf4] px-3 py-1.5 rounded-full border border-[#bbf7d0] font-semibold">
-            <CheckCircle className="w-3.5 h-3.5" />
-            {message}
-          </span>
-        )}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

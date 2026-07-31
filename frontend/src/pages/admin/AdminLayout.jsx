@@ -21,7 +21,8 @@ import AdminHomepage from "./AdminHomepage";
 import AdminBrandReviewCards from "./AdminBrandReviewCards";
 import AdminSocials from "./AdminSocials";
 import AdminBookings from "./AdminBookings";
-import "./AdminLayout.css";
+import Toast from "../../components/Toast";
+import "../../components/Toast.css";
 
 export default function AdminLayout() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -29,6 +30,11 @@ export default function AdminLayout() {
   const [workScopes, setWorkScopes] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+  };
 
   const navigate = useNavigate();
   const token = localStorage.getItem("paperhoof_admin_token");
@@ -232,6 +238,7 @@ export default function AdminLayout() {
               projects={projects}
               onNavigateTab={(tabId) => setActiveTab(tabId)}
               onProjectsChange={fetchProjects}
+              showToast={showToast}
             />
           )}
           {activeTab === "projects" && (
@@ -239,14 +246,20 @@ export default function AdminLayout() {
               projects={projects}
               onProjectsChange={fetchProjects}
               workScopes={workScopes}
+              showToast={showToast}
             />
           )}
-          {activeTab === "workscopes" && <AdminWorkScopes />}
-          {activeTab === "homepage" && <AdminHomepage />}
-          {activeTab === "brandreview" && <AdminBrandReviewCards />}
-          {activeTab === "socials" && <AdminSocials />}
-          {activeTab === "bookings" && <AdminBookings />}
+          {activeTab === "workscopes" && <AdminWorkScopes showToast={showToast} />}
+          {activeTab === "homepage" && <AdminHomepage showToast={showToast} />}
+          {activeTab === "brandreview" && <AdminBrandReviewCards showToast={showToast} />}
+          {activeTab === "socials" && <AdminSocials showToast={showToast} />}
+          {activeTab === "bookings" && <AdminBookings showToast={showToast} />}
         </main>
+
+        {/* Global Toast Notification Container in Top-Right Corner */}
+        <div className="toast-container-fixed">
+          <Toast toast={toast} onClose={() => setToast(null)} />
+        </div>
       </div>
     </div>
   );

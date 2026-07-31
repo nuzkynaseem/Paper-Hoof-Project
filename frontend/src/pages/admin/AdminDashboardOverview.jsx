@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Star, FolderKanban, Eye, Sparkles, ExternalLink, ArrowRight, CheckCircle, LayoutGrid } from "lucide-react";
+import { Star, FolderKanban, Eye, Sparkles, ExternalLink, ArrowRight, LayoutGrid } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 
-export default function AdminDashboardOverview({ projects = [], onNavigateTab, onProjectsChange }) {
+export default function AdminDashboardOverview({ projects = [], onNavigateTab, onProjectsChange, showToast }) {
   const [stats, setStats] = useState({ visitCount: 420, totalProjects: 6, featuredProject: null });
   const [selectedFeaturedId, setSelectedFeaturedId] = useState("");
   const [homepageLimit, setHomepageLimit] = useState(4);
   const [savingFeatured, setSavingFeatured] = useState(false);
   const [savingLimit, setSavingLimit] = useState(false);
-  const [message, setMessage] = useState("");
 
   const token = localStorage.getItem("paperhoof_admin_token");
 
@@ -50,7 +49,6 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
     const projId = e.target.value;
     setSelectedFeaturedId(projId);
     setSavingFeatured(true);
-    setMessage("");
 
     try {
       const res = await fetch(`${API_BASE}/projects/featured/${projId}`, {
@@ -63,12 +61,12 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
 
       if (!res.ok) throw new Error("Failed to set featured project");
 
-      setMessage("Featured project updated!");
+      const chosenProj = projects.find((p) => p.id === projId);
+      if (showToast) showToast(`Featured project updated to "${chosenProj?.name || "Project"}"!`, "success");
       fetchStats();
       if (onProjectsChange) onProjectsChange();
-      setTimeout(() => setMessage(""), 3000);
     } catch (err) {
-      setMessage("Error updating featured project");
+      if (showToast) showToast("Error updating featured project: " + err.message, "error");
     } finally {
       setSavingFeatured(false);
     }
@@ -78,7 +76,6 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
     const limit = parseInt(e.target.value);
     setHomepageLimit(limit);
     setSavingLimit(true);
-    setMessage("");
 
     try {
       const currentRes = await fetch(`${API_BASE}/site/homepage`);
@@ -98,10 +95,9 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
 
       if (!res.ok) throw new Error("Failed to update homepage projects limit");
 
-      setMessage(`Homepage now displays ${limit === 100 ? "all" : limit} recent projects!`);
-      setTimeout(() => setMessage(""), 3000);
+      if (showToast) showToast(`Homepage now displays ${limit === 100 ? "all" : limit} recent projects!`, "success");
     } catch (err) {
-      setMessage("Error updating homepage limit");
+      if (showToast) showToast("Error updating homepage limit: " + err.message, "error");
     } finally {
       setSavingLimit(false);
     }
@@ -207,29 +203,21 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              {message && (
-                <span className="flex items-center gap-1.5 text-xs text-[#166534] bg-[#f0fdf4] px-3 py-1.5 rounded-full border border-[#bbf7d0] font-semibold">
-                  <CheckCircle className="w-3.5 h-3.5" />
-                  {message}
-                </span>
-              )}
-              <select
-                value={selectedFeaturedId}
-                onChange={handleSetFeatured}
-                disabled={savingFeatured}
-                className="featured-select-input"
-              >
-                <option value="" disabled>
-                  Select a project...
+            <select
+              value={selectedFeaturedId}
+              onChange={handleSetFeatured}
+              disabled={savingFeatured}
+              className="featured-select-input"
+            >
+              <option value="" disabled>
+                Select a project...
+              </option>
+              {projects.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} ({p.category || "Project"})
                 </option>
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} ({p.category || "Project"})
-                  </option>
-                ))}
-              </select>
-            </div>
+              ))}
+            </select>
           </div>
 
           {currentFeatured && (
