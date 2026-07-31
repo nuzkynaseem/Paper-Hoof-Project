@@ -118,6 +118,7 @@ export default function AdminLayout() {
               src="/paperhoof-horse.svg"
               alt="Paper Hoof"
               className="sidebar-logo-img"
+              style={{ height: 32, width: 32, minWidth: 32, maxWidth: 32, maxHeight: 32, objectFit: "contain" }}
             />
             <div className="sidebar-brand-text">
               <div className="sidebar-brand-name">Paper Hoof</div>
@@ -127,9 +128,9 @@ export default function AdminLayout() {
           <button
             className="md:hidden"
             onClick={() => setSidebarOpen(false)}
-            style={{ color: "rgba(151,217,175,0.6)", background: "none", border: "none" }}
+            style={{ color: "rgba(151,217,175,0.8)", background: "none", border: "none", cursor: "pointer", padding: 4 }}
           >
-            <X style={{ width: 18, height: 18 }} />
+            <X style={{ width: 20, height: 20 }} />
           </button>
         </div>
 
@@ -183,16 +184,11 @@ export default function AdminLayout() {
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              style={{
-                display: "none",
-                color: "#6b7280",
-                background: "none",
-                border: "none",
-                padding: 4,
-              }}
-              className="mobile-menu-btn"
+              className="md:hidden text-gray-700 hover:text-[#123524] p-1.5 rounded-lg bg-gray-100 border border-gray-200"
+              style={{ cursor: "pointer" }}
+              aria-label="Toggle Menu"
             >
-              <Menu style={{ width: 22, height: 22 }} />
+              {sidebarOpen ? <X style={{ width: 20, height: 20 }} /> : <Menu style={{ width: 20, height: 20 }} />}
             </button>
             <div className="header-breadcrumb">
               <span>Paper Hoof CMS</span>
