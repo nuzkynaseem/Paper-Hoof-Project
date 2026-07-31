@@ -92,5 +92,6 @@ android-sdk/ -e
 .env
 .env.*
 credentials.json
+service_account.json
 *.key
 .credentials

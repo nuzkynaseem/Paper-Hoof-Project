@@ -1,38 +1,61 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowUpRight, ArrowUp } from 'lucide-react';
 import { InstagramIcon, LinkedinIcon } from './SocialIcons';
 import GravityCanvas from './GravityCanvas';
 import './Footer.css';
 
 const Footer = () => {
+  const [socials, setSocials] = useState({
+    email: 'hello@paperhoof.com',
+    instagramUrl: 'https://instagram.com',
+    linkedinUrl: 'https://linkedin.com',
+  });
+
+  useEffect(() => {
+    fetchSocialsData();
+  }, []);
+
+  const fetchSocialsData = async () => {
+    try {
+      const res = await fetch("/api/site/socials");
+      if (res.ok) {
+        const data = await res.json();
+        setSocials({
+          email: data.email || 'hello@paperhoof.com',
+          instagramUrl: data.instagramUrl || 'https://instagram.com',
+          linkedinUrl: data.linkedinUrl || 'https://linkedin.com',
+        });
+      }
+    } catch (e) {
+      console.warn("Using default footer socials");
+    }
+  };
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
     <footer className="compact-footer" data-testid="site-footer">
-      {/* GSAP + Matter.js Gravity Shapes Playground — Touches Very Top of Footer */}
       <GravityCanvas />
 
       <div className="compact-footer-inner">
-        {/* Middle Section: Email Statement & Social Media Buttons */}
         <div className="compact-middle-block">
           <div className="email-cta-row">
             <h3 className="compact-headline">LET'S TALK DESIGN</h3>
             <a
-              href="mailto:paperhoof@gmail.com"
+              href={`mailto:${socials.email}`}
               className="compact-email-link"
-              aria-label="Email paperhoof@gmail.com"
+              aria-label={`Email ${socials.email}`}
             >
-              <span>paperhoof@gmail.com</span>
+              <span>{socials.email}</span>
               <ArrowUpRight size={24} />
             </a>
           </div>
 
-          {/* Direct Social Media Buttons Just Below Email */}
           <div className="footer-social-buttons">
             <a
-              href="https://instagram.com"
+              href={socials.instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="footer-social-btn"
@@ -43,7 +66,7 @@ const Footer = () => {
               <ArrowUpRight size={14} className="social-btn-arrow" />
             </a>
             <a
-              href="https://linkedin.com"
+              href={socials.linkedinUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="footer-social-btn"
@@ -56,13 +79,11 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom Utility Bar */}
         <div className="compact-bottom-bar">
           <div className="copyright-info">
             © {new Date().getFullYear()} Paper Hoof Studio. All rights reserved.
           </div>
 
-          {/* Paper Hoof Wordmark Icon in Middle */}
           <div className="brand-stamp">
             <img
               src={`${process.env.PUBLIC_URL}/paperhoof-wordmark.svg`}
@@ -71,7 +92,6 @@ const Footer = () => {
             />
           </div>
 
-          {/* Back to Top Button with Upward Arrow & Springing Motion */}
           <button
             type="button"
             className="scroll-top-btn"

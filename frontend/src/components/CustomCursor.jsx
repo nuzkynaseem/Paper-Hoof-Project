@@ -17,6 +17,10 @@ const CustomCursor = () => {
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
+    if (window.location.pathname.startsWith('/admin')) {
+      return;
+    }
+
     // Check if touch device
     if (window.matchMedia('(pointer: coarse)').matches) {
       return;
@@ -119,6 +123,10 @@ const CustomCursor = () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
   }, [isVisible]);
+
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <div className={`custom-cursor-wrapper ${hoverState} ${isVisible ? 'active' : ''} ${isDragging ? 'is-dragging' : ''}`}>

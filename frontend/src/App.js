@@ -15,6 +15,9 @@ import AboutUs from "./pages/AboutUs";
 import Work from "./pages/Work";
 import ProjectCaseStudy from "./pages/ProjectCaseStudy";
 import CustomCursor from "./components/CustomCursor";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminLogin from "./pages/admin/AdminLogin";
+import { API_BASE } from "./utils/api";
 
 function HomePage() {
   return (
@@ -32,6 +35,14 @@ function AppContent() {
   const [isBrandReviewOpen, setIsBrandReviewOpen] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  // Record visit analytics on public load
+  useEffect(() => {
+    if (!isAdminRoute) {
+      fetch(`${API_BASE}/analytics/visit`, { method: "POST" }).catch(() => {});
+    }
+  }, [location.pathname, isAdminRoute]);
 
   // Scroll to top on route change
   useEffect(() => {
@@ -69,6 +80,15 @@ function AppContent() {
     setIsBrandReviewOpen(false);
     document.body.style.overflow = 'auto';
   };
+
+  if (isAdminRoute) {
+    return (
+      <Routes>
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/*" element={<AdminLayout />} />
+      </Routes>
+    );
+  }
 
   return (
     <div className="App">

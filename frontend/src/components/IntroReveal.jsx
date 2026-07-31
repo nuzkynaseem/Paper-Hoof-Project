@@ -1,13 +1,37 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './IntroReveal.css';
+import { API_BASE } from '../utils/api';
 
-const TEXT =
+const DEFAULT_TEXT =
   "We are here to design for you, that's what makes us distinctive. Since we started to work, we loved everyone who came across us.";
 
 const IntroReveal = () => {
   const textRef = useRef(null);
   const [progress, setProgress] = useState(0);
-  const words = TEXT.split(' ');
+  const [statementText, setStatementText] = useState(DEFAULT_TEXT);
+
+  useEffect(() => {
+    fetchHomepageData();
+  }, []);
+
+  const fetchHomepageData = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/site/homepage`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.secondSectionTitle || data.secondSectionDescription) {
+          const combined = [data.secondSectionTitle, data.secondSectionDescription]
+            .filter(Boolean)
+            .join(" ");
+          setStatementText(combined);
+        }
+      }
+    } catch (e) {
+      console.warn("Using default intro text");
+    }
+  };
+
+  const words = statementText.split(' ');
 
   useEffect(() => {
     let rafId = null;
@@ -19,8 +43,6 @@ const IntroReveal = () => {
       const rect = el.getBoundingClientRect();
       const windowHeight = window.innerHeight;
 
-      // Start reveal when element is at 85% of viewport height
-      // Finish reveal when element is at 25% of viewport height
       const start = windowHeight * 0.85;
       const end = windowHeight * 0.25;
 
@@ -48,7 +70,7 @@ const IntroReveal = () => {
       window.removeEventListener('resize', onScroll);
       if (rafId) cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [statementText]);
 
   const activeIndex = progress * (words.length + 1);
 

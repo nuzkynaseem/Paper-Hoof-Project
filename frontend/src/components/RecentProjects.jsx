@@ -1,7 +1,8 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { projects } from '../mock';
+import { projects as mockProjects, slugify } from '../mock';
 import { ContainerScroll } from './ui/container-scroll-animation';
+import { API_BASE } from '../utils/api';
 import './RecentProjects.css';
 
 const MAX_TILT = 9;
@@ -10,10 +11,46 @@ const RecentProjects = () => {
   const navigate = useNavigate();
   const cardRef = useRef(null);
   const mediaRef = useRef(null);
-  const featured = projects[0];
+  const [featured, setFeatured] = useState(mockProjects[0]);
+
+  useEffect(() => {
+    fetchFeaturedProject();
+  }, []);
+
+  const fetchFeaturedProject = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/analytics/stats`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.featuredProject) {
+          const fp = data.featuredProject;
+          setFeatured({
+            ...fp,
+            slug: fp.slug || slugify(fp.name),
+            image: fp.coverImage || fp.image,
+          });
+          return;
+        }
+      }
+
+      const resProj = await fetch(`${API_BASE}/projects`);
+      if (resProj.ok) {
+        const list = await resProj.json();
+        const foundFeatured = list.find((p) => p.isFeatured) || list[0];
+        if (foundFeatured) {
+          setFeatured({
+            ...foundFeatured,
+            slug: foundFeatured.slug || slugify(foundFeatured.name),
+            image: foundFeatured.coverImage || foundFeatured.image,
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("Using default fallback featured project");
+    }
+  };
 
   const handleMouseMove = (e) => {
-    // 3D Mouse Tilt Calculation
     const el = mediaRef.current;
     if (el) {
       const rect = el.getBoundingClientRect();
@@ -31,7 +68,8 @@ const RecentProjects = () => {
   };
 
   const handleClick = () => {
-    navigate(`/work/${featured.name.toLowerCase().replace(/ /g, '-')}`);
+    const targetSlug = featured.slug || slugify(featured.name);
+    navigate(`/work/${targetSlug}`);
   };
 
   return (
@@ -40,7 +78,7 @@ const RecentProjects = () => {
         <ContainerScroll>
           <div className="featured-work-center-wrapper">
             
-            {/* Giant Background Typography: "FEATURED" (75% visible on left side of project container) */}
+            {/* Giant Background Typography: "FEATURED" */}
             <span className="featured-bg-text text-left-featured">
               FEATURED
             </span>
@@ -57,7 +95,7 @@ const RecentProjects = () => {
             >
               <div className="featured-media" ref={mediaRef}>
                 <img
-                  src={featured.image}
+                  src={featured.coverImage || featured.image}
                   alt={featured.name}
                   className="rp-image single-featured-img"
                   loading="eager"
@@ -71,7 +109,7 @@ const RecentProjects = () => {
               </div>
             </article>
 
-            {/* Giant Background Typography: "WORK" (Visible on right side of project container) */}
+            {/* Giant Background Typography: "WORK" */}
             <span className="featured-bg-text text-right-work">
               WORK
             </span>
