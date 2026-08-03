@@ -91,9 +91,11 @@ const ProjectCaseStudy = () => {
       const resAll = await fetch(`${API_BASE}/projects`);
       if (resAll.ok) {
         const list = await resAll.json();
-        if (list && list.length > 0) {
-          setAllProjects(list.map((p) => ({ ...p, slug: p.slug || slugify(p.name) })));
-        }
+          setAllProjects(list.map((p) => ({
+            ...p,
+            slug: p.slug || slugify(p.name),
+            image: p.coverImage || p.image || p.sliderImage,
+          })));
       }
 
       const resSingle = await fetch(`${API_BASE}/projects/${projectId}`);

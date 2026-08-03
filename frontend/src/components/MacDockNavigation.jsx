@@ -92,7 +92,7 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
                           <CardContent className="flex flex-col items-center justify-between p-2.5 h-full">
                             <div className="w-full aspect-square rounded-md overflow-hidden relative mb-2">
                               <img
-                                src={p.image}
+                                src={p.coverImage || p.image || p.sliderImage}
                                 alt={p.name}
                                 className="w-full h-full object-cover"
                               />
