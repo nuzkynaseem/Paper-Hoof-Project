@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { showreelSlides } from '../mock';
 import ScrollIndicator from './ScrollIndicator';
 import { API_BASE } from '../utils/api';
 import './Hero.css';
@@ -7,7 +6,6 @@ import './Hero.css';
 const DEFAULT_HERO_VIDEO = "https://assets.mixkit.co/videos/preview/mixkit-white-sand-under-water-4330-large.mp4";
 
 const Hero = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [heroContent, setHeroContent] = useState(null);
   const videoRef = useRef(null);
 
@@ -26,14 +24,6 @@ const Hero = () => {
       console.warn("Using fallback hero data");
     }
   };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % showreelSlides.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const videoUrl = heroContent?.heroVideoUrl || DEFAULT_HERO_VIDEO;
 
@@ -61,27 +51,15 @@ const Hero = () => {
             muted
             loop
             playsInline
-            className="w-full h-full object-cover opacity-75"
+            className="w-full h-full object-cover"
           >
             <source src={videoUrl} />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-t from-[#123524]/80 via-transparent to-black/30 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#123524]/60 via-transparent to-black/20 pointer-events-none" />
         </div>
       ) : null}
 
-      <div className="hero-inner relative z-10">
-        <div className="hero-content" data-testid="hero-content">
-          {showreelSlides.map((slide, index) => (
-            <div
-              key={slide.id}
-              className={`hero-slide ${index === currentSlide ? 'active' : ''}`}
-            >
-              <h1 className="hero-title">{slide.title}</h1>
-              <p className="hero-subtitle">{slide.subtitle}</p>
-            </div>
-          ))}
-        </div>
-
+      <div className="hero-inner relative z-10 flex flex-col justify-end items-center pb-8">
         <div className="hero-bottom">
           <ScrollIndicator />
         </div>
