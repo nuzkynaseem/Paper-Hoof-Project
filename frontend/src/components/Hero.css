@@ -4,7 +4,7 @@
   background: var(--hero-navy);
   display: flex;
   padding: 0 48px;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .hero-inner {

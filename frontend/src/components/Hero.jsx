@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { showreelSlides } from '../mock';
 import ScrollIndicator from './ScrollIndicator';
 import { API_BASE } from '../utils/api';
 import './Hero.css';
 
+const DEFAULT_HERO_VIDEO = "https://assets.mixkit.co/videos/preview/mixkit-white-sand-under-water-4330-large.mp4";
+
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [heroContent, setHeroContent] = useState(null);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     fetchHeroData();
@@ -32,24 +35,39 @@ const Hero = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const videoUrl = heroContent?.heroVideoUrl || DEFAULT_HERO_VIDEO;
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.defaultMuted = true;
+      videoRef.current.muted = true;
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn("Hero video autoplay deferred:", err);
+        });
+      }
+    }
+  }, [videoUrl]);
+
   return (
     <section className="hero-section relative overflow-hidden" data-testid="hero-section">
-      {heroContent?.heroVideoUrl ? (
+      {videoUrl ? (
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <video
+            ref={videoRef}
+            src={videoUrl}
             autoPlay
             muted
             loop
             playsInline
-            crossOrigin="anonymous"
-            className="w-full h-full object-cover opacity-60"
+            className="w-full h-full object-cover opacity-75"
           >
-            <source src={heroContent.heroVideoUrl} type="video/mp4" />
+            <source src={videoUrl} />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-t from-[#123524] via-transparent to-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#123524]/80 via-transparent to-black/30 pointer-events-none" />
         </div>
       ) : null}
-
 
       <div className="hero-inner relative z-10">
         <div className="hero-content" data-testid="hero-content">
