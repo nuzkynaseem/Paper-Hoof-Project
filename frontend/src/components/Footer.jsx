@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowUpRight, ArrowUp } from 'lucide-react';
 import { InstagramIcon, LinkedinIcon } from './SocialIcons';
 import GravityCanvas from './GravityCanvas';
+import { API_BASE } from '../utils/api';
 import './Footer.css';
 
 const Footer = () => {
@@ -17,7 +18,7 @@ const Footer = () => {
 
   const fetchSocialsData = async () => {
     try {
-      const res = await fetch("/api/site/socials");
+      const res = await fetch(`${API_BASE}/site/socials`);
       if (res.ok) {
         const data = await res.json();
         setSocials({

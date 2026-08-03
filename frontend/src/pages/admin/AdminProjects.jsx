@@ -707,7 +707,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                 <div className="space-y-4 pt-4" style={{ borderTop: "1px solid #e5e7eb" }}>
                   <h3 className="text-xs uppercase tracking-wider text-[#166534] font-bold">3. Case Study Hero & Narrative</h3>
                   <div className="input-group">
-                    <label>Page Title (Top heading in Case Study)</label>
+                    <label>Explaining Title</label>
                     <input
                       type="text"
                       value={formData.title}

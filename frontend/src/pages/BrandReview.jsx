@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
+import { API_BASE } from '../utils/api';
 import './BrandReview.css';
 
 const defaultBrandCards = [
@@ -112,7 +113,7 @@ const BrandReview = () => {
 
   const fetchCards = async () => {
     try {
-      const res = await fetch("/api/brand-review-cards");
+      const res = await fetch(`${API_BASE}/brand-review-cards`);
       if (res.ok) {
         const data = await res.json();
         if (data && data.length > 0) {

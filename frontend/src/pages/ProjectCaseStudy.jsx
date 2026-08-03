@@ -1,26 +1,78 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronDown, Plus, X } from 'lucide-react';
+import { ChevronDown, Plus, X, Code2, Copy, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { projects as mockProjects, slugify } from '../mock';
 import MacDockNavigation from '../components/MacDockNavigation';
 import { getTagStyle } from '../utils/tagColors';
+import { API_BASE } from '../utils/api';
 import './ProjectCaseStudy.css';
 
 const defaultDetails = [
   {
-    title: 'Logotype',
-    summary: 'Built on refined geometry, the logotype feels simple, confident, and approachable. The continuous line introduces a sense of flow that echoes the ability to move intelligently.',
+    title: 'Logotype & Geometry',
+    description: 'Built on refined geometry, the logotype feels simple, confident, and approachable. The continuous line introduces flow and movement.',
   },
   {
     title: 'Visual Identity System',
-    summary: 'Our visual language pairs high-contrast typographic hierarchy with fluid grid alignments. Built to adapt across digital displays and tactile physical touchpoints.',
+    description: 'Our visual language pairs high-contrast typographic hierarchy with fluid grid alignments. Built to adapt across digital displays and physical touchpoints.',
   },
   {
     title: 'Color Architecture',
-    summary: 'Curated color palettes balance functional clarity with emotional depth. The tones shift dynamically from subtle warm neutrals to high-contrast focal accents.',
+    description: 'Curated color palettes balance functional clarity with emotional depth. Tones shift dynamically from subtle warm neutrals to high-contrast accents.',
   },
 ];
+
+// Helper component to render Next.js / Codeblocks or HTML embeds
+function CodeOrHtmlComponent({ content }) {
+  const [copied, setCopied] = useState(false);
+  if (!content) return null;
+
+  const isRawHtml = /^\s*<(div|iframe|svg|section|p|style|header|footer|main|article|span|a|ul|ol|li)/i.test(content.trim());
+
+  if (isRawHtml) {
+    return (
+      <div
+        className="w-full bg-neutral-900 text-white p-8 md:p-12 overflow-auto"
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    );
+  }
+
+  const copyCode = () => {
+    navigator.clipboard.writeText(content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="w-full bg-[#121619] border-y border-neutral-800 p-4 md:p-8 font-mono text-sm leading-relaxed overflow-x-auto text-neutral-100 relative">
+      {/* IDE Code Header */}
+      <div className="flex items-center justify-between pb-3 mb-4 border-b border-neutral-800 text-xs text-neutral-400">
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded-full bg-red-500 inline-block opacity-80" />
+          <span className="w-3 h-3 rounded-full bg-yellow-500 inline-block opacity-80" />
+          <span className="w-3 h-3 rounded-full bg-green-500 inline-block opacity-80" />
+          <span className="ml-2 flex items-center gap-1.5 font-bold text-neutral-300">
+            <Code2 size={13} className="text-[#97D9AF]" /> Next.js / Codeblock
+          </span>
+        </div>
+        <button
+          onClick={copyCode}
+          className="flex items-center gap-1 px-2.5 py-1 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-300 transition-colors"
+          title="Copy Code"
+        >
+          {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+          <span>{copied ? "Copied" : "Copy"}</span>
+        </button>
+      </div>
+
+      <pre className="overflow-x-auto whitespace-pre font-mono text-xs md:text-sm text-emerald-400 leading-relaxed">
+        <code>{content}</code>
+      </pre>
+    </div>
+  );
+}
 
 const ProjectCaseStudy = () => {
   const { projectId } = useParams();
@@ -28,7 +80,7 @@ const ProjectCaseStudy = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeInsight, setActiveInsight] = useState(null);
   const [project, setProject] = useState(null);
-  const [allProjects, setAllProjects] = useState(mockProjects);
+  const [allProjects, setAllProjects] = useState([]);
 
   useEffect(() => {
     fetchProjectData();
@@ -36,7 +88,7 @@ const ProjectCaseStudy = () => {
 
   const fetchProjectData = async () => {
     try {
-      const resAll = await fetch("/api/projects");
+      const resAll = await fetch(`${API_BASE}/projects`);
       if (resAll.ok) {
         const list = await resAll.json();
         if (list && list.length > 0) {
@@ -44,7 +96,7 @@ const ProjectCaseStudy = () => {
         }
       }
 
-      const resSingle = await fetch(`/api/projects/${projectId}`);
+      const resSingle = await fetch(`${API_BASE}/projects/${projectId}`);
       if (resSingle.ok) {
         const data = await resSingle.json();
         setProject(data);
@@ -59,7 +111,9 @@ const ProjectCaseStudy = () => {
     setProject(found);
   };
 
-  if (!project) return <div className="p-20 text-center text-white">Loading case study...</div>;
+  if (!project) {
+    return <div className="p-20 text-center text-neutral-800 font-semibold">Loading case study...</div>;
+  }
 
   const showcaseComponents = (project.components && project.components.length > 0)
     ? project.components
@@ -75,14 +129,15 @@ const ProjectCaseStudy = () => {
   };
 
   const heroMediaUrl = project.heroMedia || project.coverImage || project.image;
-  const isHeroVideo = project.heroMediaType === "video" || heroMediaUrl.endsWith(".mp4");
+  const isHeroVideo = project.heroMediaType === "video" || (heroMediaUrl && heroMediaUrl.endsWith(".mp4"));
+  const explainingTitle = project.title || project.name;
 
   return (
     <div className="case-study-page">
-      {/* 1: Title Section */}
+      {/* 1: Explaining Title Section */}
       <header className="case-study-title-section">
         <div className="case-study-container">
-          <h1 className="case-study-main-title">{project.title || project.name}</h1>
+          <h1 className="case-study-main-title">{explainingTitle}</h1>
         </div>
       </header>
 
@@ -102,9 +157,10 @@ const ProjectCaseStudy = () => {
         )}
       </section>
 
-      {/* 3: Subtitle & Description Section */}
+      {/* 3: Overview Section */}
       <section className="case-study-overview-section">
         <div className="case-study-container overview-grid">
+          {/* Left Column: Scope Pills */}
           <div className="overview-left-meta">
             <span className="overview-section-label">OVERVIEW</span>
             <div className="overview-tags-list">
@@ -116,17 +172,29 @@ const ProjectCaseStudy = () => {
             </div>
           </div>
 
+          {/* Right Column: Subtitle & Description */}
           <div className="overview-right-content">
-            <p className="overview-lead-paragraph">
-              {project.subtitle || project.description}
-            </p>
+            {/* Subtitle is visible when Read More is NOT pressed */}
+            {project.subtitle && (
+              <p className="overview-lead-paragraph">
+                {project.subtitle}
+              </p>
+            )}
             
+            {/* Description & ReadMoreText are visible when Read More IS pressed */}
             {isExpanded && (
               <div className="overview-expanded-body">
-                <p>
-                  {project.readMoreText ||
-                    `${project.name} partnered with Paper Hoof to sharpen a brand that had grown faster than its identity could keep up. We began with research — stakeholder interviews, audience mapping, and a close look at the market.`}
-                </p>
+                {project.description && (
+                  <p>{project.description}</p>
+                )}
+                {project.readMoreText && (
+                  <p>{project.readMoreText}</p>
+                )}
+                {!project.description && !project.readMoreText && (
+                  <p>
+                    {`${project.name} partnered with Paper Hoof to sharpen a brand that had grown faster than its identity could keep up. We began with research — stakeholder interviews, audience mapping, and a close look at the market.`}
+                  </p>
+                )}
               </div>
             )}
 
@@ -147,11 +215,12 @@ const ProjectCaseStudy = () => {
         <div className="presentation-media-stack">
           {showcaseComponents.map((comp, index) => {
             const isInsightOpen = activeInsight === index;
-            const insightTitle = comp.insight?.title || `Component Detail #${index + 1}`;
-            const insightDesc = comp.insight?.description || "High precision identity asset calibrated for clarity.";
+            const insightTitle = comp.insight?.title;
+            const insightDesc = comp.insight?.description;
+            const hasInsight = Boolean(insightTitle || insightDesc);
 
             return (
-              <div key={index} className="case-study-component-item">
+              <div key={comp.id || index} className="case-study-component-item">
                 {comp.type === "video" ? (
                   <video
                     src={comp.contentUrl}
@@ -159,13 +228,33 @@ const ProjectCaseStudy = () => {
                     autoPlay
                     muted
                     loop
+                    playsInline
                     className="component-media-img"
                   />
                 ) : comp.type === "html" ? (
-                  <div
-                    className="component-media-img p-8 bg-neutral-900 overflow-auto"
-                    dangerouslySetInnerHTML={{ __html: comp.contentUrl }}
-                  />
+                  <CodeOrHtmlComponent content={comp.contentUrl} />
+                ) : comp.type === "quote" ? (
+                  <div className="w-full py-16 px-8 md:py-24 md:px-16 bg-[#123524] text-white flex flex-col items-center justify-center text-center">
+                    <blockquote className="text-2xl md:text-4xl font-semibold leading-relaxed max-w-4xl font-serif">
+                      “{comp.quoteText || comp.contentUrl}”
+                    </blockquote>
+                    {comp.author && (
+                      <cite className="mt-6 text-sm tracking-wider uppercase opacity-90 not-italic font-bold text-[#97D9AF]">
+                        — {comp.author}
+                      </cite>
+                    )}
+                  </div>
+                ) : comp.type === "grid" ? (
+                  <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-2 bg-neutral-950 p-2">
+                    {(comp.gridUrls || [comp.contentUrl, comp.contentUrl]).map((url, gIdx) => (
+                      <img
+                        key={gIdx}
+                        src={url}
+                        alt={`Grid showcase ${gIdx + 1}`}
+                        className="w-full h-[450px] md:h-[650px] object-cover"
+                      />
+                    ))}
+                  </div>
                 ) : (
                   <img
                     src={comp.contentUrl}
@@ -175,7 +264,7 @@ const ProjectCaseStudy = () => {
                 )}
 
                 {/* Bottom-Left Expandable Insight Button */}
-                {comp.insight && (
+                {hasInsight && (
                   <div className="component-insight-container">
                     <AnimatePresence mode="wait">
                       {!isInsightOpen ? (
@@ -187,9 +276,9 @@ const ProjectCaseStudy = () => {
                           transition={{ duration: 0.2 }}
                           className="component-insight-pill"
                           onClick={() => setActiveInsight(index)}
-                          aria-label={`View detail for ${insightTitle}`}
+                          aria-label={`View detail for ${insightTitle || "insight"}`}
                         >
-                          <span className="pill-title-text">{insightTitle}</span>
+                          <span className="pill-title-text">{insightTitle || "View Detail"}</span>
                           <div className="pill-plus-icon">
                             <Plus size={14} />
                           </div>
@@ -204,7 +293,7 @@ const ProjectCaseStudy = () => {
                           className="component-insight-modal"
                         >
                           <div className="insight-modal-header">
-                            <h4 className="insight-modal-title">{insightTitle}</h4>
+                            <h4 className="insight-modal-title">{insightTitle || "Detail"}</h4>
                             <button
                               className="insight-modal-close"
                               onClick={() => setActiveInsight(null)}
@@ -213,7 +302,7 @@ const ProjectCaseStudy = () => {
                               <X size={16} />
                             </button>
                           </div>
-                          <p className="insight-modal-body">{insightDesc}</p>
+                          {insightDesc && <p className="insight-modal-body">{insightDesc}</p>}
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -227,7 +316,7 @@ const ProjectCaseStudy = () => {
 
       {/* 5: Bottom Dock Navigation */}
       <MacDockNavigation
-        projects={allProjects}
+        projects={allProjects.length > 0 ? allProjects : mockProjects}
         activeSlug={project.slug || slugify(project.name)}
         onSelect={handleSelectProject}
       />
