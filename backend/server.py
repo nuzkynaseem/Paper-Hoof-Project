@@ -14,6 +14,11 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone, timedelta
 from google_calendar import create_google_calendar_event
 import certifi
+import smtplib
+import secrets
+import string
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -44,9 +49,15 @@ JWT_SECRET = os.environ.get('JWT_SECRET', 'paper_hoof_super_secret_key_2026')
 JWT_ALGORITHM = 'HS256'
 ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@paperhoof.com')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'paperhoof123')
+SUPER_ADMIN_EMAIL = os.environ.get('SUPER_ADMIN_EMAIL', 'paperhoof@gmail.com').lower().strip()
+SUPER_ADMIN_PASSWORD = os.environ.get('SUPER_ADMIN_PASSWORD', 'paperhoof123')
 
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode('utf-8')).hexdigest()
+
+def generate_temp_password(length: int = 10) -> str:
+    chars = string.ascii_letters + string.digits + "!@#$"
+    return "PH-" + ''.join(secrets.choice(chars) for _ in range(length))
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
@@ -64,6 +75,71 @@ async def verify_token(authorization: Optional[str] = Header(None)) -> dict:
     except Exception:
         raise HTTPException(status_code=401, detail="Unauthorized: Token expired or invalid")
 
+async def verify_super_admin(payload: dict = Depends(verify_token)) -> dict:
+    role = payload.get("role")
+    if role != "super_admin":
+        raise HTTPException(status_code=403, detail="Forbidden: Super Admin access required")
+    return payload
+
+def send_invitation_email(recipient_email: str, recipient_name: str, temp_password: str, role: str) -> bool:
+    """Sends an invitation email containing login details & temp password via Gmail SMTP."""
+    smtp_user = os.environ.get("SMTP_USER", "paperhoof@gmail.com")
+    smtp_password = os.environ.get("SMTP_PASSWORD", "")
+    smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
+    smtp_port = int(os.environ.get("SMTP_PORT", 587))
+
+    if not smtp_password:
+        logger.info(f"SMTP_PASSWORD not set in env. Invitation email to {recipient_email} skipped. Temp password: {temp_password}")
+        return False
+
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = "Welcome to Paper Hoof Studio CMS — Invitation & Access"
+        msg["From"] = f"Paper Hoof <{smtp_user}>"
+        msg["To"] = recipient_email
+
+        role_title = "Super Administrator" if role == "super_admin" else "Team Member (Admin)"
+
+        html_content = f"""
+        <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #0d1a14; color: #ffffff; padding: 40px 20px;">
+            <div style="max-width: 560px; margin: 0 auto; background-color: #12241b; border: 1px solid #1e3b2e; border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <h2 style="color: #97d9af; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Paper Hoof</h2>
+                    <p style="color: #6b8a78; font-size: 13px; margin-top: 4px; text-transform: uppercase; letter-spacing: 1.5px;">Studio CMS Backend Access</p>
+                </div>
+                <hr style="border: 0; border-top: 1px solid #1e3b2e; margin: 24px 0;" />
+                <p style="font-size: 15px; color: #e2e8f0; line-height: 1.6;">Hello <strong>{recipient_name}</strong>,</p>
+                <p style="font-size: 15px; color: #cbd5e1; line-height: 1.6;">You have been added to the <strong>Paper Hoof CMS Backend</strong> as a <strong>{role_title}</strong>.</p>
+                
+                <div style="background-color: #0b1510; border: 1.5px solid #97d9af; border-radius: 12px; padding: 20px; margin: 24px 0; text-align: center;">
+                    <p style="font-size: 12px; color: #97d9af; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0; font-weight: 600;">Your Temporary Login Credentials</p>
+                    <p style="font-size: 14px; color: #cbd5e1; margin: 4px 0;">Email: <strong style="color: #ffffff;">{recipient_email}</strong></p>
+                    <p style="font-size: 14px; color: #cbd5e1; margin: 8px 0 0 0;">Temporary Password: <strong style="color: #97d9af; font-family: monospace; font-size: 18px; letter-spacing: 2px;">{temp_password}</strong></p>
+                </div>
+                
+                <p style="font-size: 14px; color: #94a3b8; line-height: 1.5;">Log in using your temporary password below. You will be prompted to set your new permanent password immediately upon logging in.</p>
+                
+                <div style="text-align: center; margin-top: 32px;">
+                    <a href="http://localhost:3000/admin/login" style="background-color: #97d9af; color: #0d1a14; padding: 13px 32px; font-weight: 700; font-size: 14px; text-decoration: none; border-radius: 8px; display: inline-block;">Log In to CMS Backend</a>
+                </div>
+                <hr style="border: 0; border-top: 1px solid #1e3b2e; margin: 32px 0 20px 0;" />
+                <p style="font-size: 12px; color: #475569; text-align: center; margin: 0;">Paper Hoof Studio &copy; 2026. All rights reserved.</p>
+            </div>
+        </div>
+        """
+        msg.attach(MIMEText(html_content, "html"))
+
+        with smtplib.SMTP(smtp_host, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_password)
+            server.send_message(msg)
+
+        logger.info(f"Invitation email successfully sent from {smtp_user} to {recipient_email}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send invitation email via SMTP: {e}")
+        return False
+
 # App Setup
 app = FastAPI(title="Paper Hoof CMS Backend API")
 api_router = APIRouter(prefix="/api")
@@ -77,6 +153,19 @@ class AuthLogin(BaseModel):
 class AuthResponse(BaseModel):
     token: str
     user: dict
+
+class CreateUserRequest(BaseModel):
+    email: str
+    name: str
+    role: str = "admin"
+    tempPassword: Optional[str] = None
+
+class UpdateRoleRequest(BaseModel):
+    role: str
+
+class ChangePasswordRequest(BaseModel):
+    currentPassword: Optional[str] = None
+    newPassword: str
 
 class StatusCheck(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -187,24 +276,139 @@ class SocialsSettings(BaseModel):
 async def login(credentials: AuthLogin):
     email = credentials.email.lower().strip()
     password = credentials.password
-    
-    # Check against MongoDB users collection or default admin
+
     user = await db.users.find_one({"email": email})
     if not user:
+        if email == SUPER_ADMIN_EMAIL.lower() and password == SUPER_ADMIN_PASSWORD:
+            token = create_access_token({"sub": email, "role": "super_admin"})
+            return {"token": token, "user": {"email": email, "name": "Paper Hoof Super Admin", "role": "super_admin", "mustChangePassword": False}}
         if email == ADMIN_EMAIL.lower() and password == ADMIN_PASSWORD:
             token = create_access_token({"sub": email, "role": "admin"})
-            return {"token": token, "user": {"email": email, "name": "Paper Hoof Team", "role": "admin"}}
+            return {"token": token, "user": {"email": email, "name": "Paper Hoof Team", "role": "admin", "mustChangePassword": False}}
         raise HTTPException(status_code=400, detail="Invalid email or password")
-    
+
     if hash_password(password) != user.get("passwordHash"):
         raise HTTPException(status_code=400, detail="Invalid email or password")
-    
-    token = create_access_token({"sub": email, "role": user.get("role", "admin")})
-    return {"token": token, "user": {"email": email, "name": user.get("name", "Paper Hoof Team"), "role": user.get("role", "admin")}}
+
+    user_role = user.get("role", "admin")
+    must_change = bool(user.get("mustChangePassword", False))
+
+    token = create_access_token({"sub": email, "role": user_role, "id": user.get("id")})
+    return {
+        "token": token,
+        "user": {
+            "id": user.get("id"),
+            "email": email,
+            "name": user.get("name", "Paper Hoof Team"),
+            "role": user_role,
+            "mustChangePassword": must_change
+        }
+    }
+
+@api_router.post("/auth/change-password")
+async def change_password(data: ChangePasswordRequest, user_data: dict = Depends(verify_token)):
+    email = user_data.get("sub")
+    user = await db.users.find_one({"email": email})
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User account not found")
+
+    if data.currentPassword and hash_password(data.currentPassword) != user.get("passwordHash"):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+
+    if len(data.newPassword) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters long")
+
+    new_hash = hash_password(data.newPassword)
+    await db.users.update_one(
+        {"email": email},
+        {"$set": {
+            "passwordHash": new_hash,
+            "mustChangePassword": False,
+            "updatedAt": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    return {"status": "success", "message": "Password updated successfully"}
 
 @api_router.get("/auth/me")
 async def get_me(user_data: dict = Depends(verify_token)):
-    return {"user": {"email": user_data.get("sub"), "role": user_data.get("role")}}
+    email = user_data.get("sub")
+    user = await db.users.find_one({"email": email}, {"_id": 0, "passwordHash": 0})
+    if user:
+        return {"user": user}
+    return {"user": {"email": email, "role": user_data.get("role"), "mustChangePassword": False}}
+
+# --- TEAM MEMBERS MANAGEMENT (SUPER ADMIN ONLY) ---
+@api_router.get("/users")
+async def get_users(user_data: dict = Depends(verify_super_admin)):
+    users = await db.users.find({}, {"_id": 0, "passwordHash": 0}).sort("createdAt", -1).to_list(100)
+    return users
+
+@api_router.post("/users")
+async def create_user(req: CreateUserRequest, user_data: dict = Depends(verify_super_admin)):
+    email = req.email.lower().strip()
+    name = req.name.strip()
+    role = req.role if req.role in ["super_admin", "admin"] else "admin"
+
+    existing = await db.users.find_one({"email": email})
+    if existing:
+        raise HTTPException(status_code=400, detail=f"User with email '{email}' already exists.")
+
+    temp_password = req.tempPassword if req.tempPassword else generate_temp_password()
+
+    doc = {
+        "id": str(uuid.uuid4()),
+        "email": email,
+        "name": name,
+        "role": role,
+        "passwordHash": hash_password(temp_password),
+        "mustChangePassword": True,
+        "createdAt": datetime.now(timezone.utc).isoformat(),
+        "addedBy": user_data.get("sub")
+    }
+
+    await db.users.insert_one(doc)
+
+    # Dispatch invitation email via Gmail SMTP
+    email_sent = send_invitation_email(email, name, temp_password, role)
+
+    return {
+        "status": "success",
+        "user": {
+            "id": doc["id"],
+            "email": email,
+            "name": name,
+            "role": role,
+            "mustChangePassword": True,
+            "createdAt": doc["createdAt"]
+        },
+        "tempPassword": temp_password,
+        "emailSent": email_sent
+    }
+
+@api_router.put("/users/{user_id}/role")
+async def update_user_role(user_id: str, req: UpdateRoleRequest, user_data: dict = Depends(verify_super_admin)):
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user.get("email") == SUPER_ADMIN_EMAIL and req.role != "super_admin":
+        raise HTTPException(status_code=400, detail="Cannot demote the primary Super Admin account.")
+
+    await db.users.update_one({"id": user_id}, {"$set": {"role": req.role}})
+    return {"status": "success", "userId": user_id, "newRole": req.role}
+
+@api_router.delete("/users/{user_id}")
+async def delete_user(user_id: str, user_data: dict = Depends(verify_super_admin)):
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user.get("email") == SUPER_ADMIN_EMAIL or user.get("email") == user_data.get("sub"):
+        raise HTTPException(status_code=400, detail="Cannot delete your own account or the primary Super Admin.")
+
+    await db.users.delete_one({"id": user_id})
+    return {"status": "deleted", "userId": user_id}
 
 # --- CLOUDFLARE R2 / S3 FILE UPLOAD ---
 @api_router.post("/upload")
@@ -741,6 +945,30 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Startup hook to auto-seed Super Admin account
+@app.on_event("startup")
+async def seed_super_admin():
+    try:
+        admin_user = await db.users.find_one({"email": SUPER_ADMIN_EMAIL})
+        if not admin_user:
+            doc = {
+                "id": str(uuid.uuid4()),
+                "email": SUPER_ADMIN_EMAIL,
+                "name": "Paper Hoof Super Admin",
+                "role": "super_admin",
+                "passwordHash": hash_password(SUPER_ADMIN_PASSWORD),
+                "mustChangePassword": False,
+                "createdAt": datetime.now(timezone.utc).isoformat(),
+                "addedBy": "system"
+            }
+            await db.users.insert_one(doc)
+            logger.info(f"Auto-seeded Super Admin account: {SUPER_ADMIN_EMAIL}")
+        else:
+            if admin_user.get("role") != "super_admin":
+                await db.users.update_one({"email": SUPER_ADMIN_EMAIL}, {"$set": {"role": "super_admin"}})
+    except Exception as e:
+        logger.warning(f"Failed to seed Super Admin account on startup: {e}")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

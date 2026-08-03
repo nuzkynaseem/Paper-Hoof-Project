@@ -15,6 +15,9 @@ import {
   CheckCircle,
   AlertCircle,
   Info,
+  Users,
+  KeyRound,
+  ShieldCheck,
 } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 import AdminDashboardOverview from "./AdminDashboardOverview";
@@ -24,6 +27,8 @@ import AdminHomepage from "./AdminHomepage";
 import AdminBrandReviewCards from "./AdminBrandReviewCards";
 import AdminSocials from "./AdminSocials";
 import AdminBookings from "./AdminBookings";
+import AdminTeamMembers from "./AdminTeamMembers";
+import ChangePasswordModal from "./ChangePasswordModal";
 import "./AdminLayout.css";
 
 // ─── Toast Notification Component ─────────────────────────────────────────────
@@ -74,6 +79,8 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [toasts, setToasts] = useState([]);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [isForcedPasswordChange, setIsForcedPasswordChange] = useState(false);
 
   const navigate = useNavigate();
   const token = localStorage.getItem("paperhoof_admin_token");
@@ -110,9 +117,14 @@ export default function AdminLayout() {
     const savedUser = localStorage.getItem("paperhoof_admin_user");
     if (savedUser) {
       try {
-        setUser(JSON.parse(savedUser));
+        const parsedUser = JSON.parse(savedUser);
+        setUser(parsedUser);
+        if (parsedUser.mustChangePassword) {
+          setIsForcedPasswordChange(true);
+          setIsPasswordModalOpen(true);
+        }
       } catch (e) {
-        setUser({ name: "Paper Hoof Team", email: "admin@paperhoof.com" });
+        setUser({ name: "Paper Hoof Team", email: "paperhoof@gmail.com", role: "super_admin" });
       }
     }
     fetchProjects();
@@ -145,7 +157,9 @@ export default function AdminLayout() {
     navigate("/admin/login");
   };
 
-  const tabs = [
+  const isSuperAdmin = user?.role === "super_admin" || user?.email?.toLowerCase() === "paperhoof@gmail.com";
+
+  const allTabs = [
     { id: "overview", label: "Dashboard", icon: LayoutDashboard },
     { id: "projects", label: "Projects", icon: FolderKanban },
     { id: "workscopes", label: "Work Scope Pills", icon: Tag },
@@ -153,9 +167,12 @@ export default function AdminLayout() {
     { id: "brandreview", label: "Brand Review Cards", icon: Layers },
     { id: "socials", label: "Socials & Contacts", icon: Share2 },
     { id: "bookings", label: "Session Bookings", icon: Calendar },
+    { id: "team", label: "Team Members", icon: Users, superAdminOnly: true },
   ];
 
-  const activeTabLabel = tabs.find((t) => t.id === activeTab)?.label || "Dashboard";
+  const visibleTabs = allTabs.filter((t) => !t.superAdminOnly || isSuperAdmin);
+
+  const activeTabLabel = visibleTabs.find((t) => t.id === activeTab)?.label || "Dashboard";
   const userInitials = (user?.name || "PH")
     .split(" ")
     .map((w) => w[0])
@@ -167,6 +184,23 @@ export default function AdminLayout() {
     <div className="admin-layout-wrapper">
       {/* Global Toast Notification System */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+
+      {/* Password Modal (Forced or Manual) */}
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        isForced={isForcedPasswordChange}
+        onClose={() => {
+          if (!isForcedPasswordChange) setIsPasswordModalOpen(false);
+        }}
+        onSuccess={() => {
+          setIsPasswordModalOpen(false);
+          setIsForcedPasswordChange(false);
+          if (user) {
+            setUser({ ...user, mustChangePassword: false });
+          }
+        }}
+        showToast={showToast}
+      />
 
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
@@ -200,7 +234,7 @@ export default function AdminLayout() {
         {/* Nav Items */}
         <nav className="sidebar-nav">
           <div className="nav-group-label">Management</div>
-          {tabs.map((tab) => {
+          {visibleTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
@@ -214,12 +248,15 @@ export default function AdminLayout() {
               >
                 <Icon className="nav-icon" />
                 <span>{tab.label}</span>
+                {tab.superAdminOnly && (
+                  <span className="tab-super-badge" title="Super Admin Feature">SA</span>
+                )}
               </button>
             );
           })}
         </nav>
 
-        {/* Footer: User + Logout */}
+        {/* Footer: User + Actions */}
         <div className="sidebar-footer">
           <div className="user-profile-badge">
             <div className="user-avatar">{userInitials}</div>
@@ -227,16 +264,37 @@ export default function AdminLayout() {
               <div className="user-info-name" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {user?.name || "Paper Hoof Team"}
               </div>
-              <div className="user-info-role" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {user?.role === "admin" ? "Administrator" : user?.email || "admin@paperhoof.com"}
+              <div className="user-info-role" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 4 }}>
+                {isSuperAdmin ? (
+                  <span style={{ color: "#97d9af", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 2 }}>
+                    <ShieldCheck style={{ width: 12, height: 12 }} /> Super Admin
+                  </span>
+                ) : (
+                  <span>Admin Member</span>
+                )}
               </div>
             </div>
           </div>
 
-          <button onClick={handleLogout} className="logout-btn">
-            <LogOut style={{ width: 15, height: 15 }} />
-            <span>Sign Out</span>
-          </button>
+          <div style={{ display: "flex", gap: 6, width: "100%", marginTop: 8 }}>
+            <button
+              onClick={() => {
+                setIsForcedPasswordChange(false);
+                setIsPasswordModalOpen(true);
+              }}
+              className="logout-btn"
+              style={{ flex: 1, justifyContent: "center" }}
+              title="Change Password"
+            >
+              <KeyRound style={{ width: 14, height: 14 }} />
+              <span>Password</span>
+            </button>
+
+            <button onClick={handleLogout} className="logout-btn" style={{ flex: 1, justifyContent: "center" }}>
+              <LogOut style={{ width: 14, height: 14 }} />
+              <span>Sign Out</span>
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -318,6 +376,9 @@ export default function AdminLayout() {
           {activeTab === "brandreview" && <AdminBrandReviewCards showToast={showToast} />}
           {activeTab === "socials" && <AdminSocials showToast={showToast} />}
           {activeTab === "bookings" && <AdminBookings showToast={showToast} />}
+          {activeTab === "team" && isSuperAdmin && (
+            <AdminTeamMembers showToast={showToast} currentUser={user} />
+          )}
         </main>
       </div>
     </div>
