@@ -161,7 +161,7 @@ def send_invitation_email(recipient_email: str, recipient_name: str, temp_passwo
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td align="center">
-                            <a href="http://localhost:3000/admin/login" target="_blank" style="background-color: #97d9af; color: #0d1a14; font-size: 14px; font-weight: 800; text-decoration: none; padding: 14px 32px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 14px rgba(151, 217, 175, 0.3);">
+                            <a href="{os.environ.get('FRONTEND_URL', 'http://localhost:3000')}/admin/login" target="_blank" style="background-color: #97d9af; color: #0d1a14; font-size: 14px; font-weight: 800; text-decoration: none; padding: 14px 32px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 14px rgba(151, 217, 175, 0.3);">
                               Log In to Studio CMS &rarr;
                             </a>
                           </td>

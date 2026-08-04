@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { Calendar } from './ui/calendar';
+import { API_BASE } from '../utils/api';
 import './BrandReviewForm.css';
 
 const modalTimeSlots = [
@@ -50,8 +51,7 @@ const BrandReviewForm = ({ isOpen, onClose }) => {
 
     const fetchBookedSlots = async () => {
       try {
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
-        const res = await fetch(`${backendUrl}/api/bookings/booked-slots?date=${dateStr}`);
+        const res = await fetch(`${API_BASE}/bookings/booked-slots?date=${dateStr}`);
         if (res.ok) {
           const data = await res.json();
           setBookedSlots(data.bookedSlots || []);
@@ -102,8 +102,7 @@ const BrandReviewForm = ({ isOpen, onClose }) => {
     };
 
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
-      const res = await fetch(`${backendUrl}/api/bookings`, {
+      const res = await fetch(`${API_BASE}/bookings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
