@@ -538,6 +538,14 @@
   }
 }
 
+/* ========== BOOKINGS STATS 3-COLUMN SINGLE ROW GRID ========== */
+.bookings-stats-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 16px !important;
+  margin-bottom: 24px;
+}
+
 /* ========== STAT CARDS ========== */
 .stat-card {
   background: #ffffff;

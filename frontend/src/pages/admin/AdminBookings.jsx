@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, Clock, Building2, Instagram, CheckCircle, Clock3, Archive, Search, Mail, Phone } from "lucide-react";
 import { API_BASE } from "../../utils/api";
+import PaperHoofSelect from "../../components/ui/PaperHoofSelect";
 
 export default function AdminBookings({ showToast }) {
   const [bookings, setBookings] = useState([]);
@@ -87,34 +88,34 @@ export default function AdminBookings({ showToast }) {
             />
           </div>
 
-          <div className="relative">
-            <select
+          <div className="w-44">
+            <PaperHoofSelect
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="custom-input text-xs"
-            >
-              <option value="all">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="archived">Archived</option>
-            </select>
+              options={[
+                { value: "all", label: "All Statuses" },
+                { value: "pending", label: "Pending" },
+                { value: "confirmed", label: "Confirmed" },
+                { value: "archived", label: "Archived" },
+              ]}
+            />
           </div>
         </div>
       </div>
 
-      {/* Bookings Stats Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="stat-card p-4">
+      {/* Bookings Stats Single Row (3 Columns Side by Side) */}
+      <div className="bookings-stats-grid">
+        <div className="stat-card p-4 h-full flex flex-col justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Total Bookings</span>
           <div className="text-3xl font-extrabold text-[#123524]">{bookings.length}</div>
         </div>
-        <div className="stat-card p-4">
+        <div className="stat-card p-4 h-full flex flex-col justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-amber-700">Pending Review</span>
           <div className="text-3xl font-extrabold text-amber-600">
             {bookings.filter((b) => b.status === "pending").length}
           </div>
         </div>
-        <div className="stat-card p-4">
+        <div className="stat-card p-4 h-full flex flex-col justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-[#166534]">Confirmed Sessions</span>
           <div className="text-3xl font-extrabold text-[#166534]">
             {bookings.filter((b) => b.status === "confirmed").length}
