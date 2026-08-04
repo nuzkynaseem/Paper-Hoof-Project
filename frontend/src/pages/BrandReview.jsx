@@ -19,37 +19,37 @@ const defaultBrandCards = [
     title: "Nordic Light",
     minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop",
-    className: "top-8 left-[3%] md:left-[8%] rotate-[-8deg]"
+    className: "top-4 left-[1%] md:top-8 md:left-[8%] rotate-[-8deg]"
   },
   {
     title: "Aesop Organics",
     minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=600&auto=format&fit=crop",
-    className: "top-48 left-[1%] md:left-[5%] rotate-[7deg]"
+    className: "top-36 left-[1%] md:top-48 md:left-[5%] rotate-[7deg]"
   },
   {
     title: "Lumen Living",
     minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80&w=600&auto=format&fit=crop",
-    className: "top-8 right-[3%] md:right-[8%] rotate-[10deg]"
+    className: "top-4 right-[1%] md:top-8 md:right-[8%] rotate-[10deg]"
   },
   {
     title: "Maison Kith",
     minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=600&auto=format&fit=crop",
-    className: "top-52 right-[1%] md:right-[5%] rotate-[-6deg]"
+    className: "top-40 right-[1%] md:top-52 md:right-[5%] rotate-[-6deg]"
   },
   {
     title: "Aura Creative",
     minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=600&auto=format&fit=crop",
-    className: "bottom-6 left-[14%] md:left-[20%] rotate-[-5deg]"
+    className: "bottom-4 left-[6%] md:bottom-6 md:left-[20%] rotate-[-5deg]"
   },
   {
     title: "Bare Essence",
     minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1526947425960-945c6e72858f?q=80&w=600&auto=format&fit=crop",
-    className: "bottom-6 right-[14%] md:right-[20%] rotate-[8deg]"
+    className: "bottom-4 right-[6%] md:bottom-6 md:right-[20%] rotate-[8deg]"
   }
 ];
 

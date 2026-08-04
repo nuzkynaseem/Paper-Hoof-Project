@@ -15,6 +15,7 @@ import AboutUs from "./pages/AboutUs";
 import Work from "./pages/Work";
 import ProjectCaseStudy from "./pages/ProjectCaseStudy";
 import CustomCursor from "./components/CustomCursor";
+import PageLoader from "./components/PageLoader";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminLogin from "./pages/admin/AdminLogin";
 import { API_BASE } from "./utils/api";
@@ -33,9 +34,19 @@ function HomePage() {
 function AppContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isBrandReviewOpen, setIsBrandReviewOpen] = useState(false);
+  const [isRouteLoading, setIsRouteLoading] = useState(true);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
   const isAdminRoute = location.pathname.startsWith('/admin');
+
+  // Trigger loader progress on route change
+  useEffect(() => {
+    setIsRouteLoading(true);
+    const timer = setTimeout(() => {
+      setIsRouteLoading(false);
+    }, 450);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   // Record visit analytics on public load
   useEffect(() => {
@@ -92,6 +103,7 @@ function AppContent() {
 
   return (
     <div className="App">
+      <PageLoader key={location.pathname} />
       <CustomCursor />
       <a href="#main-content" className="skip-link">
         Skip to main content

@@ -2,16 +2,18 @@
   position: relative;
   z-index: 10;
   width: 100%;
+  box-sizing: border-box;
   background: var(--sheep-white);
   color: var(--horse-black);
-  padding: 0 48px 28px;
+  padding: 0 clamp(24px, 4vw, 64px) 28px;
   border-top: 1px solid rgba(32, 36, 35, 0.12);
   overflow: hidden;
 }
 
 .compact-footer-inner {
-  max-width: 1350px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 32px;

@@ -76,12 +76,11 @@ const IntroReveal = () => {
       <div className="intro-container">
         <p className="intro-reveal-statement" ref={textRef}>
           {words.map((word, i) => {
-            const wordOpacity = Math.min(1, Math.max(0.18, activeIndex - i));
-            const isRevealed = wordOpacity > 0.8;
+            const wordOpacity = Math.min(1, Math.max(0.15, activeIndex - i));
             return (
               <span
                 key={i}
-                className={`intro-word ${isRevealed ? 'is-revealed' : ''}`}
+                className="intro-word"
                 style={{ opacity: wordOpacity }}
               >
                 {word}{' '}

@@ -14,7 +14,7 @@
 
 .intro-reveal-statement {
   font-family: var(--font-primary);
-  font-weight: 500;
+  font-weight: 600;
   font-size: clamp(2.25rem, 4.5vw, 4.25rem);
   line-height: 1.22;
   letter-spacing: -0.02em;
@@ -25,13 +25,10 @@
 
 .intro-word {
   display: inline;
-  color: var(--horse-black);
-  transition: opacity 220ms ease, transform 220ms ease;
-  will-change: opacity;
-}
-
-.intro-word.is-revealed {
   font-weight: 600;
+  color: var(--horse-black);
+  transition: opacity 220ms ease;
+  will-change: opacity;
 }
 
 @media (max-width: 1024px) {
