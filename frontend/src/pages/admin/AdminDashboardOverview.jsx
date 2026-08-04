@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Star, FolderKanban, Eye, Sparkles, ExternalLink, ArrowRight, LayoutGrid } from "lucide-react";
 import { API_BASE } from "../../utils/api";
+import PaperHoofSelect from "../../components/ui/PaperHoofSelect";
 
 export default function AdminDashboardOverview({ projects = [], onNavigateTab, onProjectsChange, showToast }) {
   const [stats, setStats] = useState({ visitCount: 420, totalProjects: 6, featuredProject: null });
@@ -46,8 +47,7 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
     }
   };
 
-  const handleSetFeatured = async (e) => {
-    const projId = e.target.value;
+  const handleSetFeatured = async (projId) => {
     setSelectedFeaturedId(projId);
     setSavingFeatured(true);
 
@@ -76,8 +76,8 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
     }
   };
 
-  const handleSetHomepageLimit = async (e) => {
-    const limit = parseInt(e.target.value);
+  const handleSetHomepageLimit = async (limitVal) => {
+    const limit = parseInt(limitVal);
     setHomepageLimit(limit);
     setSavingLimit(true);
 
@@ -112,6 +112,19 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
 
   const currentFeatured = projects.find((p) => p.id === selectedFeaturedId) || stats.featuredProject;
 
+  const projectOptions = projects.map((p) => ({
+    value: p.id,
+    label: `${p.name}${p.category ? ` (${p.category})` : ""}`,
+  }));
+
+  const limitOptions = [
+    { value: 2, label: "Show 2 Projects" },
+    { value: 4, label: "Show 4 Projects (Default)" },
+    { value: 6, label: "Show 6 Projects" },
+    { value: 8, label: "Show 8 Projects" },
+    { value: 100, label: "Show All Projects" },
+  ];
+
   return (
     <div className="space-y-8">
       {/* Welcome Banner */}
@@ -143,8 +156,8 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
         </div>
       </div>
 
-      {/* Metrics Column Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      {/* Metrics 4-Column Grid */}
+      <div className="admin-dashboard-metrics-grid">
         {/* Total Projects Card */}
         <div className="stat-card h-full flex flex-col justify-between">
           <div className="stat-header">
@@ -214,7 +227,7 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Featured Project Interactive Selector Card */}
         <div className="featured-selector-card lg:col-span-2">
-          <div className="featured-card-header">
+          <div className="featured-card-header flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="featured-star-badge">
                 <Star className="w-5 h-5 text-amber-600 fill-amber-500" />
@@ -227,22 +240,14 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <select
+            <div className="w-full sm:w-64">
+              <PaperHoofSelect
                 value={selectedFeaturedId}
-                onChange={handleSetFeatured}
+                onChange={(e) => handleSetFeatured(e.target.value)}
+                options={projectOptions}
+                placeholder="Select a project..."
                 disabled={savingFeatured}
-                className="featured-select-input custom-input"
-              >
-                <option value="" disabled>
-                  Select a project...
-                </option>
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} ({p.category || "Project"})
-                  </option>
-                ))}
-              </select>
+              />
             </div>
           </div>
 
@@ -294,18 +299,12 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
 
             <div className="input-group pt-2">
               <label>Homepage Works Limit</label>
-              <select
+              <PaperHoofSelect
                 value={homepageLimit}
-                onChange={handleSetHomepageLimit}
+                onChange={(e) => handleSetHomepageLimit(e.target.value)}
+                options={limitOptions}
                 disabled={savingLimit}
-                className="custom-input font-medium"
-              >
-                <option value={2}>Show 2 Projects</option>
-                <option value={4}>Show 4 Projects (Default)</option>
-                <option value={6}>Show 6 Projects</option>
-                <option value={8}>Show 8 Projects</option>
-                <option value={100}>Show All Projects</option>
-              </select>
+              />
             </div>
           </div>
 

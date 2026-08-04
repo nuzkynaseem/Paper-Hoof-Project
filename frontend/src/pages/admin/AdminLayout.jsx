@@ -211,16 +211,16 @@ export default function AdminLayout() {
       <aside className={`admin-sidebar ${sidebarOpen ? "open" : ""}`}>
         {/* Brand Header */}
         <div className="sidebar-brand">
-          <div className="brand-logo-badge">
+          <div className="brand-logo-badge flex items-center gap-2">
             <img
-              src="/paperhoof-horse.svg"
+              src="/paperhoof-wordmark.svg"
               alt="Paper Hoof"
-              className="sidebar-logo-img"
+              className="sidebar-logo-img filter brightness-0 invert"
+              style={{ height: 26, width: "auto" }}
             />
-            <div className="sidebar-brand-text">
-              <div className="sidebar-brand-name">Paper Hoof</div>
-              <div className="sidebar-brand-tag">Studio CMS</div>
-            </div>
+            <span className="text-[10px] font-extrabold tracking-widest text-[#97d9af] uppercase bg-[#123524] px-2 py-0.5 rounded border border-[#97d9af]/30 shadow-sm">
+              CMS
+            </span>
           </div>
           <button
             className="md:hidden"

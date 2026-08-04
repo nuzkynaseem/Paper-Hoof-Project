@@ -4,6 +4,11 @@
    ========================================= */
 
 /* Global Admin Cursor & Hand Click Overrides */
+.admin-layout-wrapper,
+.admin-layout-wrapper * {
+  cursor: default;
+}
+
 .admin-layout-wrapper input[type="text"],
 .admin-layout-wrapper input[type="email"],
 .admin-layout-wrapper input[type="password"],
@@ -480,19 +485,57 @@
   align-items: center;
   gap: 8px;
   padding: 10px 18px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  border: 1.5px solid #d1d5db;
   border-radius: 10px;
-  color: #ffffff;
+  color: #123524;
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 700;
   font-family: inherit;
   transition: all 0.2s ease;
   text-decoration: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  cursor: pointer !important;
 }
 
 .action-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: #f9fafb;
+  border-color: #97d9af;
+  color: #123524;
+  transform: translateY(-1px);
+}
+
+.welcome-banner .action-btn-secondary {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.welcome-banner .action-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+/* ========== DASHBOARD METRICS 4-COLUMN GRID ========== */
+.admin-dashboard-metrics-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 20px !important;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1024px) {
+  .admin-dashboard-metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-dashboard-metrics-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 /* ========== STAT CARDS ========== */
