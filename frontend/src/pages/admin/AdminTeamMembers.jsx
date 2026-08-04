@@ -61,6 +61,7 @@ export default function AdminTeamMembers({ showToast, currentUser }) {
 
   useEffect(() => {
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAddUser = async (e) => {

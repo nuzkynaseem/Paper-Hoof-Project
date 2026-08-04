@@ -14,6 +14,7 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
   useEffect(() => {
     fetchStats();
     fetchHomepageConfig();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchStats = async () => {
