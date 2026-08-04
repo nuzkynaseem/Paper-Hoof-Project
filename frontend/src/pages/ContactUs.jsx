@@ -7,7 +7,7 @@ import {
   Check,
 } from 'lucide-react';
 import { InstagramIcon, LinkedinIcon } from '../components/SocialIcons';
-import ReadyToMove from '../components/ReadyToMove';
+import SEO from '../components/SEO';
 import './ContactUs.css';
 
 const socialChannels = [
@@ -28,6 +28,11 @@ const ContactUs = () => {
 
   return (
     <div className="contact-us-page">
+      <SEO
+        title="Get in Touch — Paper Hoof Studio"
+        description="Connect with Paper Hoof Studio to start your brand transformation or digital experience project."
+        path="/contact"
+      />
       {/* Main Interactive Hover Section */}
       <section className="contact-interactive-section">
         <div className="contact-container contact-split-grid">

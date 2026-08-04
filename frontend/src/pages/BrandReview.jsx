@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
+import SEO from '../components/SEO';
 import { API_BASE } from '../utils/api';
 import './BrandReview.css';
 
@@ -19,37 +20,37 @@ const defaultBrandCards = [
     title: "Nordic Light",
     minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop",
-    className: "top-4 left-[1%] md:top-8 md:left-[8%] rotate-[-8deg]"
+    className: "top-2 left-2 sm:top-4 sm:left-[2%] md:top-8 md:left-[8%] rotate-[-6deg]"
   },
   {
     title: "Aesop Organics",
     minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=600&auto=format&fit=crop",
-    className: "top-36 left-[1%] md:top-48 md:left-[5%] rotate-[7deg]"
+    className: "top-28 left-2 sm:top-36 sm:left-[2%] md:top-48 md:left-[5%] rotate-[5deg]"
   },
   {
     title: "Lumen Living",
     minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80&w=600&auto=format&fit=crop",
-    className: "top-4 right-[1%] md:top-8 md:right-[8%] rotate-[10deg]"
+    className: "top-2 right-2 sm:top-4 sm:right-[2%] md:top-8 md:right-[8%] rotate-[8deg]"
   },
   {
     title: "Maison Kith",
     minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=600&auto=format&fit=crop",
-    className: "top-40 right-[1%] md:top-52 md:right-[5%] rotate-[-6deg]"
+    className: "top-32 right-2 sm:top-40 sm:right-[2%] md:top-52 md:right-[5%] rotate-[-5deg]"
   },
   {
     title: "Aura Creative",
     minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=600&auto=format&fit=crop",
-    className: "bottom-4 left-[6%] md:bottom-6 md:left-[20%] rotate-[-5deg]"
+    className: "bottom-2 left-4 sm:bottom-4 sm:left-[6%] md:bottom-6 md:left-[20%] rotate-[-4deg]"
   },
   {
     title: "Bare Essence",
     minutes: "120 minutes",
     image: "https://images.unsplash.com/photo-1526947425960-945c6e72858f?q=80&w=600&auto=format&fit=crop",
-    className: "bottom-4 right-[6%] md:bottom-6 md:right-[20%] rotate-[8deg]"
+    className: "bottom-2 right-4 sm:bottom-4 sm:right-[6%] md:bottom-6 md:right-[20%] rotate-[6deg]"
   }
 ];
 
@@ -84,7 +85,7 @@ const BrandTiltCardItem = ({ item }) => {
         <div className="brand-card-img-wrapper">
           <img
             src={item.image}
-            alt={item.title}
+            alt={`Paper Hoof Brand Strategy Audit — ${item.title}`}
             className="brand-card-img"
           />
         </div>
@@ -426,8 +427,67 @@ const BrandReview = () => {
     }, 50);
   };
 
+const brandReviewSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "name": "Brand Review Session",
+      "serviceType": "Brand Audit & Strategic Digital Assessment",
+      "provider": {
+        "@type": "DesignAgency",
+        "name": "Paper Hoof Studio",
+        "url": "https://paperhoof.com"
+      },
+      "areaServed": "Global",
+      "description": "Our Brand Review is a 120-minute strategic session where we assess, analyze, and align your brand's core story, identity, and long-term potential.",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://paperhoof.com/brand-review",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is included in the 120-minute Brand Review?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The session covers a deep strategic audit of your current visual identity, positioning, messaging tone, digital presence, and actionable roadmap for growth."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who is the Brand Review session for?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It is designed for ambitious founders, brand leaders, and marketing executives looking to refresh, scale, or transform their brand authority."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I schedule a session with Paper Hoof Studio?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can reserve your preferred date and time slot directly on our booking page at paperhoof.com/brand-review."
+          }
+        }
+      ]
+    }
+  ]
+};
+
   return (
     <div className="brand-review-page">
+      <SEO
+        title="Independent Brand Audit & Strategy Review — Paper Hoof"
+        description="Request a comprehensive brand audit and strategic digital review from Paper Hoof Studio."
+        path="/brand-review"
+        schema={brandReviewSchema}
+      />
       {/* Redesigned Hero Section */}
       <section
         className="brand-review-hero"

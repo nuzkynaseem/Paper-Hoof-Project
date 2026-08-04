@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lock, Mail, ArrowRight, AlertCircle } from "lucide-react";
+import { Lock, Mail, ArrowRight, AlertCircle, ShieldCheck } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 import "./AdminLogin.css";
 
@@ -47,36 +47,56 @@ export default function AdminLogin({ onLoginSuccess }) {
       <div className="login-brand-panel">
         <div className="login-brand-panel-noise" />
 
-        {/* Decorative Circles */}
-        <div className="login-brand-circle login-brand-circle-1" />
-        <div className="login-brand-circle login-brand-circle-2" />
-        <div className="login-brand-circle login-brand-circle-3" />
+        {/* Decorative Secondary Palette Circles in Low Opacity */}
+        <div className="login-brand-circle login-brand-circle-mint" />
+        <div className="login-brand-circle login-brand-circle-gold" />
+        <div className="login-brand-circle login-brand-circle-pink" />
+        <div className="login-brand-circle login-brand-circle-red" />
+        <div className="login-brand-circle login-brand-circle-[#123524]" />
 
-        {/* Top: Logo */}
-        <div className="login-brand-top">
-          <img src="/paperhoof-horse.svg" alt="Paper Hoof Horse" />
-          <span className="login-brand-wordmark">Paper Hoof</span>
+        {/* Top: Paper Hoof Wordmark & CMS Subtitle */}
+        <div className="login-brand-top flex flex-col items-start gap-1 z-10 relative">
+          <img
+            src={`${process.env.PUBLIC_URL}/paperhoof-wordmark.svg`}
+            alt="Paper Hoof Wordmark"
+            className="login-wordmark-img h-9 w-auto filter brightness-0 invert"
+          />
+          <div className="flex items-center gap-1.5 mt-1">
+            <span className="text-[11px] font-extrabold tracking-widest text-[#97d9af] uppercase bg-[#123524] px-2.5 py-0.5 rounded border border-[#97d9af]/30 shadow-sm">
+              CMS Studio Portal
+            </span>
+          </div>
         </div>
 
         {/* Bottom: Quote */}
-        <div className="login-brand-bottom">
+        <div className="login-brand-bottom z-10 relative">
           <p className="login-brand-quote">
             Where <em>clarity</em>, tactile beauty, and strategy meet.
           </p>
-          <p className="login-brand-meta">Studio Management Portal · 2026</p>
+          <p className="login-brand-meta">Studio Management System · 2026</p>
         </div>
       </div>
 
       {/* Right — Login Form */}
       <div className="login-form-panel">
-        {/* Mobile-only logo */}
-        <div className="login-mobile-logo">
-          <img src="/paperhoof-logo.svg" alt="Paper Hoof" />
+        {/* Mobile-only wordmark logo */}
+        <div className="login-mobile-logo flex items-center gap-2 mb-8">
+          <img
+            src={`${process.env.PUBLIC_URL}/paperhoof-wordmark.svg`}
+            alt="Paper Hoof"
+            className="h-8 w-auto"
+          />
+          <span className="text-[11px] font-extrabold text-[#123524] bg-[#dcfce7] border border-[#86efac] px-2 py-0.5 rounded-md">
+            CMS
+          </span>
         </div>
 
         {/* Header */}
         <div className="login-header">
-          <span className="login-eyebrow">Team Portal</span>
+          <span className="login-eyebrow">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Team Portal</span>
+          </span>
           <h1 className="login-title">Welcome back,<br />Paper Hoof.</h1>
           <p className="login-subtitle">
             Sign in to manage your studio's content, projects, and bookings.
@@ -126,7 +146,7 @@ export default function AdminLogin({ onLoginSuccess }) {
               <span className="spinner"></span>
             ) : (
               <>
-                <span>Sign In to Dashboard</span>
+                <span>Sign In to CMS Dashboard</span>
                 <ArrowRight style={{ width: 17, height: 17 }} />
               </>
             )}

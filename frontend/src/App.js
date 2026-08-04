@@ -22,9 +22,16 @@ import { API_BASE } from "./utils/api";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
+import SEO from "./components/SEO";
+
 function HomePage() {
   return (
     <>
+      <SEO
+        title="Paper Hoof Studio — Brand Strategy & Digital Experience"
+        description="Paper Hoof is an independent brand design studio operating at the intersection of clarity, tactile beauty, and digital strategy. We craft enduring brand identities and web experiences."
+        path="/"
+      />
       <Hero />
       <IntroReveal />
       <RecentProjects />

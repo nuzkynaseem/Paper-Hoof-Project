@@ -44,15 +44,68 @@
         <script type="application/ld+json">
         {
           "@context": "https://schema.org",
-          "@type": "DesignAgency",
-          "name": "Paper Hoof Studio",
-          "url": "https://paperhoof.com",
-          "logo": "https://paperhoof.com/og-image.png",
-          "description": "Paper Hoof is an independent brand design studio operating at the intersection of clarity, tactile beauty, and digital strategy.",
-          "email": "hello@paperhoof.com",
-          "sameAs": [
-            "https://instagram.com/paperhoof",
-            "https://linkedin.com/company/paperhoof"
+          "@graph": [
+            {
+              "@type": "DesignAgency",
+              "@id": "https://paperhoof.com/#organization",
+              "name": "Paper Hoof Studio",
+              "url": "https://paperhoof.com",
+              "logo": "https://paperhoof.com/og-image.png",
+              "image": "https://paperhoof.com/og-image.png",
+              "description": "Paper Hoof is an independent brand design studio operating at the intersection of clarity, tactile beauty, and digital strategy.",
+              "email": "hello@paperhoof.com",
+              "sameAs": [
+                "https://instagram.com/paperhoof",
+                "https://linkedin.com/company/paperhoof"
+              ],
+              "hasOfferCatalog": {
+                "@type": "OfferCatalog",
+                "name": "Design & Strategy Services",
+                "itemListElement": [
+                  {
+                    "@type": "Offer",
+                    "itemOffered": {
+                      "@type": "Service",
+                      "name": "Brand Strategy & Architecture",
+                      "description": "Rigorous brand positioning, voice tone, and portfolio architecture."
+                    }
+                  },
+                  {
+                    "@type": "Offer",
+                    "itemOffered": {
+                      "@type": "Service",
+                      "name": "Visual Identity System",
+                      "description": "Custom typography, physical collateral, packaging, and comprehensive visual guidelines."
+                    }
+                  },
+                  {
+                    "@type": "Offer",
+                    "itemOffered": {
+                      "@type": "Service",
+                      "name": "Digital Product & Web Engineering",
+                      "description": "Custom React web application development, kinetic motion, and interactive design systems."
+                    }
+                  },
+                  {
+                    "@type": "Offer",
+                    "itemOffered": {
+                      "@type": "Service",
+                      "name": "Independent Brand Review & Audit",
+                      "description": "A 120-minute strategic session to assess, analyze, and align brand story and digital direction."
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://paperhoof.com/#website",
+              "url": "https://paperhoof.com",
+              "name": "Paper Hoof Studio",
+              "publisher": {
+                "@id": "https://paperhoof.com/#organization"
+              }
+            }
           ]
         }
         </script>

@@ -143,10 +143,10 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
         </div>
       </div>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      {/* Metrics Column Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {/* Total Projects Card */}
-        <div className="stat-card">
+        <div className="stat-card h-full flex flex-col justify-between">
           <div className="stat-header">
             <div className="stat-icon-wrapper bg-[#f0fdf4] text-[#166534]">
               <FolderKanban className="w-5 h-5" />
@@ -163,7 +163,7 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
         </div>
 
         {/* Website Visits Card (Vercel Synced) */}
-        <div className="stat-card">
+        <div className="stat-card h-full flex flex-col justify-between">
           <div className="stat-header">
             <div className="stat-icon-wrapper bg-blue-50 text-blue-700">
               <Eye className="w-5 h-5" />
@@ -180,7 +180,7 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
         </div>
 
         {/* Unique Visitors */}
-        <div className="stat-card">
+        <div className="stat-card h-full flex flex-col justify-between">
           <div className="stat-header">
             <div className="stat-icon-wrapper bg-purple-50 text-purple-700">
               <Sparkles className="w-5 h-5" />
@@ -194,7 +194,7 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
         </div>
 
         {/* Featured Project Status */}
-        <div className="stat-card">
+        <div className="stat-card h-full flex flex-col justify-between">
           <div className="stat-header">
             <div className="stat-icon-wrapper bg-amber-50 text-amber-700">
               <Star className="w-5 h-5" />

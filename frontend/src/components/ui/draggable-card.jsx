@@ -12,7 +12,7 @@ export const DraggableCardContainer = ({ children, className }) => {
       <div
         ref={containerRef}
         className={cn(
-          "relative flex min-h-[650px] w-full items-center justify-center overflow-visible",
+          "relative flex min-h-[480px] md:min-h-[650px] w-full max-w-full items-center justify-center overflow-hidden md:overflow-visible",
           className
         )}
       >
@@ -34,7 +34,7 @@ export const DraggableCardBody = ({ children, className, ...props }) => {
       whileHover={{ scale: 1.04, zIndex: 40 }}
       whileDrag={{ scale: 1.06, zIndex: 50, cursor: "grabbing" }}
       className={cn(
-        "absolute cursor-grab rounded-2xl border border-black/10 bg-white/95 p-2.5 sm:p-4 shadow-xl backdrop-blur-md transition-shadow hover:shadow-2xl select-none max-w-[135px] sm:max-w-[240px]",
+        "absolute cursor-grab rounded-2xl border border-black/10 bg-white/95 p-2 sm:p-4 shadow-xl backdrop-blur-md transition-shadow hover:shadow-2xl select-none max-w-[108px] xs:max-w-[120px] sm:max-w-[200px] md:max-w-[240px]",
         className
       )}
       {...props}

@@ -4,6 +4,8 @@ import { projects as mockProjects, slugify } from '../mock';
 import TiltCard from '../components/TiltCard';
 import { API_BASE } from '../utils/api';
 
+import SEO from '../components/SEO';
+
 const Work = () => {
   const navigate = useNavigate();
   const [projectList, setProjectList] = useState([]);
@@ -36,6 +38,11 @@ const Work = () => {
 
   return (
     <div className="work-page-min">
+      <SEO
+        title="Selected Work & Portfolio — Paper Hoof Studio"
+        description="Explore our selected brand identity, digital design, and strategy projects at Paper Hoof Studio."
+        path="/work"
+      />
       <div className="container">
         <div className="tilt-grid">
           {projectList.map((project) => (

@@ -93,7 +93,7 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
                             <div className="w-full aspect-square rounded-md overflow-hidden relative mb-2">
                               <img
                                 src={p.coverImage || p.image || p.sliderImage}
-                                alt={p.name}
+                                alt={`Paper Hoof Portfolio Case Study — ${p.name}`}
                                 className="w-full h-full object-cover"
                               />
                               {isActive && (

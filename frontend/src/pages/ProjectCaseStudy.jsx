@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { projects as mockProjects, slugify } from '../mock';
 import MacDockNavigation from '../components/MacDockNavigation';
 import { getTagStyle } from '../utils/tagColors';
+import SEO from '../components/SEO';
 import { API_BASE } from '../utils/api';
 import './ProjectCaseStudy.css';
 
@@ -134,9 +135,16 @@ const ProjectCaseStudy = () => {
   const heroMediaUrl = project.heroMedia || project.coverImage || project.image;
   const isHeroVideo = project.heroMediaType === "video" || (heroMediaUrl && heroMediaUrl.endsWith(".mp4"));
   const explainingTitle = project.title || project.name;
+  const projectDescription = project.subtitle || project.description || `Read the full case study for ${explainingTitle} by Paper Hoof Studio.`;
 
   return (
     <div className="case-study-page">
+      <SEO
+        title={`${explainingTitle} — Paper Hoof Studio Case Study`}
+        description={projectDescription}
+        path={`/work/${project.slug || slugify(project.name)}`}
+        image={heroMediaUrl}
+      />
       {/* 1: Explaining Title Section */}
       <header className="case-study-title-section">
         <div className="case-study-container">
@@ -156,7 +164,7 @@ const ProjectCaseStudy = () => {
             className="case-study-hero-image"
           />
         ) : (
-          <img src={heroMediaUrl} alt={project.name} className="case-study-hero-image" />
+          <img src={heroMediaUrl} alt={`Paper Hoof Brand Strategy Case Study — ${project.name}`} className="case-study-hero-image" />
         )}
       </section>
 
@@ -274,7 +282,7 @@ const ProjectCaseStudy = () => {
                       <div key={gIdx} className="w-full overflow-hidden rounded-xl bg-neutral-100">
                         <img
                           src={url}
-                          alt={`Showcase grid item ${gIdx + 1}`}
+                          alt={`Paper Hoof Studio — ${project.name} design showcase grid item ${gIdx + 1}`}
                           className="w-full h-[380px] sm:h-[480px] md:h-[620px] object-cover block transition-transform duration-500 hover:scale-[1.02]"
                         />
                       </div>
@@ -283,7 +291,7 @@ const ProjectCaseStudy = () => {
                 ) : (
                   <img
                     src={comp.contentUrl}
-                    alt={`${project.name} showcase ${index + 1}`}
+                    alt={`Paper Hoof Studio — ${project.name} visual identity showcase ${index + 1}`}
                     className="component-media-img"
                   />
                 )}

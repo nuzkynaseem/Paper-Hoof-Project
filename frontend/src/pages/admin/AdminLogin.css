@@ -1,12 +1,12 @@
 /* =========================================
    Paper Hoof Admin — Login Page
-   Light Mode • Brand Palette
+   Light Mode • Brand Palette & Secondary Circles
    ========================================= */
 
 /* Cursor Overrides */
 .admin-login-container,
 .admin-login-container * {
-  cursor: auto !important;
+  cursor: auto;
 }
 .admin-login-container input,
 .admin-login-container textarea {
@@ -14,7 +14,8 @@
 }
 .admin-login-container button,
 .admin-login-container a,
-.admin-login-container label {
+.admin-login-container label,
+.admin-login-container select {
   cursor: pointer !important;
 }
 
@@ -58,24 +59,16 @@
 
 .login-brand-top {
   display: flex;
-  align-items: center;
-  gap: 14px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
   position: relative;
   z-index: 2;
 }
 
-.login-brand-top img {
-  height: 36px;
+.login-wordmark-img {
+  height: 38px;
   width: auto;
-  filter: brightness(0) invert(1);
-}
-
-.login-brand-wordmark {
-  font-size: 15px;
-  font-weight: 700;
-  color: #97d9af;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .login-brand-bottom {
@@ -90,7 +83,7 @@
   line-height: 1.3;
   letter-spacing: -0.02em;
   margin: 0 0 24px 0;
-  max-width: 400px;
+  max-width: 420px;
 }
 
 .login-brand-quote em {
@@ -100,36 +93,53 @@
 
 .login-brand-meta {
   font-size: 13px;
-  color: rgba(151, 217, 175, 0.6);
-  font-weight: 500;
-  letter-spacing: 0.04em;
+  color: rgba(151, 217, 175, 0.7);
+  font-weight: 600;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
-/* Decorative circles */
+/* Secondary Palette Circles in Low Opacity */
 .login-brand-circle {
   position: absolute;
   border-radius: 50%;
-  background: rgba(151, 217, 175, 0.07);
-  border: 1px solid rgba(151, 217, 175, 0.12);
+  pointer-events: none;
 }
-.login-brand-circle-1 {
-  width: 320px;
-  height: 320px;
-  top: -80px;
-  right: -80px;
+
+.login-brand-circle-mint {
+  width: 380px;
+  height: 380px;
+  top: -120px;
+  right: -90px;
+  background: rgba(151, 217, 175, 0.12);
+  border: 1.5px solid rgba(151, 217, 175, 0.22);
 }
-.login-brand-circle-2 {
+
+.login-brand-circle-gold {
+  width: 240px;
+  height: 240px;
+  top: 30%;
+  right: 12%;
+  background: rgba(234, 179, 8, 0.10);
+  border: 1.5px solid rgba(234, 179, 8, 0.20);
+}
+
+.login-brand-circle-pink {
   width: 200px;
   height: 200px;
-  top: 38%;
-  right: 20%;
+  bottom: 22%;
+  left: -50px;
+  background: rgba(244, 114, 182, 0.10);
+  border: 1.5px solid rgba(244, 114, 182, 0.20);
 }
-.login-brand-circle-3 {
-  width: 120px;
-  height: 120px;
-  bottom: 15%;
+
+.login-brand-circle-red {
+  width: 160px;
+  height: 160px;
+  bottom: 6%;
   right: -30px;
+  background: rgba(239, 68, 68, 0.10);
+  border: 1.5px solid rgba(239, 68, 68, 0.20);
 }
 
 /* Right Panel — Login Form */
@@ -170,27 +180,26 @@
   }
 }
 
-.login-mobile-logo img {
-  height: 30px;
-  width: auto;
-}
-
 .login-header {
   margin-bottom: 36px;
 }
 
+/* High-Contrast TEAM PORTAL Eyebrow Pill */
 .login-eyebrow {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #97d9af;
-  background: rgba(18, 53, 36, 0.07);
-  border: 1px solid rgba(18, 53, 36, 0.12);
-  border-radius: 100px;
-  padding: 4px 12px;
+  color: #123524;
+  background: #dcfce7;
+  border: 1.5px solid #86efac;
+  border-radius: 999px;
+  padding: 5px 14px;
   margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(18, 53, 36, 0.08);
 }
 
 .login-title {
@@ -299,6 +308,7 @@
   letter-spacing: 0.01em;
   transition: all 0.25s ease;
   box-shadow: 0 4px 12px rgba(18, 53, 36, 0.25);
+  cursor: pointer !important;
 }
 
 .login-submit-btn:hover:not(:disabled) {
@@ -309,7 +319,7 @@
 
 .login-submit-btn:disabled {
   opacity: 0.6;
-  cursor: not-allowed;
+  cursor: not-allowed !important;
 }
 
 .spinner {

@@ -3,20 +3,31 @@
    Light Mode • Brand Palette
    ========================================= */
 
-/* Cursor Overrides */
-.admin-layout-wrapper,
-.admin-layout-wrapper * {
-  cursor: auto !important;
-}
-.admin-layout-wrapper input,
-.admin-layout-wrapper textarea,
-.admin-layout-wrapper select {
+/* Global Admin Cursor & Hand Click Overrides */
+.admin-layout-wrapper input[type="text"],
+.admin-layout-wrapper input[type="email"],
+.admin-layout-wrapper input[type="password"],
+.admin-layout-wrapper textarea {
   cursor: text !important;
 }
+
 .admin-layout-wrapper button,
 .admin-layout-wrapper a,
+.admin-layout-wrapper select,
+.admin-layout-wrapper select option,
 .admin-layout-wrapper label,
-.admin-layout-wrapper .nav-item {
+.admin-layout-wrapper input[type="checkbox"],
+.admin-layout-wrapper input[type="radio"],
+.admin-layout-wrapper .nav-item,
+.admin-layout-wrapper .logout-btn,
+.admin-layout-wrapper .upload-btn,
+.admin-layout-wrapper .stat-link,
+.admin-layout-wrapper .action-btn-primary,
+.admin-layout-wrapper .action-btn-secondary,
+.admin-layout-wrapper .project-admin-card,
+.admin-layout-wrapper .project-admin-card *,
+.admin-layout-wrapper [role="button"],
+.admin-layout-wrapper .clickable {
   cursor: pointer !important;
 }
 
@@ -731,70 +742,63 @@
 
 /* ========== PAPER HOOF BRANDED SELECT DROPDOWNS ========== */
 select.custom-input,
-.admin-layout-wrapper select {
+.admin-layout-wrapper select,
+.editor-card select,
+.role-select,
+.featured-select-input {
   width: 100%;
-  padding: 10px 40px 10px 14px;
-  background-color: #f9fafb;
+  padding: 10.5px 40px 10.5px 14px;
+  background-color: #ffffff;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23123524' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
+  background-position: right 14px center;
   background-size: 15px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid #d1d5db;
   border-radius: 10px;
-  color: #111827;
+  color: #123524;
   font-size: 13.5px;
   font-family: inherit;
-  font-weight: 600;
+  font-weight: 700;
   outline: none;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   transition: all 0.22s ease;
   box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   cursor: pointer !important;
 }
 
 select.custom-input:hover,
-.admin-layout-wrapper select:hover {
+.admin-layout-wrapper select:hover,
+.editor-card select:hover,
+.role-select:hover,
+.featured-select-input:hover {
   border-color: #97d9af;
   background-color: #ffffff;
+  box-shadow: 0 3px 10px rgba(151, 217, 175, 0.25);
 }
 
 select.custom-input:focus,
-.admin-layout-wrapper select:focus {
+.admin-layout-wrapper select:focus,
+.editor-card select:focus,
+.role-select:focus,
+.featured-select-input:focus {
   border-color: #123524;
   background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(18, 53, 36, 0.09);
+  box-shadow: 0 0 0 3.5px rgba(151, 217, 175, 0.4);
 }
 
 select.custom-input option,
-.admin-layout-wrapper select option {
+.admin-layout-wrapper select option,
+.editor-card select option,
+.role-select option,
+.featured-select-input option {
   font-family: inherit;
-  font-weight: 500;
-  color: #111827;
+  font-weight: 600;
+  color: #123524;
   background: #ffffff;
-  padding: 8px 12px;
-}
-
-/* Featured select override */
-.featured-select-input {
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23123524' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 15px;
-  padding-right: 40px;
-  cursor: pointer !important;
-}
-
-.featured-select-input:hover {
-  border-color: #97d9af;
-}
-
-.featured-select-input:focus {
-  border-color: #123524;
-  box-shadow: 0 0 0 3px rgba(18, 53, 36, 0.09);
+  padding: 10px 14px;
 }
 
 .upload-btn {

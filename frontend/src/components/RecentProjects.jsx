@@ -96,7 +96,7 @@ const RecentProjects = () => {
               <div className="featured-media" ref={mediaRef}>
                 <img
                   src={featured.coverImage || featured.image}
-                  alt={featured.name}
+                  alt={`Paper Hoof Brand Strategy Case Study — ${featured.name}`}
                   className="rp-image single-featured-img"
                   loading="eager"
                   decoding="async"

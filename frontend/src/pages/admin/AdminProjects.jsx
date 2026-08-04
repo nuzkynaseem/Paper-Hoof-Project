@@ -16,6 +16,11 @@ import {
   ChevronDown,
   Eye,
   EyeOff,
+  ArrowLeft,
+  Save,
+  FolderKanban,
+  Check,
+  Sparkles,
 } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 
@@ -43,7 +48,7 @@ function ComponentTypeIcon({ type, size = 14 }) {
 
 export default function AdminProjects({ projects = [], onProjectsChange, workScopes = [], showToast }) {
   const [editingProject, setEditingProject] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadingCompIdx, setUploadingCompIdx] = useState(null);
@@ -82,7 +87,8 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
     setFormData(emptyForm());
     setEditingProject(null);
     setCollapsedComps({});
-    setModalOpen(true);
+    setIsEditorOpen(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleOpenEdit = (project) => {
@@ -119,7 +125,8 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
     });
     setEditingProject(project);
     setCollapsedComps({});
-    setModalOpen(true);
+    setIsEditorOpen(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleTagToggle = (tagName) => {
@@ -143,7 +150,6 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
       if (!res.ok) throw new Error(data.detail || "Upload failed");
 
       if (compIndex !== null && gridSlot !== null) {
-        // Grid slot upload
         setFormData((prev) => {
           const updated = [...prev.components];
           const urls = [...(updated[compIndex].gridUrls || ["", ""])];
@@ -249,13 +255,14 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
     });
   };
 
-  // ── Form Submit ──────────────────────────────────────────────────────────────
+  // ── Form Submit & Delete ────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.name.trim() || !formData.coverImage.trim()) {
-      if (showToast) showToast("error", "Validation failed", "Please provide a project name and cover image.");
+    if (e) e.preventDefault();
+    if (!formData.name.trim()) {
+      if (showToast) showToast("error", "Validation error", "Project Name is required.");
       return;
     }
+
     setSaving(true);
     try {
       const isNew = !editingProject;
@@ -277,7 +284,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
         throw new Error(errData.detail || "Failed to save project");
       }
       if (showToast) showToast("success", isNew ? "Project created" : "Project updated", `"${formData.name}" was saved successfully.`);
-      setModalOpen(false);
+      setIsEditorOpen(false);
       if (onProjectsChange) onProjectsChange();
     } catch (err) {
       if (showToast) showToast("error", "Save failed", err.message);
@@ -301,374 +308,676 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
     }
   };
 
-  // ── Component Editor Card ──────────────────────────────────────────────────
+  // ── Component Editor Card Component ───────────────────────────────────────
   const renderComponentEditor = (comp, index) => {
-    const isUploadingThis = uploadingCompIdx === index;
-    const isCollapsed = Boolean(collapsedComps[comp.id || index]);
+    const compType = COMPONENT_TYPES.find((c) => c.value === comp.type) || COMPONENT_TYPES[0];
+    const isCollapsed = collapsedComps[comp.id];
+    const isPreviewing = showPreviewIdx === index;
 
     return (
       <div
-        id={`comp-card-${comp.id || index}`}
-        key={comp.id || index}
-        style={{
-          border: "1.5px solid #e5e7eb",
-          borderRadius: 14,
-          background: "#fafafa",
-          padding: "16px 18px",
-          transition: "all 0.2s ease"
-        }}
+        key={comp.id}
+        id={`comp-card-${comp.id}`}
+        className="border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden transition-all duration-200"
       >
-        {/* Header row with Numbering & Chevron Accordion Toggle */}
-        <div className="flex justify-between items-center" style={{ marginBottom: isCollapsed ? 0 : 14 }}>
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => toggleCollapse(comp.id || index)}>
-            <button
-              type="button"
-              className="p-1 rounded-md hover:bg-gray-200 text-gray-600 transition-colors"
-              title={isCollapsed ? "Expand Component" : "Collapse Component"}
-            >
-              {isCollapsed ? <ChevronDown style={{ width: 16, height: 16 }} /> : <ChevronUp style={{ width: 16, height: 16 }} />}
-            </button>
+        {/* Card Header */}
+        <div
+          className="flex items-center justify-between p-3.5 bg-gray-50 border-b border-gray-200 select-none cursor-pointer"
+          onClick={() => toggleCollapse(comp.id)}
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-bold text-gray-400 w-5 text-center">#{index + 1}</span>
             <ComponentTypeIcon type={comp.type} />
-            <span style={{ fontSize: 12, fontWeight: 800, color: "#123524", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-              Component #{index + 1}
-            </span>
-            <span style={{ fontSize: 11, color: "#6b7280", background: "#eef2ff", border: "1px solid #c7d2fe", padding: "2px 8px", borderRadius: 6, fontWeight: 700 }}>
-              {COMPONENT_TYPES.find((t) => t.value === comp.type)?.label || comp.type}
-            </span>
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-800">{compType.label}</span>
+              {comp.contentUrl && comp.type !== "quote" && comp.type !== "grid" && (
+                <p className="text-[11px] text-gray-500 truncate max-w-xs">{comp.contentUrl}</p>
+              )}
+              {comp.type === "quote" && comp.quoteText && (
+                <p className="text-[11px] text-gray-500 truncate max-w-xs">"{comp.quoteText}"</p>
+              )}
+              {comp.type === "grid" && comp.gridUrls && (
+                <p className="text-[11px] text-gray-500 truncate max-w-xs">{comp.gridUrls.filter(Boolean).length} of 2 slots filled</p>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => setShowPreviewIdx(isPreviewing ? null : index)}
+              className={`p-1.5 rounded-md text-xs font-semibold flex items-center gap-1 border transition-colors ${
+                isPreviewing ? "bg-[#123524] text-white border-[#123524]" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+              }`}
+              title="Toggle Live Component Preview"
+            >
+              {isPreviewing ? <EyeOff style={{ width: 13, height: 13 }} /> : <Eye style={{ width: 13, height: 13 }} />}
+              <span className="hidden sm:inline">{isPreviewing ? "Hide Preview" : "Preview"}</span>
+            </button>
             <button
               type="button"
               onClick={() => handleMoveComponent(index, "up")}
               disabled={index === 0}
-              style={{ padding: "4px 6px", borderRadius: 7, border: "1px solid #e5e7eb", background: index === 0 ? "#f9fafb" : "#fff", color: index === 0 ? "#d1d5db" : "#374151" }}
+              className="p-1.5 rounded-md text-gray-500 hover:bg-gray-200 disabled:opacity-30 disabled:hover:bg-transparent"
               title="Move Up"
             >
-              <ChevronUp style={{ width: 13, height: 13 }} />
+              <ChevronUp style={{ width: 14, height: 14 }} />
             </button>
             <button
               type="button"
               onClick={() => handleMoveComponent(index, "down")}
               disabled={index === formData.components.length - 1}
-              style={{ padding: "4px 6px", borderRadius: 7, border: "1px solid #e5e7eb", background: index === formData.components.length - 1 ? "#f9fafb" : "#fff", color: index === formData.components.length - 1 ? "#d1d5db" : "#374151" }}
+              className="p-1.5 rounded-md text-gray-500 hover:bg-gray-200 disabled:opacity-30 disabled:hover:bg-transparent"
               title="Move Down"
             >
-              <ChevronDown style={{ width: 13, height: 13 }} />
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowPreviewIdx(showPreviewIdx === index ? null : index)}
-              style={{ padding: "4px 7px", borderRadius: 7, border: "1px solid #e5e7eb", background: "#fff", color: "#6b7280" }}
-              title="Toggle Preview"
-            >
-              {showPreviewIdx === index ? <EyeOff style={{ width: 13, height: 13 }} /> : <Eye style={{ width: 13, height: 13 }} />}
+              <ChevronDown style={{ width: 14, height: 14 }} />
             </button>
             <button
               type="button"
               onClick={() => handleRemoveComponent(index)}
-              style={{ padding: "4px 7px", borderRadius: 7, border: "1px solid #fecaca", background: "#fff", color: "#dc2626" }}
+              className="p-1.5 rounded-md text-red-500 hover:bg-red-50"
               title="Remove Component"
             >
-              <X style={{ width: 13, height: 13 }} />
+              <Trash2 style={{ width: 14, height: 14 }} />
             </button>
           </div>
         </div>
 
-        {/* Component Body (Shown when NOT collapsed) */}
+        {/* Card Body */}
         {!isCollapsed && (
-          <div className="space-y-4 pt-1">
+          <div className="p-4 space-y-4 bg-white">
             {/* Type selector */}
-            <div className="input-group">
-              <label>Component Type</label>
-              <select
-                value={comp.type}
-                onChange={(e) => handleUpdateComponent(index, "type", e.target.value)}
-                className="custom-input font-bold"
-              >
-                {COMPONENT_TYPES.map((t) => (
-                  <option key={t.value} value={t.value}>{t.label}</option>
-                ))}
-              </select>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="input-group">
+                <label style={{ fontSize: 11 }}>Component Type</label>
+                <select
+                  value={comp.type}
+                  onChange={(e) => handleUpdateComponent(index, "type", e.target.value)}
+                  className="custom-input text-xs"
+                >
+                  {COMPONENT_TYPES.map((ct) => (
+                    <option key={ct.value} value={ct.value}>{ct.label}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            {/* Type-specific fields */}
-            {(comp.type === "image" || comp.type === "video") && (
-              <div className="input-group">
-                <label>{comp.type === "image" ? "Image URL" : "Video URL"}</label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={comp.contentUrl}
-                    onChange={(e) => handleUpdateComponent(index, "contentUrl", e.target.value)}
-                    placeholder={comp.type === "image" ? "https://domain.com/photo.jpg" : "https://domain.com/video.mp4"}
-                    className="custom-input flex-1"
-                  />
-                  <label className="upload-btn" style={{ whiteSpace: "nowrap", fontSize: 12 }}>
-                    <Upload style={{ width: 13, height: 13 }} />
-                    <span>{isUploadingThis ? "Uploading..." : "Upload"}</span>
+            {/* 1: IMAGE */}
+            {comp.type === "image" && (
+              <div className="space-y-3">
+                <div className="input-group">
+                  <label style={{ fontSize: 11 }}>Image URL or Direct Upload</label>
+                  <div className="flex gap-2">
                     <input
-                      type="file"
-                      accept={comp.type === "image" ? "image/*" : "video/*"}
-                      onChange={(e) => handleCompFileUpload(e, index)}
-                      className="hidden"
-                      disabled={isUploadingThis}
+                      type="text"
+                      value={comp.contentUrl}
+                      onChange={(e) => handleUpdateComponent(index, "contentUrl", e.target.value)}
+                      placeholder="https://domain.com/showcase.jpg"
+                      className="custom-input flex-1 text-xs"
                     />
-                  </label>
+                    <label className="upload-btn text-xs py-1.5">
+                      <Upload style={{ width: 13, height: 13 }} />
+                      <span>{uploadingCompIdx === index ? "Uploading..." : "Upload"}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleCompFileUpload(e, index)}
+                        className="hidden"
+                        disabled={uploadingCompIdx === index}
+                      />
+                    </label>
+                  </div>
                 </div>
-                {/* Preview thumbnail */}
-                {showPreviewIdx === index && comp.contentUrl && (
-                  <div style={{ marginTop: 10, borderRadius: 10, overflow: "hidden", border: "1px solid #e5e7eb", maxHeight: 200 }}>
-                    {comp.type === "video" ? (
-                      <video src={comp.contentUrl} controls muted style={{ width: "100%", maxHeight: 200, objectFit: "cover" }} />
-                    ) : (
-                      <img src={comp.contentUrl} alt="preview" style={{ width: "100%", maxHeight: 200, objectFit: "cover" }} />
-                    )}
+                {comp.contentUrl && (
+                  <div className="rounded-lg overflow-hidden border border-gray-200 max-h-44 bg-gray-900 flex items-center justify-center">
+                    <img src={comp.contentUrl} alt="preview" className="max-h-44 object-contain" />
                   </div>
                 )}
               </div>
             )}
 
-            {comp.type === "html" && (
-              <div className="input-group">
-                <label>HTML / Code Snippet</label>
-                <textarea
-                  rows={6}
-                  value={comp.contentUrl}
-                  onChange={(e) => handleUpdateComponent(index, "contentUrl", e.target.value)}
-                  placeholder={"<div class=\"my-component\">\n  <!-- your custom HTML here -->\n</div>"}
-                  className="custom-input"
-                  style={{ fontFamily: "monospace", fontSize: 12.5, resize: "vertical" }}
-                />
+            {/* 2: VIDEO */}
+            {comp.type === "video" && (
+              <div className="space-y-3">
+                <div className="input-group">
+                  <label style={{ fontSize: 11 }}>Video URL or Direct Upload (.mp4 / .webm)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={comp.contentUrl}
+                      onChange={(e) => handleUpdateComponent(index, "contentUrl", e.target.value)}
+                      placeholder="https://domain.com/showcase.mp4"
+                      className="custom-input flex-1 text-xs"
+                    />
+                    <label className="upload-btn text-xs py-1.5">
+                      <Upload style={{ width: 13, height: 13 }} />
+                      <span>{uploadingCompIdx === index ? "Uploading..." : "Upload Video"}</span>
+                      <input
+                        type="file"
+                        accept="video/*"
+                        onChange={(e) => handleCompFileUpload(e, index)}
+                        className="hidden"
+                        disabled={uploadingCompIdx === index}
+                      />
+                    </label>
+                  </div>
+                </div>
+                {comp.contentUrl && (
+                  <div className="rounded-lg overflow-hidden border border-gray-200 bg-black">
+                    <video src={comp.contentUrl} controls autoPlay muted loop className="w-full max-h-44 object-contain" />
+                  </div>
+                )}
               </div>
             )}
 
-            {comp.type === "quote" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 14, background: "#f8fafc", border: "1px solid #e2e8f0", padding: "16px", borderRadius: 12 }}>
+            {/* 3: INTERACTIVE HTML / NEXT.JS CODEBLOCK */}
+            {comp.type === "html" && (
+              <div className="space-y-3">
                 <div className="input-group">
-                  <label style={{ fontWeight: 700, color: "#1e293b" }}>Quote / Highlight Text *</label>
+                  <label style={{ fontSize: 11 }}>HTML Code or Next.js / React Codeblock</label>
+                  <textarea
+                    rows={6}
+                    value={comp.contentUrl}
+                    onChange={(e) => handleUpdateComponent(index, "contentUrl", e.target.value)}
+                    placeholder={'<div className="my-widget">Showcase Widget</div> or Next.js codeblock'}
+                    className="custom-input font-mono text-xs"
+                  />
+                  <p className="text-[11px] text-gray-500">
+                    Supports HTML embeds or Next.js / React code snippets. Displays as a formatted code window or HTML preview on the live site.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* 4: QUOTE / TEXT BLOCK */}
+            {comp.type === "quote" && (
+              <div className="space-y-3">
+                <div className="input-group">
+                  <label style={{ fontSize: 11 }}>Quote Statement Text</label>
                   <textarea
                     rows={3}
-                    value={comp.quoteText || ""}
+                    value={comp.quoteText}
                     onChange={(e) => handleUpdateComponent(index, "quoteText", e.target.value)}
-                    placeholder="&ldquo;We crafted a high-impact identity that speaks to both heart and mind.&rdquo;"
-                    className="custom-input"
-                    style={{ resize: "vertical" }}
+                    placeholder="We loved everyone who came across us..."
+                    className="custom-input text-xs"
                   />
                 </div>
                 <div className="input-group">
-                  <label style={{ fontWeight: 700, color: "#1e293b" }}>Author / Attribution (optional)</label>
+                  <label style={{ fontSize: 11 }}>Author Attribution (Optional)</label>
                   <input
                     type="text"
-                    value={comp.author || ""}
+                    value={comp.author}
                     onChange={(e) => handleUpdateComponent(index, "author", e.target.value)}
-                    placeholder="— Client Name, CEO"
-                    className="custom-input"
+                    placeholder="— Paper Hoof Design Team"
+                    className="custom-input text-xs"
                   />
                 </div>
-
-                {/* Quote Styling & Typography Options */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2" style={{ borderTop: "1px dashed #cbd5e1" }}>
-                  {/* Background Color Picker */}
-                  <div className="input-group">
-                    <label>Quote Background Color</label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="color"
-                        value={comp.bgColor || "#123524"}
-                        onChange={(e) => handleUpdateComponent(index, "bgColor", e.target.value)}
-                        style={{ width: 34, height: 34, borderRadius: 8, cursor: "pointer", border: "1px solid #cbd5e1" }}
-                      />
-                      <input
-                        type="text"
-                        value={comp.bgColor || "#123524"}
-                        onChange={(e) => handleUpdateComponent(index, "bgColor", e.target.value)}
-                        className="custom-input flex-1"
-                        placeholder="#123524"
-                      />
-                    </div>
-                    {/* Color Preset Pills */}
-                    <div className="flex flex-wrap gap-1.5 mt-2">
-                      {[
-                        { label: "Dark Green", hex: "#123524" },
-                        { label: "Soot Black", hex: "#202423" },
-                        { label: "Cream", hex: "#FFFDF7" },
-                        { label: "Mint Sprig", hex: "#97D9AF" },
-                        { label: "Tangerine", hex: "#FD6D1E" },
-                        { label: "Bubblegum", hex: "#FDB5ED" }
-                      ].map((preset) => (
-                        <button
-                          key={preset.hex}
-                          type="button"
-                          onClick={() => handleUpdateComponent(index, "bgColor", preset.hex)}
-                          style={{
-                            backgroundColor: preset.hex,
-                            border: "1px solid rgba(0,0,0,0.15)",
-                            borderRadius: 6,
-                            width: 22,
-                            height: 22,
-                            cursor: "pointer"
-                          }}
-                          title={`Set background to ${preset.label}`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Text Color Picker */}
-                  <div className="input-group">
-                    <label>Quote Text Color</label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="color"
-                        value={comp.textColor || "#FFFFFF"}
-                        onChange={(e) => handleUpdateComponent(index, "textColor", e.target.value)}
-                        style={{ width: 34, height: 34, borderRadius: 8, cursor: "pointer", border: "1px solid #cbd5e1" }}
-                      />
-                      <input
-                        type="text"
-                        value={comp.textColor || "#FFFFFF"}
-                        onChange={(e) => handleUpdateComponent(index, "textColor", e.target.value)}
-                        className="custom-input flex-1"
-                        placeholder="#FFFFFF"
-                      />
-                    </div>
-                    {/* Color Preset Pills */}
-                    <div className="flex flex-wrap gap-1.5 mt-2">
-                      {[
-                        { label: "White", hex: "#FFFFFF" },
-                        { label: "Soot Black", hex: "#202423" },
-                        { label: "Mint Sprig", hex: "#97D9AF" },
-                        { label: "Tangerine", hex: "#FD6D1E" }
-                      ].map((preset) => (
-                        <button
-                          key={preset.hex}
-                          type="button"
-                          onClick={() => handleUpdateComponent(index, "textColor", preset.hex)}
-                          style={{
-                            backgroundColor: preset.hex,
-                            border: "1px solid rgba(0,0,0,0.15)",
-                            borderRadius: 6,
-                            width: 22,
-                            height: 22,
-                            cursor: "pointer"
-                          }}
-                          title={`Set text to ${preset.label}`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Author Accent Color */}
-                  <div className="input-group">
-                    <label>Author Accent Color</label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="color"
-                        value={comp.authorColor || "#97D9AF"}
-                        onChange={(e) => handleUpdateComponent(index, "authorColor", e.target.value)}
-                        style={{ width: 34, height: 34, borderRadius: 8, cursor: "pointer", border: "1px solid #cbd5e1" }}
-                      />
-                      <input
-                        type="text"
-                        value={comp.authorColor || "#97D9AF"}
-                        onChange={(e) => handleUpdateComponent(index, "authorColor", e.target.value)}
-                        className="custom-input flex-1"
-                        placeholder="#97D9AF"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Typography Font Choice */}
-                  <div className="input-group">
-                    <label>Paper Hoof Typography</label>
-                    <select
-                      value={comp.quoteFont || "heading"}
-                      onChange={(e) => handleUpdateComponent(index, "quoteFont", e.target.value)}
-                      className="custom-input font-bold"
-                    >
-                      <option value="heading">Paper Hoof Heading (Syne / Display)</option>
-                      <option value="primary">Paper Hoof Primary (Space Grotesk / Body)</option>
-                    </select>
-                  </div>
-                </div>
               </div>
             )}
 
+            {/* 5: 2-COLUMN GRID */}
             {comp.type === "grid" && (
-              <div style={{ marginBottom: 12 }}>
-                <label className="input-group">
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.05em", textTransform: "uppercase" }}>
-                    2-Column Image Grid
-                  </span>
+              <div className="space-y-3">
+                <label style={{ fontSize: 11, fontWeight: 700 }} className="text-gray-700 uppercase tracking-wider block">
+                  2-Column Image Grid Slots
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" style={{ marginTop: 8 }}>
-                  {[0, 1].map((slot) => (
-                    <div key={slot} className="input-group">
-                      <label>Column {slot + 1} Image</label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={(comp.gridUrls || ["", ""])[slot] || ""}
-                          onChange={(e) => handleUpdateComponent(index, `gridUrls.${slot}`, e.target.value)}
-                          placeholder="https://..."
-                          className="custom-input flex-1"
-                          style={{ fontSize: 12 }}
-                        />
-                        <label className="upload-btn" style={{ fontSize: 11 }}>
-                          <Upload style={{ width: 12, height: 12 }} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[0, 1].map((slotIdx) => {
+                    const slotUrl = (comp.gridUrls || ["", ""])[slotIdx] || "";
+                    const isUploadingSlot = uploadingCompIdx === `${index}-${slotIdx}`;
+                    return (
+                      <div key={slotIdx} className="space-y-2 border border-gray-200 rounded-lg p-2.5 bg-gray-50">
+                        <span className="text-[11px] font-bold text-gray-600 block">Image #{slotIdx + 1}</span>
+                        <div className="flex gap-1.5">
                           <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleGridFileUpload(e, index, slot)}
-                            className="hidden"
-                            disabled={uploadingCompIdx === `${index}-${slot}`}
+                            type="text"
+                            value={slotUrl}
+                            onChange={(e) => handleUpdateComponent(index, `gridUrls.${slotIdx}`, e.target.value)}
+                            placeholder="Image URL"
+                            className="custom-input flex-1 text-xs"
                           />
-                        </label>
-                      </div>
-                      {(comp.gridUrls || [])[slot] && (
-                        <div style={{ marginTop: 6, borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb" }}>
-                          <img src={(comp.gridUrls || [])[slot]} alt={`col${slot}`} style={{ width: "100%", height: 100, objectFit: "cover" }} />
+                          <label className="upload-btn text-xs py-1 px-2.5 shrink-0">
+                            <Upload style={{ width: 12, height: 12 }} />
+                            <span>{isUploadingSlot ? "..." : "Upload"}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleGridFileUpload(e, index, slotIdx)}
+                              className="hidden"
+                              disabled={isUploadingSlot}
+                            />
+                          </label>
                         </div>
-                      )}
-                    </div>
-                  ))}
+                        {slotUrl && (
+                          <img src={slotUrl} alt={`slot-${slotIdx}`} className="w-full h-24 object-cover rounded border border-gray-200" />
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
-            {/* Optional Insight Panel */}
-            <div style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 10, padding: "12px 14px" }}>
-              <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#92400e", display: "flex", alignItems: "center", gap: 5, marginBottom: 8 }}>
-                <Lightbulb style={{ width: 12, height: 12 }} />
-                Optional Insight Caption
-              </span>
+            {/* Optional Insight Caption */}
+            <div className="pt-3 border-t border-gray-100 space-y-2">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-600">
+                <Lightbulb style={{ width: 13, height: 13, color: "#166534" }} />
+                <span>Bottom-Left Interactive Insight Button (Optional)</span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <input
                   type="text"
                   value={comp.insight?.title || ""}
                   onChange={(e) => handleUpdateComponent(index, "insight.title", e.target.value)}
                   placeholder="Insight Title (e.g. Tactile Packaging)"
-                  className="custom-input"
-                  style={{ fontSize: 12.5 }}
+                  className="custom-input text-xs"
                 />
                 <input
                   type="text"
                   value={comp.insight?.description || ""}
                   onChange={(e) => handleUpdateComponent(index, "insight.description", e.target.value)}
                   placeholder="Short insight description..."
-                  className="custom-input"
-                  style={{ fontSize: 12.5 }}
+                  className="custom-input text-xs"
                 />
               </div>
             </div>
+
+            {/* Live Component Preview */}
+            {isPreviewing && (
+              <div className="mt-3 p-4 bg-neutral-900 rounded-xl text-white space-y-2 border border-neutral-700">
+                <span className="text-[10px] font-bold text-[#97D9AF] uppercase tracking-wider block">Live Component Preview</span>
+                {comp.type === "image" && comp.contentUrl && (
+                  <img src={comp.contentUrl} alt="preview" className="w-full max-h-60 object-cover rounded-lg" />
+                )}
+                {comp.type === "video" && comp.contentUrl && (
+                  <video src={comp.contentUrl} controls autoPlay muted loop className="w-full max-h-60 object-cover rounded-lg" />
+                )}
+                {comp.type === "quote" && (
+                  <div className="p-6 bg-[#123524] rounded-xl text-center">
+                    <blockquote className="text-lg font-serif">"{comp.quoteText || "Quote Text..."}"</blockquote>
+                    {comp.author && <cite className="text-xs text-[#97D9AF] font-bold mt-2 block">— {comp.author}</cite>}
+                  </div>
+                )}
+                {comp.type === "grid" && (
+                  <div className="grid grid-cols-2 gap-2">
+                    {(comp.gridUrls || ["", ""]).map((u, idx) => (
+                      u ? <img key={idx} src={u} alt="grid" className="w-full h-32 object-cover rounded" /> : <div key={idx} className="h-32 bg-neutral-800 rounded flex items-center justify-center text-xs text-neutral-500">Empty Slot</div>
+                    ))}
+                  </div>
+                )}
+                {comp.type === "html" && (
+                  <div className="p-3 bg-neutral-950 font-mono text-xs text-emerald-400 rounded overflow-x-auto whitespace-pre">
+                    {comp.contentUrl || "<!-- HTML or Next.js Codeblock -->"}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
     );
   };
 
-  // ── Render ──────────────────────────────────────────────────────────────────
+  // ── 1: FULL SCREEN EDITOR VIEW WITH BREADCRUMBS ──────────────────────────────
+  if (isEditorOpen) {
+    return (
+      <div className="space-y-8 max-w-6xl pb-20">
+        {/* Breadcrumbs & Top Action Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#e5e5e0]">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
+              <button
+                type="button"
+                onClick={() => setIsEditorOpen(false)}
+                className="hover:text-[#123524] hover:underline flex items-center gap-1 transition-colors cursor-pointer"
+              >
+                <FolderKanban style={{ width: 14, height: 14 }} />
+                <span>Projects</span>
+              </button>
+              <span>/</span>
+              <span className="font-bold text-[#123524]">
+                {editingProject ? `Edit: ${formData.name || "Untitled Project"}` : "Create New Project"}
+              </span>
+            </div>
+            <h1 className="text-2xl font-bold text-[#123524]">
+              {editingProject ? `Editing Project "${formData.name || ""}"` : "Create New Project Case Study"}
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsEditorOpen(false)}
+              className="action-btn-secondary px-4 py-2.5 cursor-pointer"
+            >
+              <ArrowLeft style={{ width: 15, height: 15 }} />
+              <span>Back to Projects</span>
+            </button>
+            <button
+              type="button"
+              disabled={saving}
+              onClick={handleSubmit}
+              className="action-btn-primary px-6 py-2.5 cursor-pointer"
+            >
+              <Save style={{ width: 15, height: 15 }} />
+              <span>{saving ? "Saving Changes..." : editingProject ? "Save Changes" : "Create Project"}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Full Page Editor Form */}
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* ── 1. Basic Project Information ───────────────────────────────── */}
+          <div className="editor-card space-y-6">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+              <h2 className="text-lg font-bold text-[#123524] flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-[#f0fdf4] text-[#166534] text-xs flex items-center justify-center font-extrabold">1</span>
+                <span>Basic Project Information</span>
+              </h2>
+              <label className="flex items-center gap-2.5 cursor-pointer bg-[#f9fafb] px-3.5 py-1.5 rounded-lg border border-gray-200">
+                <input
+                  type="checkbox"
+                  checked={formData.isFeatured}
+                  onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
+                  className="w-4 h-4 accent-[#123524] cursor-pointer"
+                />
+                <span className="text-xs font-bold text-[#123524] flex items-center gap-1">
+                  <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Featured Spotlight
+                </span>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="input-group lg:col-span-2">
+                <label>Project Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="e.g. Burger Hot"
+                  className="custom-input"
+                />
+              </div>
+              <div className="input-group">
+                <label>Category</label>
+                <input
+                  type="text"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  placeholder="e.g. Brand Identity & Web"
+                  className="custom-input"
+                />
+              </div>
+              <div className="input-group">
+                <label>Client & Year</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    value={formData.client}
+                    onChange={(e) => setFormData({ ...formData, client: e.target.value })}
+                    placeholder="Client Name"
+                    className="custom-input text-xs"
+                  />
+                  <input
+                    type="text"
+                    value={formData.year}
+                    onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                    placeholder="Year"
+                    className="custom-input text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Work Scope Pills / Tags */}
+            <div className="input-group">
+              <label>Work Scope Pills (Tags)</label>
+              <div className="flex flex-wrap gap-2 p-3 bg-[#f9fafb] border border-gray-200 rounded-xl">
+                {workScopes.map((scope) => {
+                  const selected = formData.tags.includes(scope.name);
+                  return (
+                    <button
+                      key={scope.id}
+                      type="button"
+                      onClick={() => handleTagToggle(scope.name)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
+                        selected
+                          ? "bg-[#123524] text-white border-[#123524] shadow-sm"
+                          : "bg-white text-gray-700 border-gray-300 hover:border-[#123524]"
+                      }`}
+                    >
+                      {selected ? "✓ " : "+ "}
+                      {scope.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* ── 2. Cover & Showcase Images ──────────────────────────────────── */}
+          <div className="editor-card space-y-6">
+            <div className="pb-3 border-b border-gray-200">
+              <h2 className="text-lg font-bold text-[#123524] flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-[#f0fdf4] text-[#166534] text-xs flex items-center justify-center font-extrabold">2</span>
+                <span>Cover & Showcase Media</span>
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="input-group space-y-2">
+                <label>Cover Image URL (Featured Grid)</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={formData.coverImage}
+                    onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                    placeholder="https://domain.com/cover.jpg"
+                    className="custom-input flex-1"
+                  />
+                  <label className="upload-btn">
+                    <Upload style={{ width: 14, height: 14 }} />
+                    <span>{uploading ? "..." : "Upload"}</span>
+                    <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "coverImage")} className="hidden" disabled={uploading} />
+                  </label>
+                </div>
+                {formData.coverImage && (
+                  <img src={formData.coverImage} alt="cover" className="w-full h-36 object-cover rounded-xl border border-gray-200" />
+                )}
+              </div>
+
+              <div className="input-group space-y-2">
+                <label>Slider / Dock Image URL</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={formData.sliderImage}
+                    onChange={(e) => setFormData({ ...formData, sliderImage: e.target.value })}
+                    placeholder="https://domain.com/slider.jpg"
+                    className="custom-input flex-1"
+                  />
+                  <label className="upload-btn">
+                    <Upload style={{ width: 14, height: 14 }} />
+                    <span>{uploading ? "..." : "Upload"}</span>
+                    <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "sliderImage")} className="hidden" disabled={uploading} />
+                  </label>
+                </div>
+                {formData.sliderImage && (
+                  <img src={formData.sliderImage} alt="slider" className="w-full h-36 object-cover rounded-xl border border-gray-200" />
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* ── 3. Case Study Hero & Narrative ──────────────────────────────── */}
+          <div className="editor-card space-y-6">
+            <div className="pb-3 border-b border-gray-200">
+              <h2 className="text-lg font-bold text-[#123524] flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-[#f0fdf4] text-[#166534] text-xs flex items-center justify-center font-extrabold">3</span>
+                <span>Case Study Hero & Narrative</span>
+              </h2>
+            </div>
+
+            <div className="space-y-4">
+              <div className="input-group">
+                <label>Explaining Title (Top Heading in Case Study)</label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="e.g. Burger Hot — Identity & Ordering System"
+                  className="custom-input"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="sm:col-span-2 input-group">
+                  <label>Hero Media URL (Image or Video)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={formData.heroMedia}
+                      onChange={(e) => setFormData({ ...formData, heroMedia: e.target.value })}
+                      placeholder="https://domain.com/hero.mp4"
+                      className="custom-input flex-1"
+                    />
+                    <label className="upload-btn">
+                      <Upload style={{ width: 14, height: 14 }} />
+                      <span>{uploading ? "..." : "Upload"}</span>
+                      <input type="file" accept="image/*,video/*" onChange={(e) => handleFileUpload(e, "heroMedia")} className="hidden" disabled={uploading} />
+                    </label>
+                  </div>
+                </div>
+                <div className="input-group">
+                  <label>Hero Media Type</label>
+                  <select
+                    value={formData.heroMediaType}
+                    onChange={(e) => setFormData({ ...formData, heroMediaType: e.target.value })}
+                    className="custom-input"
+                  >
+                    <option value="image">Image</option>
+                    <option value="video">Video (.mp4)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="input-group">
+                <label>Subtitle (Visible when Read More is NOT pressed)</label>
+                <textarea
+                  rows={2}
+                  value={formData.subtitle}
+                  onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                  placeholder="Burger Hot is a fast-casual dining experience built for modern taste..."
+                  className="custom-input"
+                />
+              </div>
+
+              <div className="input-group">
+                <label>Description Paragraph (Revealed when Read More IS pressed)</label>
+                <textarea
+                  rows={3}
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="The new visual identity balances warmth with high-contrast typography..."
+                  className="custom-input"
+                />
+              </div>
+
+              <div className="input-group">
+                <label>Additional Narrative Text (Optional)</label>
+                <textarea
+                  rows={3}
+                  value={formData.readMoreText}
+                  onChange={(e) => setFormData({ ...formData, readMoreText: e.target.value })}
+                  placeholder="We crafted a high-impact color system paired with..."
+                  className="custom-input"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ── 4. Case Study Content Components ────────────────────────────── */}
+          <div className="editor-card space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 border-b border-gray-200">
+              <div>
+                <h2 className="text-lg font-bold text-[#123524] flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#f0fdf4] text-[#166534] text-xs flex items-center justify-center font-extrabold">4</span>
+                  <span>Case Study Content Components</span>
+                </h2>
+                <p className="text-xs text-gray-500 mt-1">
+                  Build rich case study layouts — images, videos, HTML embeds, Next.js codeblocks, pull-quotes, and 2-column grids.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-1 bg-gray-100 p-1.5 rounded-xl border border-gray-200">
+                  {COMPONENT_TYPES.map((ct) => {
+                    const Icon = ct.icon;
+                    return (
+                      <button
+                        key={ct.value}
+                        type="button"
+                        onClick={() => handleAddComponent(ct.value)}
+                        className="px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-white text-gray-800 border border-gray-200 hover:border-[#123524] hover:text-[#123524] shadow-sm transition-all cursor-pointer"
+                      >
+                        <Icon style={{ width: 13, height: 13, color: ct.iconColor }} />
+                        <span>+ {ct.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {formData.components.length === 0 ? (
+              <div className="p-10 border-2 border-dashed border-gray-200 rounded-xl text-center space-y-3 bg-[#f9fafb]">
+                <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-700 mx-auto flex items-center justify-center">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <h3 className="text-sm font-bold text-[#123524]">No Components Added Yet</h3>
+                <p className="text-xs text-gray-500 max-w-md mx-auto">
+                  Click any button above to add full-width images, videos, Next.js codeblocks, pull-quotes, or 2-column grids.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {formData.components.map((comp, index) => renderComponentEditor(comp, index))}
+              </div>
+            )}
+          </div>
+
+          {/* Sticky Bottom Save Bar */}
+          <div className="sticky bottom-4 z-40 bg-[#123524] text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between border border-[#97d9af]/30">
+            <div className="flex items-center gap-3">
+              <span className="w-3 h-3 rounded-full bg-[#97d9af] animate-pulse" />
+              <span className="text-sm font-bold">
+                {editingProject ? `Editing "${formData.name || "Project"}"` : "Creating New Project"}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setIsEditorOpen(false)}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="px-6 py-2.5 rounded-xl text-xs font-bold bg-[#97d9af] text-[#123524] hover:bg-[#7dce9b] transition-all flex items-center gap-2 shadow-lg cursor-pointer"
+              >
+                <Save style={{ width: 14, height: 14 }} />
+                <span>{saving ? "Saving..." : "Save Project"}</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
+  // ── 2: MAIN PROJECTS CATALOG LIST VIEW ──────────────────────────────────────
   return (
     <div className="space-y-8">
       {/* Top Header */}
@@ -679,7 +988,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
             Add, update, or remove studio projects displayed across the homepage, works catalog, and case study pages.
           </p>
         </div>
-        <button onClick={handleOpenNew} className="action-btn-primary px-4 py-2.5">
+        <button onClick={handleOpenNew} className="action-btn-primary px-4 py-2.5 cursor-pointer">
           <Plus style={{ width: 15, height: 15 }} />
           <span>Add New Project</span>
         </button>
@@ -688,8 +997,8 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
       {/* Projects Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((proj) => (
-          <div key={proj.id} className="project-admin-card">
-            <div className="project-card-image-wrap">
+          <div key={proj.id} className="project-admin-card cursor-pointer">
+            <div className="project-card-image-wrap" onClick={() => handleOpenEdit(proj)}>
               <img src={proj.coverImage || proj.image} alt={proj.name} className="w-full h-48 object-cover" />
               {proj.isFeatured && (
                 <span className="featured-badge">
@@ -699,21 +1008,21 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
             </div>
             <div className="p-5 space-y-3">
               <div className="flex justify-between items-start">
-                <div>
+                <div onClick={() => handleOpenEdit(proj)} className="cursor-pointer">
                   <span className="text-xs uppercase font-bold text-[#166534] tracking-wider">{proj.category || "Project"}</span>
-                  <h3 className="text-lg font-bold text-[#123524]">{proj.name}</h3>
+                  <h3 className="text-lg font-bold text-[#123524] hover:text-[#166534] transition-colors">{proj.name}</h3>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => handleOpenEdit(proj)} className="p-1.5 text-gray-500 hover:text-[#123524] transition-colors" title="Edit Project">
+                  <button onClick={() => handleOpenEdit(proj)} className="p-1.5 text-gray-500 hover:text-[#123524] transition-colors cursor-pointer" title="Edit Project">
                     <Edit2 style={{ width: 15, height: 15 }} />
                   </button>
-                  <button onClick={() => handleDelete(proj.id, proj.name)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors" title="Delete Project">
+                  <button onClick={() => handleDelete(proj.id, proj.name)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Delete Project">
                     <Trash2 style={{ width: 15, height: 15 }} />
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-gray-600 line-clamp-2">{proj.subtitle || proj.description}</p>
-              <div className="flex flex-wrap gap-1.5 pt-1">
+              <p className="text-xs text-gray-600 line-clamp-2" onClick={() => handleOpenEdit(proj)}>{proj.subtitle || proj.description}</p>
+              <div className="flex flex-wrap gap-1.5 pt-1" onClick={() => handleOpenEdit(proj)}>
                 {(proj.tags || []).map((t, idx) => (
                   <span key={idx} className="tag-pill text-[10px]">{t}</span>
                 ))}
@@ -722,323 +1031,6 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
           </div>
         ))}
       </div>
-
-      {/* ── Project Editor Modal ──────────────────────────────────────────────── */}
-      {modalOpen && (
-        <div className="modal-backdrop">
-          <div className="modal-card max-w-3xl">
-            {/* Sticky Header — always visible */}
-            <div className="modal-header-sticky">
-              <div>
-                <h2>{editingProject ? "Edit Project" : "Create New Project"}</h2>
-                <p style={{ fontSize: 12, color: "#6b7280", marginTop: 3, fontWeight: 500 }}>
-                  {formData.name || "Untitled Project"}
-                </p>
-              </div>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="modal-close-btn"
-                aria-label="Close modal"
-              >
-                <X style={{ width: 16, height: 16 }} />
-              </button>
-            </div>
-
-            {/* Scrollable Body */}
-            <div className="modal-body-scroll">
-              <form onSubmit={handleSubmit} className="space-y-6">
-
-                {/* ── 1. Basic Info ─────────────────────────────────────────── */}
-                <div className="space-y-4">
-                  <h3 className="text-xs uppercase tracking-wider text-[#166534] font-bold">1. Basic Information</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="input-group">
-                      <label>Project Name *</label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="e.g. Burger Hot"
-                        className="custom-input"
-                      />
-                    </div>
-                    <div className="input-group">
-                      <label>Category</label>
-                      <input
-                        type="text"
-                        value={formData.category}
-                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        placeholder="e.g. Food Chain"
-                        className="custom-input"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="input-group">
-                      <label>Client Name</label>
-                      <input
-                        type="text"
-                        value={formData.client}
-                        onChange={(e) => setFormData({ ...formData, client: e.target.value })}
-                        placeholder="e.g. Burger Hot Global"
-                        className="custom-input"
-                      />
-                    </div>
-                    <div className="input-group">
-                      <label>Year</label>
-                      <select
-                        value={formData.year}
-                        onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                        className="custom-input"
-                      >
-                        {["2020","2021","2022","2023","2024","2025","2026"].map((y) => (
-                          <option key={y} value={y}>{y}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Work Scope Tags */}
-                  <div className="input-group">
-                    <label>Work Scope Tags</label>
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      {workScopes.map((scope) => {
-                        const isSelected = formData.tags.includes(scope.name);
-                        return (
-                          <button
-                            key={scope.id}
-                            type="button"
-                            onClick={() => handleTagToggle(scope.name)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                              isSelected
-                                ? "border-[#123524] bg-[#123524] text-white"
-                                : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-400"
-                            }`}
-                          >
-                            <span
-                              className="inline-block w-2.5 h-2.5 rounded-full mr-1.5"
-                              style={{ backgroundColor: scope.color }}
-                            />
-                            {scope.name}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-
-                {/* ── 2. Visual Assets ──────────────────────────────────────── */}
-                <div className="space-y-4 pt-4" style={{ borderTop: "1px solid #e5e7eb" }}>
-                  <h3 className="text-xs uppercase tracking-wider text-[#166534] font-bold">2. Cover & Showcase Images</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="input-group">
-                      <label>Cover Image (Homepage & Works List) *</label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          required
-                          value={formData.coverImage}
-                          onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                          placeholder="https://domain.com/cover.jpg"
-                          className="custom-input flex-1"
-                        />
-                        <label className="upload-btn">
-                          <Upload style={{ width: 13, height: 13 }} />
-                          <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "coverImage")} className="hidden" />
-                        </label>
-                      </div>
-                      {formData.coverImage && (
-                        <img src={formData.coverImage} alt="cover" style={{ marginTop: 8, borderRadius: 8, height: 80, width: "100%", objectFit: "cover", border: "1px solid #e5e7eb" }} />
-                      )}
-                    </div>
-                    <div className="input-group">
-                      <label>Slider Image (Homepage Showcase Slider)</label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={formData.sliderImage}
-                          onChange={(e) => setFormData({ ...formData, sliderImage: e.target.value })}
-                          placeholder="https://domain.com/slider.jpg"
-                          className="custom-input flex-1"
-                        />
-                        <label className="upload-btn">
-                          <Upload style={{ width: 13, height: 13 }} />
-                          <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "sliderImage")} className="hidden" />
-                        </label>
-                      </div>
-                      {formData.sliderImage && (
-                        <img src={formData.sliderImage} alt="slider" style={{ marginTop: 8, borderRadius: 8, height: 80, width: "100%", objectFit: "cover", border: "1px solid #e5e7eb" }} />
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* ── 3. Case Study Hero & Narrative ───────────────────────── */}
-                <div className="space-y-4 pt-4" style={{ borderTop: "1px solid #e5e7eb" }}>
-                  <h3 className="text-xs uppercase tracking-wider text-[#166534] font-bold">3. Case Study Hero & Narrative</h3>
-                  <div className="input-group">
-                    <label>Explaining Title</label>
-                    <input
-                      type="text"
-                      value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      placeholder="e.g. Burger Hot — Identity & Ordering System"
-                      className="custom-input"
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="sm:col-span-2 input-group">
-                      <label>Hero Media URL (Image or Video)</label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={formData.heroMedia}
-                          onChange={(e) => setFormData({ ...formData, heroMedia: e.target.value })}
-                          placeholder="https://domain.com/hero.mp4"
-                          className="custom-input flex-1"
-                        />
-                        <label className="upload-btn">
-                          <Upload style={{ width: 13, height: 13 }} />
-                          <input type="file" accept="image/*,video/*" onChange={(e) => handleFileUpload(e, "heroMedia")} className="hidden" disabled={uploading} />
-                        </label>
-                      </div>
-                    </div>
-                    <div className="input-group">
-                      <label>Hero Media Type</label>
-                      <select
-                        value={formData.heroMediaType}
-                        onChange={(e) => setFormData({ ...formData, heroMediaType: e.target.value })}
-                        className="custom-input"
-                      >
-                        <option value="image">Image</option>
-                        <option value="video">Video</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="input-group">
-                    <label>Subtitle (Lead sentence after hero)</label>
-                    <input
-                      type="text"
-                      value={formData.subtitle}
-                      onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                      placeholder="A bold rebrand for a fast-casual chain..."
-                      className="custom-input"
-                    />
-                  </div>
-                  <div className="input-group">
-                    <label>Description (Overview paragraph)</label>
-                    <textarea
-                      rows={3}
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      placeholder="Brief project overview paragraph..."
-                      className="custom-input"
-                    />
-                  </div>
-                  <div className="input-group">
-                    <label>Read More Expanded Text</label>
-                    <textarea
-                      rows={3}
-                      value={formData.readMoreText}
-                      onChange={(e) => setFormData({ ...formData, readMoreText: e.target.value })}
-                      placeholder="We crafted a high-impact color system paired with..."
-                      className="custom-input"
-                    />
-                  </div>
-                </div>
-
-                {/* ── 4. Case Study Content Components ─────────────────────── */}
-                <div className="space-y-4 pt-4" style={{ borderTop: "1px solid #e5e7eb" }}>
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                    <div>
-                      <h3 className="text-xs uppercase tracking-wider text-[#166534] font-bold">
-                        4. Case Study Content Components
-                      </h3>
-                      <p className="text-xs text-gray-500" style={{ marginTop: 4 }}>
-                        Build rich case study layouts — images, videos, HTML embeds, pull-quotes, and 2-column grids. Reorder freely.
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {/* Quick-add type picker */}
-                      <div className="flex items-center gap-1">
-                        {COMPONENT_TYPES.map((ct) => {
-                          const Icon = ct.icon;
-                          return (
-                            <button
-                              key={ct.value}
-                              type="button"
-                              onClick={() => handleAddComponent(ct.value)}
-                              title={`Add ${ct.label}`}
-                              style={{
-                                width: 32, height: 32, borderRadius: 8,
-                                border: "1.5px solid #e5e7eb", background: ct.color, color: ct.iconColor,
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                cursor: "pointer", transition: "all 0.15s ease",
-                              }}
-                            >
-                              <Icon style={{ width: 14, height: 14 }} />
-                            </button>
-                          );
-                        })}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleAddComponent("image")}
-                        className="action-btn-secondary py-1.5 px-3 text-xs text-[#123524] bg-gray-100 hover:bg-gray-200 border-gray-200"
-                      >
-                        <Plus style={{ width: 13, height: 13 }} />
-                        <span>Add</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {formData.components.length === 0 ? (
-                    <div style={{ padding: "24px", textAlign: "center", border: "1.5px dashed #e5e7eb", borderRadius: 12, color: "#9ca3af" }}>
-                      <p style={{ fontSize: 13, fontWeight: 500 }}>No components yet.</p>
-                      <p style={{ fontSize: 12, marginTop: 4 }}>Click a type button above to add images, videos, quotes, or grid layouts to this case study.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {formData.components.map((comp, index) => renderComponentEditor(comp, index))}
-                    </div>
-                  )}
-                </div>
-
-                {/* ── Options ──────────────────────────────────────────────── */}
-                <div className="pt-4" style={{ borderTop: "1px solid #e5e7eb" }}>
-                  <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
-                    <input
-                      type="checkbox"
-                      checked={formData.isFeatured}
-                      onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
-                      style={{ width: 16, height: 16, accentColor: "#123524" }}
-                    />
-                    <div>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#123524" }}>Mark as Featured Project</span>
-                      <p style={{ fontSize: 11, color: "#6b7280", marginTop: 1 }}>Sets this as the highlighted project in the dashboard and hero area.</p>
-                    </div>
-                  </label>
-                </div>
-
-                {/* ── Form Actions ─────────────────────────────────────────── */}
-                <div className="flex justify-end gap-3 pt-4" style={{ borderTop: "1px solid #e5e7eb" }}>
-                  <button
-                    type="button"
-                    onClick={() => setModalOpen(false)}
-                    className="action-btn-secondary text-gray-700 bg-gray-100 hover:bg-gray-200 border-gray-300"
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" disabled={saving} className="action-btn-primary px-6">
-                    {saving ? "Saving..." : editingProject ? "Save Changes" : "Create Project"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

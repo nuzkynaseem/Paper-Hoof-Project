@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight, ChevronDown } from 'lucide-react';
 import ReadyToMove from '../components/ReadyToMove';
+import SEO from '../components/SEO';
 import './AboutUs.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -57,7 +58,7 @@ const SubFieldCard = ({ title, description, bgColor, textColor }) => {
       onMouseLeave={handleMouseLeave}
     >
       <div className="sub-card-horse-watermark">
-        <img src={`${process.env.PUBLIC_URL}/paperhoof-horse.svg`} alt="" />
+        <img src={`${process.env.PUBLIC_URL}/paperhoof-horse.svg`} alt="Paper Hoof Studio Horse Emblem" />
       </div>
       <div className="sub-card-content">
         <h4 className="sub-card-title" style={{ color: textColor }}>{title}</h4>
@@ -184,6 +185,11 @@ const AboutUs = () => {
 
   return (
     <div className="about-us-page">
+      <SEO
+        title="About Paper Hoof — Independent Design & Strategy Studio"
+        description="Learn about Paper Hoof Studio, our design ethos, methodology, and team."
+        path="/about"
+      />
       {/* Hero Section */}
       <section className="about-hero">
         <div className="about-container">
@@ -316,7 +322,7 @@ const AboutUs = () => {
             {teamMembers.map((member, index) => (
               <div key={index} className="team-member-card">
                 <div className="team-img-wrapper">
-                  <img src={member.image} alt={member.name} className="team-img" />
+                  <img src={member.image} alt={`${member.name} — ${member.role} at Paper Hoof Studio`} className="team-img" />
                   <a
                     href={member.instagram}
                     target="_blank"
