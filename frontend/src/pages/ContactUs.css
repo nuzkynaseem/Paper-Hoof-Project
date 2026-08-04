@@ -4,6 +4,16 @@
   background: var(--bg-cream);
   padding-top: 130px;
   position: relative;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden !important;
+  box-sizing: border-box;
+}
+
+.contact-interactive-section {
+  padding: 20px 0 120px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .contact-container {
@@ -13,6 +23,170 @@
 }
 
 /* Main Interactive Hover Section */
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .contact-us-page {
+    padding-top: 84px;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden !important;
+  }
+
+  .contact-interactive-section {
+    padding: 10px 0 60px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .contact-container {
+    padding: 0 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .contact-split-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .contact-nav-titles-col {
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .contact-nav-title-btn {
+    padding: 12px 0;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .contact-nav-title-btn:hover,
+  .contact-nav-title-btn.active {
+    transform: translateX(4px);
+  }
+
+  .title-num {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+  }
+
+  .title-text {
+    font-size: clamp(1.6rem, 6.5vw, 2.2rem);
+  }
+
+  .tab-pane {
+    padding: 20px 16px;
+    border-radius: 20px;
+    gap: 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .pane-intro {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .email-card-box {
+    padding: 14px 12px;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .email-icon-wrapper {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+  }
+
+  .email-icon-wrapper svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .email-text-details {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .email-label {
+    font-size: 0.62rem;
+  }
+
+  .email-address-link {
+    font-size: 0.92rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+  .email-copy-action-btn {
+    padding: 4px;
+    flex-shrink: 0;
+  }
+
+  .location-info-card {
+    padding: 14px 12px;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .location-icon-wrapper {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .location-value {
+    font-size: 0.95rem;
+  }
+
+  .location-sub {
+    font-size: 0.78rem;
+  }
+
+  .response-guarantee-badge {
+    padding: 8px 12px;
+    font-size: 0.76rem;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .social-channel-card {
+    padding: 12px 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .social-channel-left {
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .social-icon-wrapper {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .social-name {
+    font-size: 0.92rem;
+  }
+
+  .social-handle {
+    font-size: 0.75rem;
+  }
+}
 .contact-interactive-section {
   padding: 20px 0 120px;
 }
@@ -383,33 +557,4 @@
 .social-channel-card:hover .social-arrow-icon {
   color: var(--mane-orange);
   transform: translate(3px, -3px);
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-  .contact-us-page {
-    padding-top: 90px;
-  }
-
-  .contact-container {
-    padding: 0 16px;
-  }
-
-  .contact-split-grid {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
-
-  .contact-nav-title-btn {
-    padding: 12px 0;
-  }
-
-  .title-text {
-    font-size: 2.2rem;
-  }
-
-  .tab-pane {
-    padding: 28px 20px;
-    border-radius: 22px;
-  }
 }
