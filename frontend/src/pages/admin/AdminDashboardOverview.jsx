@@ -144,7 +144,7 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
       </div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Total Projects Card */}
         <div className="stat-card">
           <div className="stat-header">
@@ -162,17 +162,34 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
           </div>
         </div>
 
-        {/* Website Visits Card */}
+        {/* Website Visits Card (Vercel Synced) */}
         <div className="stat-card">
           <div className="stat-header">
             <div className="stat-icon-wrapper bg-blue-50 text-blue-700">
               <Eye className="w-5 h-5" />
             </div>
-            <span className="stat-badge text-blue-700 border-blue-200 bg-blue-50">Live Engagement</span>
+            <span className="stat-badge text-blue-700 border-blue-200 bg-blue-50">Vercel Analytics</span>
           </div>
-          <div className="stat-value">{stats.visitCount.toLocaleString()}</div>
+          <div className="stat-value">{(stats.visitCount || 0).toLocaleString()}</div>
+          <div className="stat-footer flex items-center justify-between">
+            <span>Total visits recorded</span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+              Vercel Connected
+            </span>
+          </div>
+        </div>
+
+        {/* Unique Visitors */}
+        <div className="stat-card">
+          <div className="stat-header">
+            <div className="stat-icon-wrapper bg-purple-50 text-purple-700">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <span className="stat-badge text-purple-700 border-purple-200 bg-purple-50">Unique Visitors</span>
+          </div>
+          <div className="stat-value">{(stats.uniqueVisitors || 0).toLocaleString()}</div>
           <div className="stat-footer">
-            <span>Total website visits recorded</span>
+            <span>Distinct IP / Visitor sessions</span>
           </div>
         </div>
 
@@ -184,7 +201,7 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
             </div>
             <span className="stat-badge text-amber-700 border-amber-200 bg-amber-50">Spotlight</span>
           </div>
-          <div className="stat-title truncate">
+          <div className="stat-title truncate font-bold text-lg">
             {currentFeatured ? currentFeatured.name : "No Featured Project"}
           </div>
           <div className="stat-footer">

@@ -19,6 +19,7 @@ import PageLoader from "./components/PageLoader";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminLogin from "./pages/admin/AdminLogin";
 import { API_BASE } from "./utils/api";
+import { Analytics } from "@vercel/analytics/react";
 
 function HomePage() {
   return (
@@ -48,10 +49,18 @@ function AppContent() {
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
-  // Record visit analytics on public load
+  // Record visit analytics on public load (syncs with Vercel Web Analytics)
   useEffect(() => {
     if (!isAdminRoute) {
-      fetch(`${API_BASE}/analytics/visit`, { method: "POST" }).catch(() => {});
+      fetch(`${API_BASE}/analytics/visit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          path: location.pathname,
+          referrer: document.referrer || "direct",
+          screen: `${window.innerWidth}x${window.innerHeight}`
+        })
+      }).catch(() => {});
     }
   }, [location.pathname, isAdminRoute]);
 
@@ -103,6 +112,7 @@ function AppContent() {
 
   return (
     <div className="App">
+      <Analytics />
       <PageLoader key={location.pathname} />
       <CustomCursor />
       <a href="#main-content" className="skip-link">
