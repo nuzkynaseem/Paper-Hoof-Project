@@ -94,38 +94,94 @@ def send_invitation_email(recipient_email: str, recipient_name: str, temp_passwo
 
     try:
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = "Welcome to Paper Hoof Studio CMS — Invitation & Access"
+        msg["Subject"] = "Welcome to Paper Hoof Studio CMS — Access Granted"
         msg["From"] = f"Paper Hoof <{smtp_user}>"
         msg["To"] = recipient_email
 
         role_title = "Super Administrator" if role == "super_admin" else "Team Member (Admin)"
 
         html_content = f"""
-        <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #0d1a14; color: #ffffff; padding: 40px 20px;">
-            <div style="max-width: 560px; margin: 0 auto; background-color: #12241b; border: 1px solid #1e3b2e; border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-                <div style="text-align: center; margin-bottom: 24px;">
-                    <h2 style="color: #97d9af; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Paper Hoof</h2>
-                    <p style="color: #6b8a78; font-size: 13px; margin-top: 4px; text-transform: uppercase; letter-spacing: 1.5px;">Studio CMS Backend Access</p>
-                </div>
-                <hr style="border: 0; border-top: 1px solid #1e3b2e; margin: 24px 0;" />
-                <p style="font-size: 15px; color: #e2e8f0; line-height: 1.6;">Hello <strong>{recipient_name}</strong>,</p>
-                <p style="font-size: 15px; color: #cbd5e1; line-height: 1.6;">You have been added to the <strong>Paper Hoof CMS Backend</strong> as a <strong>{role_title}</strong>.</p>
-                
-                <div style="background-color: #0b1510; border: 1.5px solid #97d9af; border-radius: 12px; padding: 20px; margin: 24px 0; text-align: center;">
-                    <p style="font-size: 12px; color: #97d9af; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0; font-weight: 600;">Your Temporary Login Credentials</p>
-                    <p style="font-size: 14px; color: #cbd5e1; margin: 4px 0;">Email: <strong style="color: #ffffff;">{recipient_email}</strong></p>
-                    <p style="font-size: 14px; color: #cbd5e1; margin: 8px 0 0 0;">Temporary Password: <strong style="color: #97d9af; font-family: monospace; font-size: 18px; letter-spacing: 2px;">{temp_password}</strong></p>
-                </div>
-                
-                <p style="font-size: 14px; color: #94a3b8; line-height: 1.5;">Log in using your temporary password below. You will be prompted to set your new permanent password immediately upon logging in.</p>
-                
-                <div style="text-align: center; margin-top: 32px;">
-                    <a href="http://localhost:3000/admin/login" style="background-color: #97d9af; color: #0d1a14; padding: 13px 32px; font-weight: 700; font-size: 14px; text-decoration: none; border-radius: 8px; display: inline-block;">Log In to CMS Backend</a>
-                </div>
-                <hr style="border: 0; border-top: 1px solid #1e3b2e; margin: 32px 0 20px 0;" />
-                <p style="font-size: 12px; color: #475569; text-align: center; margin: 0;">Paper Hoof Studio &copy; 2026. All rights reserved.</p>
-            </div>
-        </div>
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Welcome to Paper Hoof</title>
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #0d1a14; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0d1a14; padding: 40px 16px;">
+            <tr>
+              <td align="center">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 560px; background-color: #12241b; border: 1px solid #1e3b2e; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);">
+                  <!-- Header Logo Banner -->
+                  <tr>
+                    <td align="center" style="padding: 36px 32px 24px 32px; background: linear-gradient(180deg, #163024 0%, #12241b 100%); border-bottom: 1px solid #1e3b2e;">
+                      <!-- Logo Badge Container -->
+                      <table border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td align="center" style="width: 52px; height: 52px; background-color: #0d1a14; border: 2px solid #97d9af; border-radius: 14px; text-align: center; vertical-align: middle;">
+                            <span style="font-size: 26px; line-height: 52px;">🐎</span>
+                          </td>
+                        </tr>
+                      </table>
+                      <h1 style="color: #97d9af; font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin: 16px 0 4px 0;">Paper Hoof</h1>
+                      <p style="color: #6b8a78; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin: 0;">Studio CMS Backend Access</p>
+                    </td>
+                  </tr>
+
+                  <!-- Main Content -->
+                  <tr>
+                    <td style="padding: 32px;">
+                      <p style="font-size: 16px; color: #ffffff; font-weight: 600; margin: 0 0 12px 0;">Hello {recipient_name},</p>
+                      <p style="font-size: 14.5px; color: #cbd5e1; line-height: 1.6; margin: 0 0 24px 0;">
+                        You have been officially added to the <strong>Paper Hoof CMS Backend</strong> as a <strong><span style="color: #97d9af;">{role_title}</span></strong>.
+                      </p>
+
+                      <!-- Credentials Card -->
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0b1510; border: 1.5px solid #97d9af; border-radius: 14px; margin-bottom: 24px;">
+                        <tr>
+                          <td style="padding: 22px; text-align: center;">
+                            <p style="font-size: 11px; color: #97d9af; text-transform: uppercase; font-weight: 800; letter-spacing: 1.5px; margin: 0 0 12px 0;">Your Temporary Credentials</p>
+                            <p style="font-size: 14px; color: #94a3b8; margin: 0 0 6px 0;">Account Email: <strong style="color: #ffffff;">{recipient_email}</strong></p>
+                            <p style="font-size: 14px; color: #94a3b8; margin: 0;">
+                              Temporary Password: 
+                              <br>
+                              <span style="display: inline-block; margin-top: 6px; background-color: #163024; border: 1px solid #1e3b2e; color: #97d9af; font-family: 'Courier New', Courier, monospace; font-size: 19px; font-weight: 700; letter-spacing: 2px; padding: 8px 16px; border-radius: 8px;">{temp_password}</span>
+                            </p>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <p style="font-size: 13.5px; color: #94a3b8; line-height: 1.55; margin: 0 0 28px 0;">
+                        Please log in using your temporary password. You will be prompted to set your permanent password upon your first login.
+                      </p>
+
+                      <!-- Button CTA -->
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td align="center">
+                            <a href="http://localhost:3000/admin/login" target="_blank" style="background-color: #97d9af; color: #0d1a14; font-size: 14px; font-weight: 800; text-decoration: none; padding: 14px 32px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 14px rgba(151, 217, 175, 0.3);">
+                              Log In to Studio CMS &rarr;
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td align="center" style="padding: 24px 32px; background-color: #0b1510; border-top: 1px solid #1e3b2e;">
+                      <p style="font-size: 12px; color: #475569; margin: 0 0 4px 0;">Paper Hoof Studio &copy; 2026. All rights reserved.</p>
+                      <p style="font-size: 11px; color: #334155; margin: 0;">This is an automated operational notification regarding your backend access permissions.</p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
         """
         msg.attach(MIMEText(html_content, "html"))
 
@@ -138,6 +194,104 @@ def send_invitation_email(recipient_email: str, recipient_name: str, temp_passwo
         return True
     except Exception as e:
         logger.error(f"Failed to send invitation email via SMTP: {e}")
+        return False
+
+def send_revocation_email(recipient_email: str, recipient_name: str) -> bool:
+    """Sends an access revocation email when a team member is deleted via Super Admin."""
+    smtp_user = os.environ.get("SMTP_USER", "paperhoof@gmail.com")
+    smtp_password = os.environ.get("SMTP_PASSWORD", "")
+    smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
+    smtp_port = int(os.environ.get("SMTP_PORT", 587))
+
+    if not smtp_password:
+        logger.info(f"SMTP_PASSWORD not set in env. Revocation email to {recipient_email} skipped.")
+        return False
+
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = "Access Revoked — Paper Hoof Studio CMS"
+        msg["From"] = f"Paper Hoof <{smtp_user}>"
+        msg["To"] = recipient_email
+
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Access Revoked — Paper Hoof</title>
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #0d1a14; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0d1a14; padding: 40px 16px;">
+            <tr>
+              <td align="center">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 560px; background-color: #12241b; border: 1px solid #7f1d1d; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);">
+                  <!-- Header Banner -->
+                  <tr>
+                    <td align="center" style="padding: 36px 32px 24px 32px; background: linear-gradient(180deg, #2a1215 0%, #12241b 100%); border-bottom: 1px solid #7f1d1d;">
+                      <!-- Security Icon Badge Container -->
+                      <table border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td align="center" style="width: 52px; height: 52px; background-color: #1a0f0f; border: 2px solid #ef4444; border-radius: 14px; text-align: center; vertical-align: middle;">
+                            <span style="font-size: 24px; line-height: 52px;">🛑</span>
+                          </td>
+                        </tr>
+                      </table>
+                      <h1 style="color: #f87171; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin: 16px 0 4px 0;">Paper Hoof</h1>
+                      <p style="color: #991b1b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin: 0;">Access Revocation Notice</p>
+                    </td>
+                  </tr>
+
+                  <!-- Main Content -->
+                  <tr>
+                    <td style="padding: 32px;">
+                      <p style="font-size: 16px; color: #ffffff; font-weight: 600; margin: 0 0 12px 0;">Hello {recipient_name},</p>
+                      <p style="font-size: 14.5px; color: #cbd5e1; line-height: 1.6; margin: 0 0 24px 0;">
+                        This notification is to inform you that your backend access to the <strong>Paper Hoof CMS Studio</strong> has been <strong style="color: #f87171;">revoked and denied</strong> by Paper Hoof.
+                      </p>
+
+                      <!-- Revocation Details Box -->
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #1a0f0f; border: 1.5px solid #ef4444; border-radius: 14px; margin-bottom: 24px;">
+                        <tr>
+                          <td style="padding: 20px; text-align: center;">
+                            <p style="font-size: 11px; color: #f87171; text-transform: uppercase; font-weight: 800; letter-spacing: 1.5px; margin: 0 0 8px 0;">Account Status Update</p>
+                            <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 4px 0;">Account Email: <strong style="color: #ffffff;">{recipient_email}</strong></p>
+                            <p style="font-size: 14px; color: #cbd5e1; margin: 0;">Access Permission: <strong style="color: #f87171;">REVOKED / DENIED</strong></p>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <p style="font-size: 13.5px; color: #94a3b8; line-height: 1.55; margin: 0;">
+                        You will no longer be able to log in to the Paper Hoof CMS backend portal. If you believe this is an error or need access reinstated, please contact your Super Administrator (paperhoof@gmail.com).
+                      </p>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td align="center" style="padding: 24px 32px; background-color: #0b1510; border-top: 1px solid #1e3b2e;">
+                      <p style="font-size: 12px; color: #475569; margin: 0 0 4px 0;">Paper Hoof Studio &copy; 2026. All rights reserved.</p>
+                      <p style="font-size: 11px; color: #334155; margin: 0;">Automated security notification from Paper Hoof Access Management System.</p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
+        """
+        msg.attach(MIMEText(html_content, "html"))
+
+        with smtplib.SMTP(smtp_host, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_password)
+            server.send_message(msg)
+
+        logger.info(f"Revocation email successfully sent from {smtp_user} to {recipient_email}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send revocation email via SMTP: {e}")
         return False
 
 # App Setup
@@ -407,8 +561,15 @@ async def delete_user(user_id: str, user_data: dict = Depends(verify_super_admin
     if user.get("email") == SUPER_ADMIN_EMAIL or user.get("email") == user_data.get("sub"):
         raise HTTPException(status_code=400, detail="Cannot delete your own account or the primary Super Admin.")
 
+    email = user.get("email")
+    name = user.get("name", "Team Member")
+
     await db.users.delete_one({"id": user_id})
-    return {"status": "deleted", "userId": user_id}
+
+    # Dispatch access revocation email via Gmail SMTP
+    email_sent = send_revocation_email(email, name)
+
+    return {"status": "deleted", "userId": user_id, "emailSent": email_sent}
 
 # --- CLOUDFLARE R2 / S3 FILE UPLOAD ---
 @api_router.post("/upload")
