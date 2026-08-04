@@ -382,6 +382,10 @@ class ProjectComponent(BaseModel):
     contentUrl: Optional[str] = ""
     quoteText: Optional[str] = ""
     author: Optional[str] = ""
+    bgColor: Optional[str] = "#123524"
+    textColor: Optional[str] = "#FFFFFF"
+    authorColor: Optional[str] = "#97D9AF"
+    quoteFont: Optional[str] = "heading"  # "heading" | "primary"
     gridUrls: Optional[List[str]] = []
     insight: Optional[ProjectComponentInsight] = None
 

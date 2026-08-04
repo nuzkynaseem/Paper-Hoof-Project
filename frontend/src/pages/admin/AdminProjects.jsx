@@ -48,8 +48,13 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
   const [saving, setSaving] = useState(false);
   const [uploadingCompIdx, setUploadingCompIdx] = useState(null);
   const [showPreviewIdx, setShowPreviewIdx] = useState(null);
+  const [collapsedComps, setCollapsedComps] = useState({});
 
   const token = localStorage.getItem("paperhoof_admin_token");
+
+  const toggleCollapse = (compId) => {
+    setCollapsedComps((prev) => ({ ...prev, [compId]: !prev[compId] }));
+  };
 
   const emptyForm = () => ({
     id: Date.now().toString(),
@@ -76,6 +81,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
   const handleOpenNew = () => {
     setFormData(emptyForm());
     setEditingProject(null);
+    setCollapsedComps({});
     setModalOpen(true);
   };
 
@@ -99,6 +105,10 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
         contentUrl: c.contentUrl || "",
         quoteText: c.quoteText || "",
         author: c.author || "",
+        bgColor: c.bgColor || "#123524",
+        textColor: c.textColor || "#FFFFFF",
+        authorColor: c.authorColor || "#97D9AF",
+        quoteFont: c.quoteFont || "heading",
         gridUrls: c.gridUrls || ["", ""],
         insight: c.insight || { title: "", description: "" },
       })),
@@ -108,6 +118,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
       order: project.order || 0,
     });
     setEditingProject(project);
+    setCollapsedComps({});
     setModalOpen(true);
   };
 
@@ -180,16 +191,30 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
 
   // ── Component Management ─────────────────────────────────────────────────────
   const handleAddComponent = (type = "image") => {
+    const newCompId = Date.now().toString();
     const newComp = {
-      id: Date.now().toString(),
+      id: newCompId,
       type,
       contentUrl: "",
       quoteText: "",
       author: "",
+      bgColor: "#123524",
+      textColor: "#FFFFFF",
+      authorColor: "#97D9AF",
+      quoteFont: "heading",
       gridUrls: ["", ""],
       insight: { title: "", description: "" },
     };
     setFormData((prev) => ({ ...prev, components: [...prev.components, newComp] }));
+
+    setTimeout(() => {
+      const el = document.getElementById(`comp-card-${newCompId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        const focusable = el.querySelector("input, textarea, select");
+        if (focusable) focusable.focus();
+      }
+    }, 120);
   };
 
   const handleUpdateComponent = (index, field, value) => {
@@ -279,20 +304,39 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
   // ── Component Editor Card ──────────────────────────────────────────────────
   const renderComponentEditor = (comp, index) => {
     const isUploadingThis = uploadingCompIdx === index;
+    const isCollapsed = Boolean(collapsedComps[comp.id || index]);
 
     return (
-      <div key={comp.id || index} style={{ border: "1.5px solid #e5e7eb", borderRadius: 14, background: "#fafafa", padding: "16px 18px" }}>
-        {/* Header row */}
-        <div className="flex justify-between items-center" style={{ marginBottom: 14 }}>
-          <div className="flex items-center gap-2">
+      <div
+        id={`comp-card-${comp.id || index}`}
+        key={comp.id || index}
+        style={{
+          border: "1.5px solid #e5e7eb",
+          borderRadius: 14,
+          background: "#fafafa",
+          padding: "16px 18px",
+          transition: "all 0.2s ease"
+        }}
+      >
+        {/* Header row with Numbering & Chevron Accordion Toggle */}
+        <div className="flex justify-between items-center" style={{ marginBottom: isCollapsed ? 0 : 14 }}>
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => toggleCollapse(comp.id || index)}>
+            <button
+              type="button"
+              className="p-1 rounded-md hover:bg-gray-200 text-gray-600 transition-colors"
+              title={isCollapsed ? "Expand Component" : "Collapse Component"}
+            >
+              {isCollapsed ? <ChevronDown style={{ width: 16, height: 16 }} /> : <ChevronUp style={{ width: 16, height: 16 }} />}
+            </button>
             <ComponentTypeIcon type={comp.type} />
             <span style={{ fontSize: 12, fontWeight: 800, color: "#123524", textTransform: "uppercase", letterSpacing: "0.06em" }}>
               Component #{index + 1}
             </span>
-            <span style={{ fontSize: 11, color: "#6b7280", background: "#f3f4f6", padding: "2px 8px", borderRadius: 6, fontWeight: 600 }}>
+            <span style={{ fontSize: 11, color: "#6b7280", background: "#eef2ff", border: "1px solid #c7d2fe", padding: "2px 8px", borderRadius: 6, fontWeight: 700 }}>
               {COMPONENT_TYPES.find((t) => t.value === comp.type)?.label || comp.type}
             </span>
           </div>
+
           <div className="flex items-center gap-1">
             <button
               type="button"
@@ -331,168 +375,295 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
           </div>
         </div>
 
-        {/* Type selector */}
-        <div className="input-group" style={{ marginBottom: 12 }}>
-          <label>Component Type</label>
-          <select
-            value={comp.type}
-            onChange={(e) => handleUpdateComponent(index, "type", e.target.value)}
-            className="custom-input"
-          >
-            {COMPONENT_TYPES.map((t) => (
-              <option key={t.value} value={t.value}>{t.label}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Type-specific fields */}
-        {(comp.type === "image" || comp.type === "video") && (
-          <div className="input-group" style={{ marginBottom: 12 }}>
-            <label>{comp.type === "image" ? "Image URL" : "Video URL"}</label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={comp.contentUrl}
-                onChange={(e) => handleUpdateComponent(index, "contentUrl", e.target.value)}
-                placeholder={comp.type === "image" ? "https://domain.com/photo.jpg" : "https://domain.com/video.mp4"}
-                className="custom-input flex-1"
-              />
-              <label
-                className="upload-btn"
-                style={{ whiteSpace: "nowrap", fontSize: 12 }}
-                title={`Upload ${comp.type}`}
+        {/* Component Body (Shown when NOT collapsed) */}
+        {!isCollapsed && (
+          <div className="space-y-4 pt-1">
+            {/* Type selector */}
+            <div className="input-group">
+              <label>Component Type</label>
+              <select
+                value={comp.type}
+                onChange={(e) => handleUpdateComponent(index, "type", e.target.value)}
+                className="custom-input font-bold"
               >
-                <Upload style={{ width: 13, height: 13 }} />
-                <span>{isUploadingThis ? "Uploading..." : "Upload"}</span>
-                <input
-                  type="file"
-                  accept={comp.type === "image" ? "image/*" : "video/*"}
-                  onChange={(e) => handleCompFileUpload(e, index)}
-                  className="hidden"
-                  disabled={isUploadingThis}
-                />
-              </label>
+                {COMPONENT_TYPES.map((t) => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
             </div>
-            {/* Preview thumbnail */}
-            {showPreviewIdx === index && comp.contentUrl && (
-              <div style={{ marginTop: 10, borderRadius: 10, overflow: "hidden", border: "1px solid #e5e7eb", maxHeight: 200 }}>
-                {comp.type === "video" ? (
-                  <video src={comp.contentUrl} controls muted style={{ width: "100%", maxHeight: 200, objectFit: "cover" }} />
-                ) : (
-                  <img src={comp.contentUrl} alt="preview" style={{ width: "100%", maxHeight: 200, objectFit: "cover" }} />
+
+            {/* Type-specific fields */}
+            {(comp.type === "image" || comp.type === "video") && (
+              <div className="input-group">
+                <label>{comp.type === "image" ? "Image URL" : "Video URL"}</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={comp.contentUrl}
+                    onChange={(e) => handleUpdateComponent(index, "contentUrl", e.target.value)}
+                    placeholder={comp.type === "image" ? "https://domain.com/photo.jpg" : "https://domain.com/video.mp4"}
+                    className="custom-input flex-1"
+                  />
+                  <label className="upload-btn" style={{ whiteSpace: "nowrap", fontSize: 12 }}>
+                    <Upload style={{ width: 13, height: 13 }} />
+                    <span>{isUploadingThis ? "Uploading..." : "Upload"}</span>
+                    <input
+                      type="file"
+                      accept={comp.type === "image" ? "image/*" : "video/*"}
+                      onChange={(e) => handleCompFileUpload(e, index)}
+                      className="hidden"
+                      disabled={isUploadingThis}
+                    />
+                  </label>
+                </div>
+                {/* Preview thumbnail */}
+                {showPreviewIdx === index && comp.contentUrl && (
+                  <div style={{ marginTop: 10, borderRadius: 10, overflow: "hidden", border: "1px solid #e5e7eb", maxHeight: 200 }}>
+                    {comp.type === "video" ? (
+                      <video src={comp.contentUrl} controls muted style={{ width: "100%", maxHeight: 200, objectFit: "cover" }} />
+                    ) : (
+                      <img src={comp.contentUrl} alt="preview" style={{ width: "100%", maxHeight: 200, objectFit: "cover" }} />
+                    )}
+                  </div>
                 )}
               </div>
             )}
-          </div>
-        )}
 
-        {comp.type === "html" && (
-          <div className="input-group" style={{ marginBottom: 12 }}>
-            <label>HTML / Code Snippet</label>
-            <textarea
-              rows={6}
-              value={comp.contentUrl}
-              onChange={(e) => handleUpdateComponent(index, "contentUrl", e.target.value)}
-              placeholder={"<div class=\"my-component\">\n  <!-- your custom HTML here -->\n</div>"}
-              className="custom-input"
-              style={{ fontFamily: "monospace", fontSize: 12.5, resize: "vertical" }}
-            />
-          </div>
-        )}
+            {comp.type === "html" && (
+              <div className="input-group">
+                <label>HTML / Code Snippet</label>
+                <textarea
+                  rows={6}
+                  value={comp.contentUrl}
+                  onChange={(e) => handleUpdateComponent(index, "contentUrl", e.target.value)}
+                  placeholder={"<div class=\"my-component\">\n  <!-- your custom HTML here -->\n</div>"}
+                  className="custom-input"
+                  style={{ fontFamily: "monospace", fontSize: 12.5, resize: "vertical" }}
+                />
+              </div>
+            )}
 
-        {comp.type === "quote" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 12 }}>
-            <div className="input-group">
-              <label>Quote / Highlight Text</label>
-              <textarea
-                rows={3}
-                value={comp.quoteText || ""}
-                onChange={(e) => handleUpdateComponent(index, "quoteText", e.target.value)}
-                placeholder="&ldquo;We crafted a high-impact identity that speaks to both heart and mind.&rdquo;"
-                className="custom-input"
-                style={{ resize: "vertical" }}
-              />
-            </div>
-            <div className="input-group">
-              <label>Author / Attribution (optional)</label>
-              <input
-                type="text"
-                value={comp.author || ""}
-                onChange={(e) => handleUpdateComponent(index, "author", e.target.value)}
-                placeholder="— Client Name, CEO"
-                className="custom-input"
-              />
-            </div>
-          </div>
-        )}
-
-        {comp.type === "grid" && (
-          <div style={{ marginBottom: 12 }}>
-            <label className="input-group">
-              <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.05em", textTransform: "uppercase" }}>
-                2-Column Image Grid
-              </span>
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" style={{ marginTop: 8 }}>
-              {[0, 1].map((slot) => (
-                <div key={slot} className="input-group">
-                  <label>Column {slot + 1} Image</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={(comp.gridUrls || ["", ""])[slot] || ""}
-                      onChange={(e) => handleUpdateComponent(index, `gridUrls.${slot}`, e.target.value)}
-                      placeholder="https://..."
-                      className="custom-input flex-1"
-                      style={{ fontSize: 12 }}
-                    />
-                    <label className="upload-btn" style={{ fontSize: 11 }}>
-                      <Upload style={{ width: 12, height: 12 }} />
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleGridFileUpload(e, index, slot)}
-                        className="hidden"
-                        disabled={uploadingCompIdx === `${index}-${slot}`}
-                      />
-                    </label>
-                  </div>
-                  {showPreviewIdx === index && (comp.gridUrls || [])[slot] && (
-                    <div style={{ marginTop: 6, borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb" }}>
-                      <img src={(comp.gridUrls || [])[slot]} alt={`col${slot}`} style={{ width: "100%", height: 100, objectFit: "cover" }} />
-                    </div>
-                  )}
+            {comp.type === "quote" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 14, background: "#f8fafc", border: "1px solid #e2e8f0", padding: "16px", borderRadius: 12 }}>
+                <div className="input-group">
+                  <label style={{ fontWeight: 700, color: "#1e293b" }}>Quote / Highlight Text *</label>
+                  <textarea
+                    rows={3}
+                    value={comp.quoteText || ""}
+                    onChange={(e) => handleUpdateComponent(index, "quoteText", e.target.value)}
+                    placeholder="&ldquo;We crafted a high-impact identity that speaks to both heart and mind.&rdquo;"
+                    className="custom-input"
+                    style={{ resize: "vertical" }}
+                  />
                 </div>
-              ))}
+                <div className="input-group">
+                  <label style={{ fontWeight: 700, color: "#1e293b" }}>Author / Attribution (optional)</label>
+                  <input
+                    type="text"
+                    value={comp.author || ""}
+                    onChange={(e) => handleUpdateComponent(index, "author", e.target.value)}
+                    placeholder="— Client Name, CEO"
+                    className="custom-input"
+                  />
+                </div>
+
+                {/* Quote Styling & Typography Options */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2" style={{ borderTop: "1px dashed #cbd5e1" }}>
+                  {/* Background Color Picker */}
+                  <div className="input-group">
+                    <label>Quote Background Color</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={comp.bgColor || "#123524"}
+                        onChange={(e) => handleUpdateComponent(index, "bgColor", e.target.value)}
+                        style={{ width: 34, height: 34, borderRadius: 8, cursor: "pointer", border: "1px solid #cbd5e1" }}
+                      />
+                      <input
+                        type="text"
+                        value={comp.bgColor || "#123524"}
+                        onChange={(e) => handleUpdateComponent(index, "bgColor", e.target.value)}
+                        className="custom-input flex-1"
+                        placeholder="#123524"
+                      />
+                    </div>
+                    {/* Color Preset Pills */}
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {[
+                        { label: "Dark Green", hex: "#123524" },
+                        { label: "Soot Black", hex: "#202423" },
+                        { label: "Cream", hex: "#FFFDF7" },
+                        { label: "Mint Sprig", hex: "#97D9AF" },
+                        { label: "Tangerine", hex: "#FD6D1E" },
+                        { label: "Bubblegum", hex: "#FDB5ED" }
+                      ].map((preset) => (
+                        <button
+                          key={preset.hex}
+                          type="button"
+                          onClick={() => handleUpdateComponent(index, "bgColor", preset.hex)}
+                          style={{
+                            backgroundColor: preset.hex,
+                            border: "1px solid rgba(0,0,0,0.15)",
+                            borderRadius: 6,
+                            width: 22,
+                            height: 22,
+                            cursor: "pointer"
+                          }}
+                          title={`Set background to ${preset.label}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Text Color Picker */}
+                  <div className="input-group">
+                    <label>Quote Text Color</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={comp.textColor || "#FFFFFF"}
+                        onChange={(e) => handleUpdateComponent(index, "textColor", e.target.value)}
+                        style={{ width: 34, height: 34, borderRadius: 8, cursor: "pointer", border: "1px solid #cbd5e1" }}
+                      />
+                      <input
+                        type="text"
+                        value={comp.textColor || "#FFFFFF"}
+                        onChange={(e) => handleUpdateComponent(index, "textColor", e.target.value)}
+                        className="custom-input flex-1"
+                        placeholder="#FFFFFF"
+                      />
+                    </div>
+                    {/* Color Preset Pills */}
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {[
+                        { label: "White", hex: "#FFFFFF" },
+                        { label: "Soot Black", hex: "#202423" },
+                        { label: "Mint Sprig", hex: "#97D9AF" },
+                        { label: "Tangerine", hex: "#FD6D1E" }
+                      ].map((preset) => (
+                        <button
+                          key={preset.hex}
+                          type="button"
+                          onClick={() => handleUpdateComponent(index, "textColor", preset.hex)}
+                          style={{
+                            backgroundColor: preset.hex,
+                            border: "1px solid rgba(0,0,0,0.15)",
+                            borderRadius: 6,
+                            width: 22,
+                            height: 22,
+                            cursor: "pointer"
+                          }}
+                          title={`Set text to ${preset.label}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Author Accent Color */}
+                  <div className="input-group">
+                    <label>Author Accent Color</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={comp.authorColor || "#97D9AF"}
+                        onChange={(e) => handleUpdateComponent(index, "authorColor", e.target.value)}
+                        style={{ width: 34, height: 34, borderRadius: 8, cursor: "pointer", border: "1px solid #cbd5e1" }}
+                      />
+                      <input
+                        type="text"
+                        value={comp.authorColor || "#97D9AF"}
+                        onChange={(e) => handleUpdateComponent(index, "authorColor", e.target.value)}
+                        className="custom-input flex-1"
+                        placeholder="#97D9AF"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Typography Font Choice */}
+                  <div className="input-group">
+                    <label>Paper Hoof Typography</label>
+                    <select
+                      value={comp.quoteFont || "heading"}
+                      onChange={(e) => handleUpdateComponent(index, "quoteFont", e.target.value)}
+                      className="custom-input font-bold"
+                    >
+                      <option value="heading">Paper Hoof Heading (Syne / Display)</option>
+                      <option value="primary">Paper Hoof Primary (Space Grotesk / Body)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {comp.type === "grid" && (
+              <div style={{ marginBottom: 12 }}>
+                <label className="input-group">
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#374151", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                    2-Column Image Grid
+                  </span>
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" style={{ marginTop: 8 }}>
+                  {[0, 1].map((slot) => (
+                    <div key={slot} className="input-group">
+                      <label>Column {slot + 1} Image</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={(comp.gridUrls || ["", ""])[slot] || ""}
+                          onChange={(e) => handleUpdateComponent(index, `gridUrls.${slot}`, e.target.value)}
+                          placeholder="https://..."
+                          className="custom-input flex-1"
+                          style={{ fontSize: 12 }}
+                        />
+                        <label className="upload-btn" style={{ fontSize: 11 }}>
+                          <Upload style={{ width: 12, height: 12 }} />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleGridFileUpload(e, index, slot)}
+                            className="hidden"
+                            disabled={uploadingCompIdx === `${index}-${slot}`}
+                          />
+                        </label>
+                      </div>
+                      {(comp.gridUrls || [])[slot] && (
+                        <div style={{ marginTop: 6, borderRadius: 8, overflow: "hidden", border: "1px solid #e5e7eb" }}>
+                          <img src={(comp.gridUrls || [])[slot]} alt={`col${slot}`} style={{ width: "100%", height: 100, objectFit: "cover" }} />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Optional Insight Panel */}
+            <div style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 10, padding: "12px 14px" }}>
+              <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#92400e", display: "flex", alignItems: "center", gap: 5, marginBottom: 8 }}>
+                <Lightbulb style={{ width: 12, height: 12 }} />
+                Optional Insight Caption
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input
+                  type="text"
+                  value={comp.insight?.title || ""}
+                  onChange={(e) => handleUpdateComponent(index, "insight.title", e.target.value)}
+                  placeholder="Insight Title (e.g. Tactile Packaging)"
+                  className="custom-input"
+                  style={{ fontSize: 12.5 }}
+                />
+                <input
+                  type="text"
+                  value={comp.insight?.description || ""}
+                  onChange={(e) => handleUpdateComponent(index, "insight.description", e.target.value)}
+                  placeholder="Short insight description..."
+                  className="custom-input"
+                  style={{ fontSize: 12.5 }}
+                />
+              </div>
             </div>
           </div>
         )}
-
-        {/* Optional Insight Panel */}
-        <div style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 10, padding: "12px 14px" }}>
-          <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#92400e", display: "flex", alignItems: "center", gap: 5, marginBottom: 8 }}>
-            <Lightbulb style={{ width: 12, height: 12 }} />
-            Optional Insight Caption
-          </span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <input
-              type="text"
-              value={comp.insight?.title || ""}
-              onChange={(e) => handleUpdateComponent(index, "insight.title", e.target.value)}
-              placeholder="Insight Title (e.g. Tactile Packaging)"
-              className="custom-input"
-              style={{ fontSize: 12.5 }}
-            />
-            <input
-              type="text"
-              value={comp.insight?.description || ""}
-              onChange={(e) => handleUpdateComponent(index, "insight.description", e.target.value)}
-              placeholder="Short insight description..."
-              className="custom-input"
-              style={{ fontSize: 12.5 }}
-            />
-          </div>
-        </div>
       </div>
     );
   };

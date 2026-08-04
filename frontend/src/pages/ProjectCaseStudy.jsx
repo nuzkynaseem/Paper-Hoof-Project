@@ -237,25 +237,47 @@ const ProjectCaseStudy = () => {
                 ) : comp.type === "html" ? (
                   <CodeOrHtmlComponent content={comp.contentUrl} />
                 ) : comp.type === "quote" ? (
-                  <div className="w-full py-16 px-8 md:py-24 md:px-16 bg-[#123524] text-white flex flex-col items-center justify-center text-center">
-                    <blockquote className="text-2xl md:text-4xl font-semibold leading-relaxed max-w-4xl font-serif">
+                  <div
+                    className="case-study-quote-wrapper w-full py-16 px-6 md:py-28 md:px-16 flex flex-col items-center justify-center text-center transition-colors duration-300"
+                    style={{
+                      backgroundColor: comp.bgColor || "#123524",
+                      color: comp.textColor || "#FFFFFF"
+                    }}
+                  >
+                    <blockquote
+                      className="case-study-quote-text text-2xl md:text-4xl lg:text-5xl font-extrabold leading-tight max-w-4xl tracking-tight"
+                      style={{
+                        fontFamily: comp.quoteFont === "primary" ? "var(--font-primary)" : "var(--font-heading)",
+                        color: comp.textColor || "#FFFFFF"
+                      }}
+                    >
                       “{comp.quoteText || comp.contentUrl}”
                     </blockquote>
                     {comp.author && (
-                      <cite className="mt-6 text-sm tracking-wider uppercase opacity-90 not-italic font-bold text-[#97D9AF]">
+                      <cite
+                        className="case-study-quote-author mt-8 text-sm md:text-base tracking-widest uppercase not-italic font-extrabold"
+                        style={{
+                          fontFamily: "var(--font-primary)",
+                          color: comp.authorColor || comp.textColor || "#97D9AF"
+                        }}
+                      >
                         — {comp.author}
                       </cite>
                     )}
                   </div>
                 ) : comp.type === "grid" ? (
-                  <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-2 bg-neutral-950 p-2">
-                    {(comp.gridUrls || [comp.contentUrl, comp.contentUrl]).map((url, gIdx) => (
-                      <img
-                        key={gIdx}
-                        src={url}
-                        alt={`Grid showcase ${gIdx + 1}`}
-                        className="w-full h-[450px] md:h-[650px] object-cover"
-                      />
+                  <div className="case-study-grid-wrapper w-full grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 bg-transparent py-2">
+                    {(comp.gridUrls && comp.gridUrls.filter(Boolean).length > 0
+                      ? comp.gridUrls.filter(Boolean)
+                      : [comp.contentUrl || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200", comp.contentUrl || "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80&w=1200"]
+                    ).map((url, gIdx) => (
+                      <div key={gIdx} className="w-full overflow-hidden rounded-xl bg-neutral-100">
+                        <img
+                          src={url}
+                          alt={`Showcase grid item ${gIdx + 1}`}
+                          className="w-full h-[380px] sm:h-[480px] md:h-[620px] object-cover block transition-transform duration-500 hover:scale-[1.02]"
+                        />
+                      </div>
                     ))}
                   </div>
                 ) : (
