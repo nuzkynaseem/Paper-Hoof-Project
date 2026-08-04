@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import HamburgerMenu from "./components/HamburgerMenu";
@@ -139,6 +139,7 @@ function AppContent() {
           <Route path="/" element={<HomePage />} />
           <Route path="/brand-review" element={<BrandReview />} />
           <Route path="/contact" element={<ContactUs />} />
+          <Route path="/contact-us" element={<Navigate to="/contact" replace />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/work" element={<Work />} />
           <Route path="/work/:projectId" element={<ProjectCaseStudy />} />

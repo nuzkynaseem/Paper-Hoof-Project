@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Mail,
   MapPin,
@@ -7,24 +7,51 @@ import {
   Check,
 } from 'lucide-react';
 import { InstagramIcon, LinkedinIcon } from '../components/SocialIcons';
+import ReadyToMove from '../components/ReadyToMove';
 import SEO from '../components/SEO';
+import { API_BASE } from '../utils/api';
 import './ContactUs.css';
-
-const socialChannels = [
-  { name: 'Instagram', handle: '@paperhoof', url: 'https://instagram.com', icon: InstagramIcon },
-  { name: 'LinkedIn', handle: 'Paper Hoof Studio', url: 'https://linkedin.com', icon: LinkedinIcon },
-];
 
 const ContactUs = () => {
   const [activeTab, setActiveTab] = useState('get-in-touch'); // 'get-in-touch' | 'connect'
   const [copiedEmail, setCopiedEmail] = useState(false);
+  const [socials, setSocials] = useState({
+    email: 'paperhoof@gmail.com',
+    instagramUrl: 'https://instagram.com',
+    linkedinUrl: 'https://linkedin.com',
+  });
+
+  useEffect(() => {
+    fetchSocialsData();
+  }, []);
+
+  const fetchSocialsData = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/site/socials`);
+      if (res.ok) {
+        const data = await res.json();
+        setSocials({
+          email: data.email || 'paperhoof@gmail.com',
+          instagramUrl: data.instagramUrl || 'https://instagram.com',
+          linkedinUrl: data.linkedinUrl || 'https://linkedin.com',
+        });
+      }
+    } catch (e) {
+      console.warn("Using default contact socials");
+    }
+  };
 
   const handleCopyEmail = (e) => {
     e.stopPropagation();
-    navigator.clipboard.writeText('paperhoof@gmail.com');
+    navigator.clipboard.writeText(socials.email);
     setCopiedEmail(true);
     setTimeout(() => setCopiedEmail(false), 2200);
   };
+
+  const socialChannels = [
+    { name: 'Instagram', handle: '@paperhoof', url: socials.instagramUrl, icon: InstagramIcon },
+    { name: 'LinkedIn', handle: 'Paper Hoof Studio', url: socials.linkedinUrl, icon: LinkedinIcon },
+  ];
 
   return (
     <div className="contact-us-page">
@@ -79,11 +106,11 @@ const ContactUs = () => {
                   <div className="email-text-details">
                     <span className="email-label">DIRECT EMAIL</span>
                     <a
-                      href="mailto:paperhoof@gmail.com"
+                      href={`mailto:${socials.email}`}
                       onClick={(e) => e.stopPropagation()}
                       className="email-address-link"
                     >
-                      paperhoof@gmail.com
+                      {socials.email}
                     </a>
                   </div>
                   <button
