@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Disallow indexing admin routes
+Disallow: /admin
+Disallow: /admin/*
+
+Sitemap: https://paperhoof.com/sitemap.xml
