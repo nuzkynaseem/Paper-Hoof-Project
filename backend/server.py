@@ -1099,6 +1099,11 @@ async def create_booking(input: BookingCreate):
 # Include router & middlewares
 app.include_router(api_router)
 
+@app.get("/")
+async def root_app():
+    return {"message": "Paper Hoof API Service", "status": "online"}
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
