@@ -305,13 +305,7 @@ export default function AdminLayout() {
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              style={{
-                display: "none",
-                color: "#6b7280",
-                background: "none",
-                border: "none",
-                padding: 4,
-              }}
+              aria-label="Toggle navigation sidebar"
               className="mobile-menu-btn"
             >
               <Menu style={{ width: 22, height: 22 }} />

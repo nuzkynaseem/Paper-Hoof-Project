@@ -1576,3 +1576,199 @@ select.custom-input option,
   justify-content: center;
   margin-bottom: 12px;
 }
+
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVE SYSTEM FOR PAPER HOOF ADMIN CMS
+   ========================================================================== */
+
+.mobile-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 8px;
+  color: #123524;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mobile-menu-btn:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+
+  /* Main Container */
+  .admin-main-container {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Top Header */
+  .admin-top-header {
+    padding: 0 16px !important;
+    height: 56px !important;
+  }
+
+  .header-breadcrumb {
+    font-size: 12px !important;
+    gap: 4px !important;
+  }
+
+  .header-live-badge {
+    display: none !important;
+  }
+
+  /* Content Padding */
+  .admin-content-padding {
+    padding: 16px 12px 32px !important;
+  }
+
+  /* Sidebar Drawer on Mobile */
+  .admin-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 280px !important;
+    max-width: 85vw !important;
+    z-index: 9999 !important;
+    transform: translateX(-100%) !important;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  .admin-sidebar.open {
+    transform: translateX(0) !important;
+  }
+
+  /* Welcome Banner */
+  .welcome-banner {
+    padding: 20px 18px !important;
+    border-radius: 16px !important;
+    gap: 16px !important;
+  }
+
+  .welcome-heading {
+    font-size: 20px !important;
+  }
+
+  .welcome-subtext {
+    font-size: 13px !important;
+  }
+
+  .welcome-banner .flex {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 10px !important;
+  }
+
+  .welcome-banner button,
+  .welcome-banner a {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Project Editor Modal & Dialogs */
+  .modal-backdrop,
+  .admin-modal-overlay {
+    padding: 10px !important;
+    align-items: flex-end !important;
+  }
+
+  .modal-card,
+  .admin-modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92vh !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 16px 14px !important;
+    margin: 0 !important;
+  }
+
+  .modal-header-sticky {
+    padding: 14px 16px !important;
+  }
+
+  .modal-body-scroll {
+    padding: 16px 14px 24px !important;
+  }
+
+  /* Editor cards & Form layouts */
+  .editor-card,
+  .stat-card,
+  .featured-selector-card {
+    padding: 16px 14px !important;
+    border-radius: 14px !important;
+  }
+
+  .featured-preview-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .featured-image-wrapper {
+    height: 180px !important;
+  }
+
+  /* Project Cards Grid */
+  .project-admin-card {
+    border-radius: 14px !important;
+  }
+
+  /* Tables Responsiveness */
+  .team-table-wrapper,
+  .table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    margin: 0 -14px !important;
+    padding: 0 14px !important;
+  }
+
+  .team-table th,
+  .team-table td {
+    padding: 12px 14px !important;
+    white-space: nowrap !important;
+  }
+
+  /* Action Buttons & Input Wrappers */
+  .input-group label {
+    font-size: 12px !important;
+  }
+
+  .upload-btn {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+  }
+
+  .toast-container {
+    top: 10px !important;
+    right: 10px !important;
+    left: 10px !important;
+    width: auto !important;
+    max-width: calc(100vw - 20px) !important;
+  }
+
+  .toast-item {
+    padding: 12px 14px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  .admin-page-header button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+

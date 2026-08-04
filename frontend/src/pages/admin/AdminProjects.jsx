@@ -779,7 +779,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
 
                 {/* ── 4. Case Study Content Components ─────────────────────── */}
                 <div className="space-y-4 pt-4" style={{ borderTop: "1px solid #e5e7eb" }}>
-                  <div className="flex justify-between items-start">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <div>
                       <h3 className="text-xs uppercase tracking-wider text-[#166534] font-bold">
                         4. Case Study Content Components
@@ -788,7 +788,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                         Build rich case study layouts — images, videos, HTML embeds, pull-quotes, and 2-column grids. Reorder freely.
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       {/* Quick-add type picker */}
                       <div className="flex items-center gap-1">
                         {COMPONENT_TYPES.map((ct) => {
