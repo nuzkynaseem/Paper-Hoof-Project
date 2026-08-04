@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Query, Depends, UploadFile, File, Form, Header
+from fastapi import FastAPI, APIRouter, HTTPException, Query, Depends, UploadFile, File, Form, Header, Request, Body, Request, Body
+
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -431,14 +432,31 @@ async def login(credentials: AuthLogin):
     email = credentials.email.lower().strip()
     password = credentials.password
 
+    # 1. Super Admin fallback check against .env SUPER_ADMIN_EMAIL & SUPER_ADMIN_PASSWORD
+    if email == SUPER_ADMIN_EMAIL.lower() and password == SUPER_ADMIN_PASSWORD:
+        user = await db.users.find_one({"email": email})
+        user_id = user.get("id") if user else str(uuid.uuid4())
+        user_name = user.get("name", "Paper Hoof Super Admin") if user else "Paper Hoof Super Admin"
+        token = create_access_token({"sub": email, "role": "super_admin", "id": user_id})
+        return {
+            "token": token,
+            "user": {
+                "id": user_id,
+                "email": email,
+                "name": user_name,
+                "role": "super_admin",
+                "mustChangePassword": False
+            }
+        }
+
+    # 2. Legacy Admin fallback check
+    if email == ADMIN_EMAIL.lower() and password == ADMIN_PASSWORD:
+        token = create_access_token({"sub": email, "role": "admin"})
+        return {"token": token, "user": {"email": email, "name": "Paper Hoof Team", "role": "admin", "mustChangePassword": False}}
+
+    # 3. Check MongoDB users collection
     user = await db.users.find_one({"email": email})
     if not user:
-        if email == SUPER_ADMIN_EMAIL.lower() and password == SUPER_ADMIN_PASSWORD:
-            token = create_access_token({"sub": email, "role": "super_admin"})
-            return {"token": token, "user": {"email": email, "name": "Paper Hoof Super Admin", "role": "super_admin", "mustChangePassword": False}}
-        if email == ADMIN_EMAIL.lower() and password == ADMIN_PASSWORD:
-            token = create_access_token({"sub": email, "role": "admin"})
-            return {"token": token, "user": {"email": email, "name": "Paper Hoof Team", "role": "admin", "mustChangePassword": False}}
         raise HTTPException(status_code=400, detail="Invalid email or password")
 
     if hash_password(password) != user.get("passwordHash"):
@@ -1217,6 +1235,15 @@ app.add_middleware(
 @app.on_event("startup")
 async def seed_super_admin():
     try:
+        # Clean up duplicate paperhoof@gmail.com entries if any
+        cursor = db.users.find({"email": SUPER_ADMIN_EMAIL})
+        admin_users = await cursor.to_list(100)
+
+        if len(admin_users) > 1:
+            keep_id = admin_users[0].get("id")
+            await db.users.delete_many({"email": SUPER_ADMIN_EMAIL, "id": {"$ne": keep_id}})
+            logger.info(f"Cleaned up duplicate Super Admin documents for {SUPER_ADMIN_EMAIL}")
+
         admin_user = await db.users.find_one({"email": SUPER_ADMIN_EMAIL})
         if not admin_user:
             doc = {
@@ -1232,10 +1259,17 @@ async def seed_super_admin():
             await db.users.insert_one(doc)
             logger.info(f"Auto-seeded Super Admin account: {SUPER_ADMIN_EMAIL}")
         else:
-            if admin_user.get("role") != "super_admin":
-                await db.users.update_one({"email": SUPER_ADMIN_EMAIL}, {"$set": {"role": "super_admin"}})
+            await db.users.update_one(
+                {"email": SUPER_ADMIN_EMAIL},
+                {"$set": {
+                    "role": "super_admin",
+                    "passwordHash": hash_password(SUPER_ADMIN_PASSWORD),
+                    "mustChangePassword": False
+                }}
+            )
+            logger.info(f"Synced Super Admin account credentials for {SUPER_ADMIN_EMAIL}")
     except Exception as e:
-        logger.warning(f"Failed to seed Super Admin account on startup: {e}")
+        logger.warning(f"Failed to seed/sync Super Admin account on startup: {e}")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
