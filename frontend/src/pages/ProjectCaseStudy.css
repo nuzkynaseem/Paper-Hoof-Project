@@ -365,12 +365,58 @@
   }
 
   .component-insight-container {
-    bottom: 20px;
-    left: 20px;
+    bottom: 14px;
+    left: 14px;
+    max-width: calc(100vw - 28px);
+  }
+
+  .component-insight-pill {
+    padding: 6px 12px 6px 16px;
+    min-height: 32px;
+    font-size: 12px;
+    gap: 8px;
+    border-radius: 999px;
+  }
+
+  .component-insight-pill .pill-plus-icon {
+    width: 20px;
+    height: 20px;
+    border-width: 1px;
+  }
+
+  .component-insight-pill .pill-plus-icon svg {
+    width: 11px;
+    height: 11px;
   }
 
   .component-insight-modal {
-    width: calc(100vw - 40px);
-    padding: 20px 24px;
+    width: calc(100vw - 28px);
+    max-width: 380px;
+    padding: 14px 16px;
+    border-radius: 14px;
+  }
+
+  .insight-modal-header {
+    margin-bottom: 8px;
+  }
+
+  .insight-modal-title {
+    font-size: 0.95rem;
+  }
+
+  .insight-modal-close {
+    width: 22px;
+    height: 22px;
+    border-width: 1px;
+  }
+
+  .insight-modal-close svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .insight-modal-body {
+    font-size: 0.83rem;
+    line-height: 1.5;
   }
 }
