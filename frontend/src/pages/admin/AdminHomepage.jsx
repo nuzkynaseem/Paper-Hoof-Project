@@ -29,20 +29,31 @@ export default function AdminHomepage({ showToast }) {
     const file = e.target.files[0];
     if (!file) return;
     setUploading(true);
+    const currentToken = localStorage.getItem("paperhoof_admin_token");
     const formData = new FormData();
     formData.append("file", file);
     try {
+      const headers = {};
+      if (currentToken) headers["Authorization"] = `Bearer ${currentToken}`;
       const res = await fetch(`${API_BASE}/upload`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        headers,
         body: formData,
       });
+      if (!res.ok) {
+        const errText = await res.text();
+        let errMsg = `Upload failed (${res.status})`;
+        try {
+          const parsed = JSON.parse(errText);
+          errMsg = parsed.detail || errMsg;
+        } catch (_) {}
+        throw new Error(errMsg);
+      }
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Upload failed");
       setHeroVideoUrl(data.url);
       if (showToast) showToast("success", "Video uploaded", file.name);
     } catch (err) {
-      if (showToast) showToast("error", "Upload failed", err.message);
+      if (showToast) showToast("error", "Upload failed", err.message || "Failed to fetch");
     } finally {
       setUploading(false);
     }

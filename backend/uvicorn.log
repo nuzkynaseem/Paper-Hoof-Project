@@ -1,15 +1,10 @@
 INFO:     Will watch for changes in these directories: ['/Users/nuzkynaseem/Desktop/Branfern/Paper-Hoof-Project/backend']
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [41871] using StatReload
-INFO:     Started server process [41873]
+INFO:     Started reloader process [42603] using StatReload
+INFO:     Started server process [42605]
 INFO:     Waiting for application startup.
-2026-08-05 17:34:27,004 - server - INFO - Synced Super Admin account credentials for paperhoof@gmail.com
+2026-08-05 17:55:42,644 - server - INFO - Synced Super Admin account credentials for paperhoof@gmail.com
 INFO:     Application startup complete.
-INFO:     127.0.0.1:65449 - "POST /api/auth/login HTTP/1.1" 200 OK
-2026-08-05 17:34:31,192 - server - INFO - Successfully uploaded test_card.png to R2 bucket 'paperhoof' -> /api/uploads/uploads/80098cf0-f76d-458a-a7fd-b9c05759e5af.png
-INFO:     127.0.0.1:65450 - "POST /api/upload HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65452 - "GET /api/uploads/uploads/80098cf0-f76d-458a-a7fd-b9c05759e5af.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65463 - "POST /api/auth/login HTTP/1.1" 200 OK
-2026-08-05 17:35:57,688 - server - INFO - Successfully uploaded project_hero_test.jpg to R2 bucket 'paperhoof' -> /api/uploads/uploads/b9de5f93-3616-496d-88c1-101b9527537b.jpg
-INFO:     127.0.0.1:65464 - "POST /api/upload HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65466 - "GET /api/uploads/uploads/b9de5f93-3616-496d-88c1-101b9527537b.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49369 - "POST /api/auth/login HTTP/1.1" 200 OK
+2026-08-05 17:55:48,318 - server - INFO - Successfully uploaded cors_test.png to R2 bucket 'paperhoof' -> /api/uploads/uploads/43cbfcca-5d80-4794-816b-ec9140c178e8.png
+INFO:     127.0.0.1:49370 - "POST /api/upload HTTP/1.1" 200 OK

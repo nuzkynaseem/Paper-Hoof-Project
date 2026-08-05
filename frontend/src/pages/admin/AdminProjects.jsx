@@ -139,17 +139,31 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
 
   // ── File Upload Helpers ──────────────────────────────────────────────────────
   const uploadFile = async (file, field, compIndex = null, gridSlot = null) => {
+    const currentToken = localStorage.getItem("paperhoof_admin_token");
     const body = new FormData();
     body.append("file", file);
     try {
+      const headers = {};
+      if (currentToken) {
+        headers["Authorization"] = `Bearer ${currentToken}`;
+      }
       const res = await fetch(`${API_BASE}/upload`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        headers,
         body,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Upload failed");
 
+      if (!res.ok) {
+        const errText = await res.text();
+        let errMsg = `Upload failed (${res.status})`;
+        try {
+          const parsed = JSON.parse(errText);
+          errMsg = parsed.detail || errMsg;
+        } catch (_) {}
+        throw new Error(errMsg);
+      }
+
+      const data = await res.json();
       if (compIndex !== null && gridSlot !== null) {
         setFormData((prev) => {
           const updated = [...prev.components];
@@ -170,7 +184,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
       if (showToast) showToast("success", "File uploaded", file.name);
       return data.url;
     } catch (err) {
-      if (showToast) showToast("error", "Upload failed", err.message);
+      if (showToast) showToast("error", "Upload failed", err.message || "Failed to fetch");
       throw err;
     }
   };
