@@ -1,6 +1,6 @@
 {
-  "name": "Paper Hoof Studio — Brand Strategy & Digital Experience",
-  "short_name": "Paper Hoof",
+  "name": "MyWebSite",
+  "short_name": "MySite",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -15,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#0d1a14",
-  "background_color": "#0d1a14",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
   "display": "standalone"
 }

@@ -8,17 +8,17 @@
       "type": "image/x-icon"
     },
     {
-      "src": "favicon-96x96.png",
+      "src": "favicon-48x48.png",
       "type": "image/png",
-      "sizes": "96x96"
+      "sizes": "48x48"
     },
     {
-      "src": "web-app-manifest-192x192.png",
+      "src": "icon-192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "web-app-manifest-512x512.png",
+      "src": "icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
