@@ -99,7 +99,11 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
       category: project.category || "",
       tags: project.tags || [],
       coverImage: project.coverImage || project.image || "",
-      sliderImage: project.sliderImage || project.coverImage || project.image || "",
+      // Left empty when unset rather than pre-filled with the cover image: copying it
+      // in made the field look populated and saved a duplicate URL, so there was no way
+      // to tell whether a dock image had actually been chosen. The dock falls back to
+      // the cover at render time instead.
+      sliderImage: project.sliderImage || "",
       title: project.title || "",
       heroMedia: project.heroMedia || "",
       heroMediaType: project.heroMediaType || "image",
