@@ -650,20 +650,58 @@ LOCAL_UPLOAD_DIR = ROOT_DIR / "static" / "uploads"
 R2_PRESIGN_TTL = 3600
 
 
+R2_DEFAULT_BUCKET = "paperhoof"
+
+
+def _env(name):
+    """Reads an env var, treating blank values as unset.
+
+    A hosting dashboard will happily store an empty string for a declared variable,
+    and os.environ.get() then returns "" instead of the default — an empty bucket
+    name reaches R2 as a real request and comes back as NoSuchBucket.
+    """
+    value = os.environ.get(name)
+    value = value.strip() if value else ""
+    return value or None
+
+
 def r2_config():
     """Returns R2 settings only when credentials are complete, else None."""
-    account_id = os.environ.get("R2_ACCOUNT_ID")
-    access_key = os.environ.get("R2_ACCESS_KEY_ID")
-    secret_key = os.environ.get("R2_SECRET_ACCESS_KEY")
+    account_id = _env("R2_ACCOUNT_ID")
+    access_key = _env("R2_ACCESS_KEY_ID")
+    secret_key = _env("R2_SECRET_ACCESS_KEY")
     if not (account_id and access_key and secret_key):
         return None
     return {
         "account_id": account_id,
         "access_key": access_key,
         "secret_key": secret_key,
-        "bucket": os.environ.get("R2_BUCKET_NAME", "paperhoof"),
-        "public_domain": os.environ.get("R2_PUBLIC_DOMAIN"),
+        "bucket": _env("R2_BUCKET_NAME") or R2_DEFAULT_BUCKET,
+        "public_domain": _env("R2_PUBLIC_DOMAIN"),
     }
+
+
+def r2_error_hint(exc, cfg):
+    """Turns an opaque S3 error into something the admin UI can act on.
+
+    The raw text ("The specified bucket does not exist") names no variable, so a
+    misconfigured deployment looks like a code bug from the toast alone.
+    """
+    code = ""
+    if hasattr(exc, "response"):
+        code = (exc.response or {}).get("Error", {}).get("Code", "")
+    hints = {
+        "NoSuchBucket": (
+            f"bucket {cfg['bucket']!r} does not exist in this R2 account "
+            f"(account {cfg['account_id'][:6]}…) — check R2_BUCKET_NAME and R2_ACCOUNT_ID"
+        ),
+        "InvalidAccessKeyId": "R2_ACCESS_KEY_ID is not valid for this account",
+        "SignatureDoesNotMatch": "R2_SECRET_ACCESS_KEY does not match R2_ACCESS_KEY_ID",
+        "AccessDenied": (
+            f"the R2 API token cannot write to bucket {cfg['bucket']!r} — it needs Object Read & Write"
+        ),
+    }
+    return hints.get(code) or str(exc)
 
 
 def r2_client(cfg):
@@ -787,8 +825,11 @@ async def upload_file(file: UploadFile = File(...), user_data: dict = Depends(ve
             return {"url": public_url, "filename": file.filename, "key": file_key,
                     "contentType": content_type, "storage": "r2"}
         except Exception as e:
-            r2_error = str(e)
-            logger.error(f"Cloudflare R2 upload failed for {file.filename}: {e}")
+            r2_error = r2_error_hint(e, cfg)
+            logger.error(
+                f"Cloudflare R2 upload failed for {file.filename} "
+                f"(bucket={cfg['bucket']!r} account={cfg['account_id'][:6]}…): {e}"
+            )
     else:
         logger.warning("R2 is not configured — falling back to local disk for uploads.")
 
@@ -803,7 +844,10 @@ async def upload_file(file: UploadFile = File(...), user_data: dict = Depends(ve
     except Exception as local_err:
         logger.error(f"Local upload storage failed for {file.filename}: {local_err}")
         if r2_error:
-            detail = f"Upload failed — Cloudflare R2 rejected the file ({r2_error}) and local storage is unavailable."
+            detail = (
+                f"Upload failed — Cloudflare R2 storage is misconfigured: {r2_error}. "
+                "Fix the R2 settings on the server; this host has no writable disk to fall back on."
+            )
         else:
             detail = ("Upload failed — no durable storage available. Set R2_ACCOUNT_ID, "
                       "R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY so uploads can be stored.")
@@ -862,7 +906,20 @@ async def serve_uploaded_file(file_path: str, request: Request):
             return RedirectResponse(url=target, status_code=307,
                                     headers={"Cache-Control": f"public, max-age={max_age}"})
         except Exception as e:
-            logger.warning(f"R2 lookup failed for key '{r2_key}': {e}")
+            code = ""
+            if hasattr(e, "response"):
+                code = (e.response or {}).get("Error", {}).get("Code", "")
+            if code in ("NoSuchKey", "404"):
+                # A genuinely absent object is routine — fall through to local disk.
+                logger.warning(f"R2 has no object for key '{r2_key}'")
+            else:
+                # Anything else means storage itself is misconfigured, which would
+                # otherwise surface to visitors as an ordinary missing image.
+                logger.error(
+                    f"R2 is unreachable while serving '{r2_key}' "
+                    f"(bucket={cfg['bucket']!r} account={cfg['account_id'][:6]}…): "
+                    f"{r2_error_hint(e, cfg)}"
+                )
 
     local_path = LOCAL_UPLOAD_DIR / filename
     if local_path.is_file():
