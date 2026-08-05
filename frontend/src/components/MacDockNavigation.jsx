@@ -6,8 +6,33 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import { getMediaUrl } from '../utils/api';
+import ProjectMedia from './ProjectMedia';
 import './MacDockNavigation.css';
+
+/**
+ * Dock tile artwork: the slider/dock image when set, otherwise the cover.
+ *
+ * The fallback runs through state rather than by rewriting the element's src, because
+ * the replacement may be a different kind of media (a video cover standing in for a
+ * missing image) and only a re-render can swap <video> for <img>.
+ */
+const DockTileMedia = ({ project }) => {
+  const [useFallback, setUseFallback] = useState(false);
+
+  const primary = project.sliderImage || project.coverImage || project.image;
+  const fallback = project.coverImage || project.image;
+
+  return (
+    <ProjectMedia
+      url={useFallback ? fallback : primary}
+      alt={`Paper Hoof Portfolio Case Study — ${project.name}`}
+      className="w-full h-full object-cover"
+      onError={() => {
+        if (!useFallback && fallback && fallback !== primary) setUseFallback(true);
+      }}
+    />
+  );
+};
 
 const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
   const [carouselApi, setCarouselApi] = useState(null);
@@ -92,21 +117,7 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
                         >
                           <CardContent className="flex flex-col items-center justify-between p-2.5 h-full">
                             <div className="w-full aspect-square rounded-md overflow-hidden relative mb-2">
-                              <img
-                                src={getMediaUrl(p.sliderImage || p.coverImage || p.image)}
-                                alt={`Paper Hoof Portfolio Case Study — ${p.name}`}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  // A slider image whose file is gone from storage must not
-                                  // leave a blank tile — drop back to the cover art, once.
-                                  const img = e.currentTarget;
-                                  if (img.dataset.fellBack) return;
-                                  const fallback = getMediaUrl(p.coverImage || p.image);
-                                  if (!fallback) return;
-                                  img.dataset.fellBack = "1";
-                                  img.src = fallback;
-                                }}
-                              />
+                              <DockTileMedia project={p} />
                               {isActive && (
                                 <div className="absolute inset-0 bg-[#FD6D1E]/15 flex items-center justify-center">
                                   <span className="w-2.5 h-2.5 rounded-full bg-[#FD6D1E] shadow-[0_0_8px_#FD6D1E]" />

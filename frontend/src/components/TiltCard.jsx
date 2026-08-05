@@ -1,12 +1,15 @@
 import React, { useRef } from 'react';
 import { getTagStyle } from '../utils/tagColors';
 import { getMediaUrl } from '../utils/api';
+import { isVideoMedia } from '../utils/media';
+import ProjectMedia from './ProjectMedia';
 import './TiltCard.css';
 
 const MAX_TILT = 9;
 
 const TiltCard = ({ project, onClick }) => {
   const mediaRef = useRef(null);
+  const isVideoCover = isVideoMedia(project.image);
 
   const handleMove = (e) => {
     const el = mediaRef.current;
@@ -36,8 +39,13 @@ const TiltCard = ({ project, onClick }) => {
         ref={mediaRef}
         onMouseMove={handleMove}
         onMouseLeave={handleLeave}
-        style={{ backgroundImage: `url(${getMediaUrl(project.image)})` }}
+        // A video cover cannot be a CSS background, so it is layered in below as an
+        // element instead; stills keep the background so the existing sizing is untouched.
+        style={isVideoCover ? undefined : { backgroundImage: `url(${getMediaUrl(project.image)})` }}
       >
+        {isVideoCover && (
+          <ProjectMedia url={project.image} className="tilt-media-video" />
+        )}
         <div className="tilt-tags">
           {project.tags.slice(0, 2).map((tag, i) => (
             <span key={i} className="tilt-tag" style={getTagStyle(tag)}>

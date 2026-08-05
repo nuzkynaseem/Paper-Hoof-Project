@@ -35,6 +35,17 @@
   box-shadow: 0 26px 60px rgba(0, 0, 0, 0.22);
 }
 
+/* Video cover: fills the frame exactly like background-size: cover would, and sits
+   below the tag pills (which are z-index 2). */
+.tilt-media-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
 .tilt-tags {
   position: absolute;
   top: 14px;

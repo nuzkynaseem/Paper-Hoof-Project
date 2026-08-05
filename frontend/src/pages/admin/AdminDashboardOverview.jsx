@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Star, FolderKanban, Eye, Sparkles, ExternalLink, ArrowRight, LayoutGrid } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 import PaperHoofSelect from "../../components/ui/PaperHoofSelect";
+import ProjectMedia from "../../components/ProjectMedia";
 
 export default function AdminDashboardOverview({ projects = [], onNavigateTab, onProjectsChange, showToast }) {
   const [stats, setStats] = useState({ visitCount: 420, totalProjects: 6, featuredProject: null });
@@ -254,8 +255,8 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
           {currentFeatured && (
             <div className="featured-preview-grid">
               <div className="featured-image-wrapper">
-                <img
-                  src={currentFeatured.coverImage || currentFeatured.image}
+                <ProjectMedia
+                  url={currentFeatured.coverImage || currentFeatured.image}
                   alt={currentFeatured.name}
                   className="featured-image"
                 />

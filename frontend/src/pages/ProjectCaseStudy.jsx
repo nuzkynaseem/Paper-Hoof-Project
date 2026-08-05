@@ -4,6 +4,7 @@ import { ChevronDown, Plus, X, Code2, Copy, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { projects as mockProjects, slugify } from '../mock';
 import MacDockNavigation from '../components/MacDockNavigation';
+import ProjectMedia from '../components/ProjectMedia';
 import { getTagStyle } from '../utils/tagColors';
 import SEO from '../components/SEO';
 import { API_BASE, getMediaUrl } from '../utils/api';
@@ -133,7 +134,6 @@ const ProjectCaseStudy = () => {
   };
 
   const heroMediaUrl = project.heroMedia || project.coverImage || project.image;
-  const isHeroVideo = project.heroMediaType === "video" || (heroMediaUrl && heroMediaUrl.endsWith(".mp4"));
   const explainingTitle = project.title || project.name;
   const projectDescription = project.subtitle || project.description || `Read the full case study for ${explainingTitle} by Paper Hoof Studio.`;
 
@@ -154,18 +154,13 @@ const ProjectCaseStudy = () => {
 
       {/* 2: Hero Page Showcase Media */}
       <section className="case-study-hero-section">
-        {isHeroVideo ? (
-          <video
-            src={getMediaUrl(heroMediaUrl)}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="case-study-hero-image"
-          />
-        ) : (
-          <img src={getMediaUrl(heroMediaUrl)} alt={`Paper Hoof Brand Strategy Case Study — ${project.name}`} className="case-study-hero-image" />
-        )}
+        {/* Hero may be a still, an animated GIF, or a video — ProjectMedia picks the element. */}
+        <ProjectMedia
+          url={heroMediaUrl}
+          mediaType={project.heroMediaType}
+          alt={`Paper Hoof Brand Strategy Case Study — ${project.name}`}
+          className="case-study-hero-image"
+        />
       </section>
 
       {/* 3: Overview Section */}

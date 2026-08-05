@@ -24,6 +24,8 @@ import {
   Info,
 } from "lucide-react";
 import { API_BASE, getMediaUrl } from "../../utils/api";
+import { isVideoMedia, MEDIA_ACCEPT } from "../../utils/media";
+import ProjectMedia from "../../components/ProjectMedia";
 
 // Component type config
 const COMPONENT_TYPES = [
@@ -800,7 +802,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="input-group space-y-2">
-                <label>Cover Image URL (Featured Grid)</label>
+                <label>Cover Media URL (Featured Grid)</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -812,15 +814,15 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                   <label className="upload-btn">
                     <Upload style={{ width: 14, height: 14 }} />
                     <span>{uploading ? "..." : "Upload"}</span>
-                    <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "coverImage")} className="hidden" disabled={uploading} />
+                    <input type="file" accept={MEDIA_ACCEPT} onChange={(e) => handleFileUpload(e, "coverImage")} className="hidden" disabled={uploading} />
                   </label>
                 </div>
                 <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5">
                   <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                  <span><strong>Recommended:</strong> 16:9 ratio · 1920×1080px (min width 1200px) · JPG/PNG/WebP under 5MB.</span>
+                  <span><strong>Recommended:</strong> 16:9 ratio · 1920×1080px (min width 1200px) · JPG/PNG/WebP/GIF, or MP4/WebM video.</span>
                 </p>
                 {formData.coverImage && (
-                  <img src={getMediaUrl(formData.coverImage)} alt="cover" className="w-full h-36 object-cover rounded-xl border border-gray-200" />
+                  <ProjectMedia url={formData.coverImage} alt="cover" className="w-full h-36 object-cover rounded-xl border border-gray-200" />
                 )}
               </div>
 
@@ -837,15 +839,15 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                   <label className="upload-btn">
                     <Upload style={{ width: 14, height: 14 }} />
                     <span>{uploading ? "..." : "Upload"}</span>
-                    <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "sliderImage")} className="hidden" disabled={uploading} />
+                    <input type="file" accept={MEDIA_ACCEPT} onChange={(e) => handleFileUpload(e, "sliderImage")} className="hidden" disabled={uploading} />
                   </label>
                 </div>
                 <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5">
                   <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                  <span><strong>Recommended:</strong> 4:3 portrait or 16:9 ratio (1200×1200px or 1600×1200px) · Appears in bottom dock.</span>
+                  <span><strong>Recommended:</strong> 4:3 portrait or 16:9 ratio (1200×1200px or 1600×1200px) · Appears in bottom dock. Leave empty to reuse the cover.</span>
                 </p>
                 {formData.sliderImage && (
-                  <img src={getMediaUrl(formData.sliderImage)} alt="slider" className="w-full h-36 object-cover rounded-xl border border-gray-200" />
+                  <ProjectMedia url={formData.sliderImage} alt="slider" className="w-full h-36 object-cover rounded-xl border border-gray-200" />
                 )}
               </div>
             </div>
@@ -898,8 +900,8 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                       onChange={(e) => setFormData({ ...formData, heroMediaType: e.target.value })}
                       className="custom-input"
                     >
-                      <option value="image">Image</option>
-                      <option value="video">Video (.mp4)</option>
+                      <option value="image">Image (JPG / PNG / WebP / GIF)</option>
+                      <option value="video">Video (MP4 / WebM / MOV)</option>
                     </select>
                   </div>
                 </div>
@@ -909,11 +911,13 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                 </p>
                 {formData.heroMedia && (
                   <div className="rounded-xl overflow-hidden border border-gray-200 bg-black max-h-48 flex items-center justify-center">
-                    {formData.heroMediaType === 'video' ? (
-                      <video src={getMediaUrl(formData.heroMedia)} controls autoPlay muted loop className="w-full max-h-48 object-contain" />
-                    ) : (
-                      <img src={getMediaUrl(formData.heroMedia)} alt="hero preview" className="w-full max-h-48 object-cover" />
-                    )}
+                    <ProjectMedia
+                      url={formData.heroMedia}
+                      mediaType={formData.heroMediaType}
+                      alt="hero preview"
+                      controls={isVideoMedia(formData.heroMedia, formData.heroMediaType)}
+                      className={`w-full max-h-48 ${isVideoMedia(formData.heroMedia, formData.heroMediaType) ? 'object-contain' : 'object-cover'}`}
+                    />
                   </div>
                 )}
               </div>
@@ -1055,7 +1059,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
         {projects.map((proj) => (
           <div key={proj.id} className="project-admin-card cursor-pointer">
             <div className="project-card-image-wrap" onClick={() => handleOpenEdit(proj)}>
-              <img src={getMediaUrl(proj.coverImage || proj.image)} alt={proj.name} className="w-full h-48 object-cover" />
+              <ProjectMedia url={proj.coverImage || proj.image} alt={proj.name} className="w-full h-48 object-cover" />
               {proj.isFeatured && (
                 <span className="featured-badge">
                   <Star style={{ width: 11, height: 11, color: "#97d9af", fill: "#97d9af" }} /> Featured

@@ -2,7 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { projects as mockProjects, slugify } from '../mock';
 import { ContainerScroll } from './ui/container-scroll-animation';
-import { API_BASE, getMediaUrl } from '../utils/api';
+import { API_BASE } from '../utils/api';
+import ProjectMedia from './ProjectMedia';
 import './RecentProjects.css';
 
 const MAX_TILT = 9;
@@ -94,8 +95,9 @@ const RecentProjects = () => {
               data-testid={`project-card-${featured.id}`}
             >
               <div className="featured-media" ref={mediaRef}>
-                <img
-                  src={getMediaUrl(featured.coverImage || featured.image)}
+                {/* Cover may be a still, an animated GIF, or a video. */}
+                <ProjectMedia
+                  url={featured.coverImage || featured.image}
                   alt={`Paper Hoof Brand Strategy Case Study — ${featured.name}`}
                   className="rp-image single-featured-img"
                   loading="eager"

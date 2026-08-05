@@ -645,6 +645,35 @@ async def delete_user(user_id: str, user_data: dict = Depends(verify_super_admin
 # --- CLOUDFLARE R2 / S3 FILE UPLOAD & SERVING ---
 LOCAL_UPLOAD_DIR = ROOT_DIR / "static" / "uploads"
 
+# mimetypes reads the host's MIME database, which is well stocked on macOS but sparse
+# in a slim serverless image — webp/avif/heic in particular can come back as None
+# there. Registering them keeps the stored Content-Type identical in every
+# environment; a wrong type makes the browser download media instead of showing it.
+for _mime_ext, _mime_type in {
+    ".apng": "image/apng",
+    ".avif": "image/avif",
+    ".bmp": "image/bmp",
+    ".gif": "image/gif",
+    ".heic": "image/heic",
+    ".heif": "image/heif",
+    ".ico": "image/x-icon",
+    ".jfif": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".jpg": "image/jpeg",
+    ".png": "image/png",
+    ".svg": "image/svg+xml",
+    ".tif": "image/tiff",
+    ".tiff": "image/tiff",
+    ".webp": "image/webp",
+    ".m4v": "video/x-m4v",
+    ".mkv": "video/x-matroska",
+    ".mov": "video/quicktime",
+    ".mp4": "video/mp4",
+    ".ogv": "video/ogg",
+    ".webm": "video/webm",
+}.items():
+    mimetypes.add_type(_mime_type, _mime_ext)
+
 # Lifetime of a presigned R2 link. Redirects are cached for half of it, so a cached
 # redirect can never outlive the signature it points at.
 R2_PRESIGN_TTL = 3600
