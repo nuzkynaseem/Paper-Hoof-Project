@@ -138,7 +138,7 @@
 /* Dark wordmark on the light footer. Vertical padding keeps the stamp off the
    copyright row now that the SVG carries no built-in whitespace. */
 .footer-wordmark-img {
-  height: 16px;
+  height: 22px;
   width: auto;
   display: block;
   opacity: 0.85;

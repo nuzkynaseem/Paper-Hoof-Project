@@ -84,7 +84,7 @@ export default function AdminLogin({ onLoginSuccess }) {
           <img
             src={`${process.env.PUBLIC_URL}/paperhoof-wordmark.svg`}
             alt="Paper Hoof"
-            className="h-4 w-auto"
+            className="h-[22px] w-auto"
           />
           <span className="text-[11px] font-extrabold text-[#123524] bg-[#dcfce7] border border-[#86efac] px-2 py-0.5 rounded-md">
             CMS

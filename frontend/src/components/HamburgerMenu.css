@@ -428,7 +428,7 @@
 
 /* Sits on the dark menu overlay, so it uses the white wordmark asset directly. */
 .brand-block-logo {
-  height: 22px;
+  height: 30px;
   width: auto;
   display: block;
   opacity: 0.95;
@@ -491,7 +491,7 @@
   }
 
   .brand-block-logo {
-    height: 18px;
+    height: 24px;
   }
 
   .panel-badge {
