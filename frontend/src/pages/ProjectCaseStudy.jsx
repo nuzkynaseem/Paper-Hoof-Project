@@ -8,6 +8,7 @@ import ProjectMedia from '../components/ProjectMedia';
 import { getTagStyle } from '../utils/tagColors';
 import SEO from '../components/SEO';
 import { API_BASE, getMediaUrl } from '../utils/api';
+import { QUOTE_FONT, quoteColors } from '../utils/quoteStyle';
 import './ProjectCaseStudy.css';
 
 const defaultDetails = [
@@ -243,15 +244,15 @@ const ProjectCaseStudy = () => {
                   <div
                     className="case-study-quote-wrapper w-full py-16 px-6 md:py-28 md:px-16 flex flex-col items-center justify-center text-center transition-colors duration-300"
                     style={{
-                      backgroundColor: comp.bgColor || "#123524",
-                      color: comp.textColor || "#FFFFFF"
+                      backgroundColor: quoteColors(comp).bg,
+                      color: quoteColors(comp).text
                     }}
                   >
                     <blockquote
-                      className="case-study-quote-text text-2xl md:text-4xl lg:text-5xl font-extrabold leading-tight max-w-4xl tracking-tight"
+                      className="case-study-quote-text text-2xl md:text-4xl lg:text-5xl font-extrabold not-italic leading-tight max-w-4xl tracking-tight"
                       style={{
-                        fontFamily: comp.quoteFont === "primary" ? "var(--font-primary)" : "var(--font-heading)",
-                        color: comp.textColor || "#FFFFFF"
+                        fontFamily: QUOTE_FONT,
+                        color: quoteColors(comp).text
                       }}
                     >
                       “{comp.quoteText || comp.contentUrl}”
@@ -260,8 +261,8 @@ const ProjectCaseStudy = () => {
                       <cite
                         className="case-study-quote-author mt-8 text-sm md:text-base tracking-widest uppercase not-italic font-extrabold"
                         style={{
-                          fontFamily: "var(--font-primary)",
-                          color: comp.authorColor || comp.textColor || "#97D9AF"
+                          fontFamily: QUOTE_FONT,
+                          color: quoteColors(comp).author
                         }}
                       >
                         — {comp.author}

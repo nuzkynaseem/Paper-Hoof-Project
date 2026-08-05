@@ -21,11 +21,14 @@ import {
   Check,
   Sparkles,
   Info,
+  Palette,
 } from "lucide-react";
 import { API_BASE, getMediaUrl } from "../../utils/api";
 import { isVideoMedia, IMAGE_ACCEPT, VIDEO_ACCEPT, MEDIA_ACCEPT } from "../../utils/media";
 import { uploadMedia } from "../../utils/uploadMedia";
 import UploadButton from "./UploadButton";
+import ColorTokenField from "./ColorTokenField";
+import { QUOTE_DEFAULTS, QUOTE_FONT, quoteColors } from "../../utils/quoteStyle";
 import ProjectMedia from "../../components/ProjectMedia";
 
 // Component type config
@@ -121,10 +124,9 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
         contentUrl: c.contentUrl || "",
         quoteText: c.quoteText || "",
         author: c.author || "",
-        bgColor: c.bgColor || "#123524",
-        textColor: c.textColor || "#FFFFFF",
-        authorColor: c.authorColor || "#97D9AF",
-        quoteFont: c.quoteFont || "heading",
+        bgColor: c.bgColor || QUOTE_DEFAULTS.bgColor,
+        textColor: c.textColor || QUOTE_DEFAULTS.textColor,
+        authorColor: c.authorColor || QUOTE_DEFAULTS.authorColor,
         gridUrls: c.gridUrls || ["", ""],
         insight: c.insight || { title: "", description: "" },
       })),
@@ -209,10 +211,9 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
       contentUrl: "",
       quoteText: "",
       author: "",
-      bgColor: "#123524",
-      textColor: "#FFFFFF",
-      authorColor: "#97D9AF",
-      quoteFont: "heading",
+      bgColor: QUOTE_DEFAULTS.bgColor,
+      textColor: QUOTE_DEFAULTS.textColor,
+      authorColor: QUOTE_DEFAULTS.authorColor,
       gridUrls: ["", ""],
       insight: { title: "", description: "" },
     };
@@ -520,6 +521,33 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                     className="custom-input text-xs"
                   />
                 </div>
+
+                <div className="pt-3 border-t border-gray-100 space-y-3">
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-600">
+                    <Palette style={{ width: 13, height: 13, color: "#166534" }} />
+                    <span>Quote Colours</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <ColorTokenField
+                      label="Background"
+                      value={comp.bgColor}
+                      fallback={QUOTE_DEFAULTS.bgColor}
+                      onChange={(hex) => handleUpdateComponent(index, "bgColor", hex)}
+                    />
+                    <ColorTokenField
+                      label="Quote Text"
+                      value={comp.textColor}
+                      fallback={QUOTE_DEFAULTS.textColor}
+                      onChange={(hex) => handleUpdateComponent(index, "textColor", hex)}
+                    />
+                    <ColorTokenField
+                      label="Author Text"
+                      value={comp.authorColor}
+                      fallback={QUOTE_DEFAULTS.authorColor}
+                      onChange={(hex) => handleUpdateComponent(index, "authorColor", hex)}
+                    />
+                  </div>
+                </div>
               </div>
             )}
 
@@ -604,9 +632,24 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                   <video src={getMediaUrl(comp.contentUrl)} controls autoPlay muted loop className="w-full max-h-60 object-cover rounded-lg" />
                 )}
                 {comp.type === "quote" && (
-                  <div className="p-6 bg-[#123524] rounded-xl text-center">
-                    <blockquote className="text-lg font-serif">"{comp.quoteText || "Quote Text..."}"</blockquote>
-                    {comp.author && <cite className="text-xs text-[#97D9AF] font-bold mt-2 block">— {comp.author}</cite>}
+                  <div
+                    className="p-6 rounded-xl text-center"
+                    style={{ backgroundColor: quoteColors(comp).bg }}
+                  >
+                    <blockquote
+                      className="text-lg font-extrabold not-italic leading-tight tracking-tight"
+                      style={{ fontFamily: QUOTE_FONT, color: quoteColors(comp).text }}
+                    >
+                      “{comp.quoteText || "Quote Text..."}”
+                    </blockquote>
+                    {comp.author && (
+                      <cite
+                        className="text-xs font-extrabold not-italic uppercase tracking-widest mt-3 block"
+                        style={{ fontFamily: QUOTE_FONT, color: quoteColors(comp).author }}
+                      >
+                        — {comp.author}
+                      </cite>
+                    )}
                   </div>
                 )}
                 {comp.type === "grid" && (

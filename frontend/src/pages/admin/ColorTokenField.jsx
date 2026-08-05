@@ -1,0 +1,100 @@
+import React from "react";
+import { Palette, Check } from "lucide-react";
+import { BRAND_COLORS, isHexColor, brandColorName } from "../../utils/brandColors";
+
+/**
+ * Colour control offering the studio tokens plus a free custom colour.
+ *
+ * Three ways in, because a quote may need either a brand colour or a client's own:
+ * a token swatch, the OS colour picker, or a typed hex.
+ */
+export default function ColorTokenField({ label, value, fallback, onChange, hint }) {
+  const current = (value || "").trim();
+  const effective = current || fallback || "";
+  const tokenName = brandColorName(effective);
+
+  return (
+    <div className="input-group space-y-2">
+      <label style={{ fontSize: 11 }}>{label}</label>
+
+      <div className="flex items-center gap-2">
+        <input
+          type="color"
+          // <input type="color"> only accepts #rrggbb. A half-typed hex in the text
+          // field must not be pushed into it, or React logs a warning every keystroke.
+          value={isHexColor(effective) ? effective : "#000000"}
+          onChange={(e) => onChange(e.target.value.toUpperCase())}
+          aria-label={`${label} colour picker`}
+          style={{
+            width: 38,
+            height: 38,
+            borderRadius: 8,
+            border: "1px solid #d1d5db",
+            background: "transparent",
+            padding: 0,
+            cursor: "pointer",
+            flexShrink: 0,
+          }}
+        />
+        <input
+          type="text"
+          value={current}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={fallback || "#123524"}
+          className="custom-input flex-1 font-mono uppercase text-xs"
+        />
+      </div>
+
+      <div className="flex flex-wrap gap-1.5">
+        {BRAND_COLORS.map((c) => {
+          const active = effective.toLowerCase() === c.hex.toLowerCase();
+          return (
+            <button
+              key={c.hex}
+              type="button"
+              title={`${c.name} · ${c.hex}`}
+              aria-label={c.name}
+              aria-pressed={active}
+              onClick={() => onChange(c.hex)}
+              style={{
+                backgroundColor: c.hex,
+                width: 22,
+                height: 22,
+                borderRadius: 6,
+                // Pale tokens would vanish against the panel without a border.
+                border: active ? "2px solid #123524" : "1px solid rgba(0,0,0,0.18)",
+                boxShadow: active ? "0 0 0 2px rgba(18,53,36,0.18)" : "none",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                padding: 0,
+              }}
+            >
+              {active && (
+                <Check
+                  style={{
+                    width: 12,
+                    height: 12,
+                    // Tick has to invert on light tokens to stay visible.
+                    color: ["#FFFFFF", "#F5F5F5", "#FFF6E9", "#FFD221", "#D9D5B0", "#97D9AF", "#FDB5ED"].includes(c.hex)
+                      ? "#123524"
+                      : "#FFFFFF",
+                  }}
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      <p className="text-[10px] text-gray-500 flex items-center gap-1">
+        <Palette style={{ width: 11, height: 11 }} className="shrink-0" />
+        <span>
+          {tokenName ? `Studio token: ${tokenName}` : effective ? "Custom colour" : "Using default"}
+          {hint ? ` · ${hint}` : ""}
+        </span>
+      </p>
+    </div>
+  );
+}
