@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Video, FileText, Save, Upload, Play, Eye } from "lucide-react";
+import { Video, FileText, Save, Upload, Play, Eye, Info } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 
 export default function AdminHomepage({ showToast }) {
@@ -123,6 +123,10 @@ export default function AdminHomepage({ showToast }) {
                   />
                 </label>
               </div>
+              <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5 mt-2">
+                <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                <span><strong>Recommended Hero Video Guidelines:</strong> 16:9 widescreen format · 1920×1080px MP4 (H.264) · Muted autoplay loop under 20MB for fast initial page load.</span>
+              </p>
             </div>
 
             {heroVideoUrl && (

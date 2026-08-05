@@ -21,6 +21,7 @@ import {
   FolderKanban,
   Check,
   Sparkles,
+  Info,
 } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 
@@ -428,6 +429,10 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                     </label>
                   </div>
                 </div>
+                <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5">
+                  <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>Presentation / Showcase Image Guideline:</strong> Full width recommended 1920px (min width 1400px). Height scales automatically according to graphic aspect ratio.</span>
+                </p>
                 {comp.contentUrl && (
                   <div className="rounded-lg overflow-hidden border border-gray-200 max-h-44 bg-gray-900 flex items-center justify-center">
                     <img src={comp.contentUrl} alt="preview" className="max-h-44 object-contain" />
@@ -462,6 +467,10 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                     </label>
                   </div>
                 </div>
+                <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5">
+                  <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>Video Guideline:</strong> 16:9 widescreen format (1920×1080px or 1280×720px) · MP4 (H.264) or WebM under 30MB.</span>
+                </p>
                 {comp.contentUrl && (
                   <div className="rounded-lg overflow-hidden border border-gray-200 bg-black">
                     <video src={comp.contentUrl} controls autoPlay muted loop className="w-full max-h-44 object-contain" />
@@ -518,9 +527,15 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
             {/* 5: 2-COLUMN GRID */}
             {comp.type === "grid" && (
               <div className="space-y-3">
-                <label style={{ fontSize: 11, fontWeight: 700 }} className="text-gray-700 uppercase tracking-wider block">
-                  2-Column Image Grid Slots
-                </label>
+                <div className="flex items-center justify-between">
+                  <label style={{ fontSize: 11, fontWeight: 700 }} className="text-gray-700 uppercase tracking-wider block">
+                    2-Column Image Grid Slots
+                  </label>
+                </div>
+                <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5">
+                  <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>2-Column Grid Guideline:</strong> Both images should share matching aspect ratios (e.g. 1000×750px or 1:1 square) for perfect side-by-side vertical alignment.</span>
+                </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[0, 1].map((slotIdx) => {
                     const slotUrl = (comp.gridUrls || ["", ""])[slotIdx] || "";
@@ -782,6 +797,10 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                     <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "coverImage")} className="hidden" disabled={uploading} />
                   </label>
                 </div>
+                <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5">
+                  <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>Recommended:</strong> 16:9 ratio · 1920×1080px (min width 1200px) · JPG/PNG/WebP under 5MB.</span>
+                </p>
                 {formData.coverImage && (
                   <img src={formData.coverImage} alt="cover" className="w-full h-36 object-cover rounded-xl border border-gray-200" />
                 )}
@@ -803,6 +822,10 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                     <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "sliderImage")} className="hidden" disabled={uploading} />
                   </label>
                 </div>
+                <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5">
+                  <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>Recommended:</strong> 4:3 portrait or 16:9 ratio (1200×1200px or 1600×1200px) · Appears in bottom dock.</span>
+                </p>
                 {formData.sliderImage && (
                   <img src={formData.sliderImage} alt="slider" className="w-full h-36 object-cover rounded-xl border border-gray-200" />
                 )}
@@ -831,35 +854,41 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="sm:col-span-2 input-group">
-                  <label>Hero Media URL (Image or Video)</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={formData.heroMedia}
-                      onChange={(e) => setFormData({ ...formData, heroMedia: e.target.value })}
-                      placeholder="https://domain.com/hero.mp4"
-                      className="custom-input flex-1"
-                    />
-                    <label className="upload-btn">
-                      <Upload style={{ width: 14, height: 14 }} />
-                      <span>{uploading ? "..." : "Upload"}</span>
-                      <input type="file" accept="image/*,video/*" onChange={(e) => handleFileUpload(e, "heroMedia")} className="hidden" disabled={uploading} />
-                    </label>
+              <div className="space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="sm:col-span-2 input-group">
+                    <label>Hero Media URL (Image or Video)</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={formData.heroMedia}
+                        onChange={(e) => setFormData({ ...formData, heroMedia: e.target.value })}
+                        placeholder="https://domain.com/hero.mp4"
+                        className="custom-input flex-1"
+                      />
+                      <label className="upload-btn">
+                        <Upload style={{ width: 14, height: 14 }} />
+                        <span>{uploading ? "..." : "Upload"}</span>
+                        <input type="file" accept="image/*,video/*" onChange={(e) => handleFileUpload(e, "heroMedia")} className="hidden" disabled={uploading} />
+                      </label>
+                    </div>
+                  </div>
+                  <div className="input-group">
+                    <label>Hero Media Type</label>
+                    <select
+                      value={formData.heroMediaType}
+                      onChange={(e) => setFormData({ ...formData, heroMediaType: e.target.value })}
+                      className="custom-input"
+                    >
+                      <option value="image">Image</option>
+                      <option value="video">Video (.mp4)</option>
+                    </select>
                   </div>
                 </div>
-                <div className="input-group">
-                  <label>Hero Media Type</label>
-                  <select
-                    value={formData.heroMediaType}
-                    onChange={(e) => setFormData({ ...formData, heroMediaType: e.target.value })}
-                    className="custom-input"
-                  >
-                    <option value="image">Image</option>
-                    <option value="video">Video (.mp4)</option>
-                  </select>
-                </div>
+                <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5">
+                  <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>Recommended Hero Guidelines:</strong> {formData.heroMediaType === 'video' ? '16:9 widescreen 1080p MP4 (H.264) · Muted autoplay background under 25MB.' : 'Width 1920px (16:9 or 21:9 ultra-wide banner) · Height scales automatically.'}</span>
+                </p>
               </div>
 
               <div className="input-group">

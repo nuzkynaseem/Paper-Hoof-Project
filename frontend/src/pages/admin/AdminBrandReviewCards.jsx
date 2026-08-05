@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layers, Save, Upload, Clock } from "lucide-react";
+import { Layers, Save, Upload, Clock, Info } from "lucide-react";
 import { API_BASE } from "../../utils/api";
 
 export default function AdminBrandReviewCards({ showToast }) {
@@ -138,6 +138,11 @@ export default function AdminBrandReviewCards({ showToast }) {
                   </label>
                 </div>
               </div>
+
+              <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5">
+                <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                <span><strong>Card Image Guideline:</strong> 1:1 Square or 4:3 ratio (800×800px or 800×600px) · JPG/PNG/WebP under 3MB.</span>
+              </p>
 
               {card.imageUrl && (
                 <div style={{ borderRadius: 10, overflow: "hidden", height: 140, border: "1px solid #e5e7eb" }}>
