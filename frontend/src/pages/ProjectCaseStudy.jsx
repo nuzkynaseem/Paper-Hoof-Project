@@ -6,7 +6,7 @@ import { projects as mockProjects, slugify } from '../mock';
 import MacDockNavigation from '../components/MacDockNavigation';
 import { getTagStyle } from '../utils/tagColors';
 import SEO from '../components/SEO';
-import { API_BASE } from '../utils/api';
+import { API_BASE, getMediaUrl } from '../utils/api';
 import './ProjectCaseStudy.css';
 
 const defaultDetails = [
@@ -156,7 +156,7 @@ const ProjectCaseStudy = () => {
       <section className="case-study-hero-section">
         {isHeroVideo ? (
           <video
-            src={heroMediaUrl}
+            src={getMediaUrl(heroMediaUrl)}
             autoPlay
             muted
             loop
@@ -164,7 +164,7 @@ const ProjectCaseStudy = () => {
             className="case-study-hero-image"
           />
         ) : (
-          <img src={heroMediaUrl} alt={`Paper Hoof Brand Strategy Case Study — ${project.name}`} className="case-study-hero-image" />
+          <img src={getMediaUrl(heroMediaUrl)} alt={`Paper Hoof Brand Strategy Case Study — ${project.name}`} className="case-study-hero-image" />
         )}
       </section>
 
@@ -234,7 +234,7 @@ const ProjectCaseStudy = () => {
               <div key={comp.id || index} className="case-study-component-item">
                 {comp.type === "video" ? (
                   <video
-                    src={comp.contentUrl}
+                    src={getMediaUrl(comp.contentUrl)}
                     controls
                     autoPlay
                     muted
@@ -281,7 +281,7 @@ const ProjectCaseStudy = () => {
                     ).map((url, gIdx) => (
                       <div key={gIdx} className="w-full overflow-hidden rounded-xl bg-neutral-100">
                         <img
-                          src={url}
+                          src={getMediaUrl(url)}
                           alt={`Paper Hoof Studio — ${project.name} design showcase grid item ${gIdx + 1}`}
                           className="w-full h-[380px] sm:h-[480px] md:h-[620px] object-cover block transition-transform duration-500 hover:scale-[1.02]"
                         />
@@ -290,7 +290,7 @@ const ProjectCaseStudy = () => {
                   </div>
                 ) : (
                   <img
-                    src={comp.contentUrl}
+                    src={getMediaUrl(comp.contentUrl)}
                     alt={`Paper Hoof Studio — ${project.name} visual identity showcase ${index + 1}`}
                     className="component-media-img"
                   />

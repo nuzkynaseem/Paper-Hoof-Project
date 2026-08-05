@@ -10,10 +10,18 @@ const getSecureBackendUrl = (url) => {
   return url;
 };
 
-const BACKEND_URL = getSecureBackendUrl(rawBackendUrl);
+export const BACKEND_URL = getSecureBackendUrl(rawBackendUrl);
 export const API_BASE = `${BACKEND_URL.replace(/\/$/, '')}/api`;
 
 export const getApiUrl = (endpoint) => {
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   return `${API_BASE}${cleanEndpoint}`;
+};
+
+export const getMediaUrl = (url) => {
+  if (!url) return "";
+  if (url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://")) return url;
+  if (url.startsWith("/api/")) return `${BACKEND_URL.replace(/\/$/, '')}${url}`;
+  if (url.startsWith("/")) return `${BACKEND_URL.replace(/\/$/, '')}/api${url}`;
+  return `${BACKEND_URL.replace(/\/$/, '')}/api/${url}`;
 };

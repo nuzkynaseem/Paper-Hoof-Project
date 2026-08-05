@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Layers, Save, Upload, Clock, Info } from "lucide-react";
-import { API_BASE } from "../../utils/api";
+import { API_BASE, getMediaUrl } from "../../utils/api";
 
 export default function AdminBrandReviewCards({ showToast }) {
   const [cards, setCards] = useState([]);
@@ -146,7 +146,7 @@ export default function AdminBrandReviewCards({ showToast }) {
 
               {card.imageUrl && (
                 <div style={{ borderRadius: 10, overflow: "hidden", height: 140, border: "1px solid #e5e7eb" }}>
-                  <img src={card.imageUrl} alt={card.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img src={getMediaUrl(card.imageUrl)} alt={card.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
               )}
             </div>

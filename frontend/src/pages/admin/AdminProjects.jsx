@@ -23,7 +23,7 @@ import {
   Sparkles,
   Info,
 } from "lucide-react";
-import { API_BASE } from "../../utils/api";
+import { API_BASE, getMediaUrl } from "../../utils/api";
 
 // Component type config
 const COMPONENT_TYPES = [
@@ -435,7 +435,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                 </p>
                 {comp.contentUrl && (
                   <div className="rounded-lg overflow-hidden border border-gray-200 max-h-44 bg-gray-900 flex items-center justify-center">
-                    <img src={comp.contentUrl} alt="preview" className="max-h-44 object-contain" />
+                    <img src={getMediaUrl(comp.contentUrl)} alt="preview" className="max-h-44 object-contain" />
                   </div>
                 )}
               </div>
@@ -473,7 +473,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                 </p>
                 {comp.contentUrl && (
                   <div className="rounded-lg overflow-hidden border border-gray-200 bg-black">
-                    <video src={comp.contentUrl} controls autoPlay muted loop className="w-full max-h-44 object-contain" />
+                    <video src={getMediaUrl(comp.contentUrl)} controls autoPlay muted loop className="w-full max-h-44 object-contain" />
                   </div>
                 )}
               </div>
@@ -564,7 +564,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                           </label>
                         </div>
                         {slotUrl && (
-                          <img src={slotUrl} alt={`slot-${slotIdx}`} className="w-full h-24 object-cover rounded border border-gray-200" />
+                          <img src={getMediaUrl(slotUrl)} alt={`slot-${slotIdx}`} className="w-full h-24 object-cover rounded border border-gray-200" />
                         )}
                       </div>
                     );
@@ -602,10 +602,10 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
               <div className="mt-3 p-4 bg-neutral-900 rounded-xl text-white space-y-2 border border-neutral-700">
                 <span className="text-[10px] font-bold text-[#97D9AF] uppercase tracking-wider block">Live Component Preview</span>
                 {comp.type === "image" && comp.contentUrl && (
-                  <img src={comp.contentUrl} alt="preview" className="w-full max-h-60 object-cover rounded-lg" />
+                  <img src={getMediaUrl(comp.contentUrl)} alt="preview" className="w-full max-h-60 object-cover rounded-lg" />
                 )}
                 {comp.type === "video" && comp.contentUrl && (
-                  <video src={comp.contentUrl} controls autoPlay muted loop className="w-full max-h-60 object-cover rounded-lg" />
+                  <video src={getMediaUrl(comp.contentUrl)} controls autoPlay muted loop className="w-full max-h-60 object-cover rounded-lg" />
                 )}
                 {comp.type === "quote" && (
                   <div className="p-6 bg-[#123524] rounded-xl text-center">
@@ -616,7 +616,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                 {comp.type === "grid" && (
                   <div className="grid grid-cols-2 gap-2">
                     {(comp.gridUrls || ["", ""]).map((u, idx) => (
-                      u ? <img key={idx} src={u} alt="grid" className="w-full h-32 object-cover rounded" /> : <div key={idx} className="h-32 bg-neutral-800 rounded flex items-center justify-center text-xs text-neutral-500">Empty Slot</div>
+                      u ? <img key={idx} src={getMediaUrl(u)} alt="grid" className="w-full h-32 object-cover rounded" /> : <div key={idx} className="h-32 bg-neutral-800 rounded flex items-center justify-center text-xs text-neutral-500">Empty Slot</div>
                     ))}
                   </div>
                 )}
@@ -802,7 +802,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                   <span><strong>Recommended:</strong> 16:9 ratio · 1920×1080px (min width 1200px) · JPG/PNG/WebP under 5MB.</span>
                 </p>
                 {formData.coverImage && (
-                  <img src={formData.coverImage} alt="cover" className="w-full h-36 object-cover rounded-xl border border-gray-200" />
+                  <img src={getMediaUrl(formData.coverImage)} alt="cover" className="w-full h-36 object-cover rounded-xl border border-gray-200" />
                 )}
               </div>
 
@@ -827,7 +827,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                   <span><strong>Recommended:</strong> 4:3 portrait or 16:9 ratio (1200×1200px or 1600×1200px) · Appears in bottom dock.</span>
                 </p>
                 {formData.sliderImage && (
-                  <img src={formData.sliderImage} alt="slider" className="w-full h-36 object-cover rounded-xl border border-gray-200" />
+                  <img src={getMediaUrl(formData.sliderImage)} alt="slider" className="w-full h-36 object-cover rounded-xl border border-gray-200" />
                 )}
               </div>
             </div>
@@ -1028,7 +1028,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
         {projects.map((proj) => (
           <div key={proj.id} className="project-admin-card cursor-pointer">
             <div className="project-card-image-wrap" onClick={() => handleOpenEdit(proj)}>
-              <img src={proj.coverImage || proj.image} alt={proj.name} className="w-full h-48 object-cover" />
+              <img src={getMediaUrl(proj.coverImage || proj.image)} alt={proj.name} className="w-full h-48 object-cover" />
               {proj.isFeatured && (
                 <span className="featured-badge">
                   <Star style={{ width: 11, height: 11, color: "#97d9af", fill: "#97d9af" }} /> Featured

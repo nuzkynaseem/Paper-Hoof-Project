@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Query, Depends, UploadFile, File, Form, Header, Request, Body, BackgroundTasks
+from fastapi import FastAPI, APIRouter, HTTPException, Query, Depends, UploadFile, File, Form, Header, Request, Body, BackgroundTasks, Response
+import mimetypes
 
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -640,19 +641,28 @@ async def delete_user(user_id: str, user_data: dict = Depends(verify_super_admin
 
     return {"status": "deleted", "userId": user_id, "emailSent": email_sent}
 
-# --- CLOUDFLARE R2 / S3 FILE UPLOAD ---
+# --- CLOUDFLARE R2 / S3 FILE UPLOAD & SERVING ---
 @api_router.post("/upload")
 async def upload_file(file: UploadFile = File(...), user_data: dict = Depends(verify_token)):
-    """Uploads media file to Cloudflare R2 / S3 bucket or fallback URL."""
+    """Uploads media file to Cloudflare R2 / S3 bucket or local storage fallback."""
     r2_account_id = os.environ.get("R2_ACCOUNT_ID")
     r2_access_key = os.environ.get("R2_ACCESS_KEY_ID")
     r2_secret_key = os.environ.get("R2_SECRET_ACCESS_KEY")
-    r2_bucket = os.environ.get("R2_BUCKET_NAME", "paperhoof-media")
+    r2_bucket = os.environ.get("R2_BUCKET_NAME", "paperhoof")
     r2_public_domain = os.environ.get("R2_PUBLIC_DOMAIN")
 
     ext = Path(file.filename).suffix
     file_key = f"uploads/{uuid.uuid4()}{ext}"
     content = await file.read()
+
+    # Save copy locally in backend static uploads folder for instant fallback
+    static_uploads_dir = Path(__file__).parent / "static" / "uploads"
+    static_uploads_dir.mkdir(parents=True, exist_ok=True)
+    local_file_path = static_uploads_dir / Path(file_key).name
+    try:
+        local_file_path.write_bytes(content)
+    except Exception as local_err:
+        logger.warning(f"Failed to write local upload copy: {local_err}")
 
     if r2_account_id and r2_access_key and r2_secret_key:
         try:
@@ -669,16 +679,61 @@ async def upload_file(file: UploadFile = File(...), user_data: dict = Depends(ve
                 Body=content,
                 ContentType=file.content_type
             )
-            public_url = f"{r2_public_domain}/{file_key}" if r2_public_domain else f"https://{r2_bucket}.r2.cloudflarestorage.com/{file_key}"
+            if r2_public_domain:
+                domain = r2_public_domain if r2_public_domain.startswith("http") else f"https://{r2_public_domain}"
+                public_url = f"{domain.rstrip('/')}/{file_key}"
+            else:
+                public_url = f"/api/uploads/{file_key}"
+
+            logger.info(f"Successfully uploaded {file.filename} to R2 bucket '{r2_bucket}' -> {public_url}")
             return {"url": public_url, "filename": file.filename, "key": file_key}
         except Exception as e:
             logger.error(f"Cloudflare R2 Upload failed: {e}")
 
-    # Fallback storage: save locally in frontend public uploads directory if available or return base64
-    import base64
-    b64_str = base64.b64encode(content).decode("utf-8")
-    data_url = f"data:{file.content_type};base64,{b64_str}"
-    return {"url": data_url, "filename": file.filename}
+    public_url = f"/api/uploads/{file_key}"
+    return {"url": public_url, "filename": file.filename, "key": file_key}
+
+
+@api_router.get("/uploads/{file_path:path}")
+async def serve_uploaded_file(file_path: str):
+    """Public media server proxy for uploaded images & videos."""
+    r2_account_id = os.environ.get("R2_ACCOUNT_ID")
+    r2_access_key = os.environ.get("R2_ACCESS_KEY_ID")
+    r2_secret_key = os.environ.get("R2_SECRET_ACCESS_KEY")
+    r2_bucket = os.environ.get("R2_BUCKET_NAME", "paperhoof")
+
+    full_key = file_path if file_path.startswith("uploads/") else f"uploads/{file_path}"
+
+    # 1. Try serving from Cloudflare R2
+    if r2_account_id and r2_access_key and r2_secret_key:
+        try:
+            s3_client = boto3.client(
+                "s3",
+                endpoint_url=f"https://{r2_account_id}.r2.cloudflarestorage.com",
+                aws_access_key_id=r2_access_key,
+                aws_secret_access_key=r2_secret_key,
+                region_name="auto"
+            )
+            obj = s3_client.get_object(Bucket=r2_bucket, Key=full_key)
+            content_type = obj.get("ContentType") or mimetypes.guess_type(file_path)[0] or "image/jpeg"
+            body = obj["Body"].read()
+            return Response(content=body, media_type=content_type, headers={
+                "Cache-Control": "public, max-age=31536000, immutable",
+                "Access-Control-Allow-Origin": "*",
+            })
+        except Exception as e:
+            logger.warning(f"R2 fetch failed for key '{full_key}': {e}")
+
+    # 2. Local disk fallback
+    local_file_path = Path(__file__).parent / "static" / "uploads" / Path(file_path).name
+    if local_file_path.exists():
+        content_type = mimetypes.guess_type(local_file_path)[0] or "image/jpeg"
+        return Response(content=local_file_path.read_bytes(), media_type=content_type, headers={
+            "Cache-Control": "public, max-age=86400",
+            "Access-Control-Allow-Origin": "*",
+        })
+
+    raise HTTPException(status_code=404, detail="File not found")
 
 # --- ANALYTICS & DASHBOARD STATS ---
 # --- ANALYTICS & DASHBOARD STATS ---
