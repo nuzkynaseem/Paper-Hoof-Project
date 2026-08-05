@@ -8,3 +8,5 @@ INFO:     Application startup complete.
 INFO:     127.0.0.1:49369 - "POST /api/auth/login HTTP/1.1" 200 OK
 2026-08-05 17:55:48,318 - server - INFO - Successfully uploaded cors_test.png to R2 bucket 'paperhoof' -> /api/uploads/uploads/43cbfcca-5d80-4794-816b-ec9140c178e8.png
 INFO:     127.0.0.1:49370 - "POST /api/upload HTTP/1.1" 200 OK
+2026-08-05 18:03:02,677 - server - WARNING - R2 fetch failed for key 'uploads/62e7f632-efcf-49bd-bb10-682404234c7e.png': An error occurred (NoSuchKey) when calling the GetObject operation: The specified key does not exist.
+INFO:     127.0.0.1:49424 - "GET /api/uploads/uploads/62e7f632-efcf-49bd-bb10-682404234c7e.png HTTP/1.1" 404 Not Found

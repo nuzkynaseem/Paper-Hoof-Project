@@ -903,6 +903,15 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                   <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
                   <span><strong>Recommended Hero Guidelines:</strong> {formData.heroMediaType === 'video' ? '16:9 widescreen 1080p MP4 (H.264) · Muted autoplay background under 25MB.' : 'Width 1920px (16:9 or 21:9 ultra-wide banner) · Height scales automatically.'}</span>
                 </p>
+                {formData.heroMedia && (
+                  <div className="rounded-xl overflow-hidden border border-gray-200 bg-black max-h-48 flex items-center justify-center">
+                    {formData.heroMediaType === 'video' ? (
+                      <video src={getMediaUrl(formData.heroMedia)} controls autoPlay muted loop className="w-full max-h-48 object-contain" />
+                    ) : (
+                      <img src={getMediaUrl(formData.heroMedia)} alt="hero preview" className="w-full max-h-48 object-cover" />
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="input-group">
