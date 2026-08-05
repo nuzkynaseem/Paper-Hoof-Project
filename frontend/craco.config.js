@@ -1,6 +1,22 @@
 // craco.config.js
 const path = require("path");
-require("dotenv").config();
+
+// This file is evaluated before CRA loads its own .env cascade, and dotenv never
+// overwrites a key that is already in process.env. A bare dotenv.config() therefore
+// locked in .env and made CRA's documented overrides (.env.local and
+// .env.<mode>.local) silently unusable — e.g. REACT_APP_BACKEND_URL could not be
+// pointed at a local backend for development. Load the same files in CRA's order.
+const NODE_ENV = process.env.NODE_ENV || "development";
+[
+  `.env.${NODE_ENV}.local`,
+  NODE_ENV !== "test" ? ".env.local" : null,
+  `.env.${NODE_ENV}`,
+  ".env",
+]
+  .filter(Boolean)
+  .forEach((file) => {
+    require("dotenv").config({ path: path.resolve(__dirname, file) });
+  });
 
 // Check if we're in development/preview mode (not production build)
 // Craco sets NODE_ENV=development for start, NODE_ENV=production for build

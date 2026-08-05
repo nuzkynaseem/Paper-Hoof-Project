@@ -1,4 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Query, Depends, UploadFile, File, Form, Header, Request, Body, BackgroundTasks, Response
+from fastapi.responses import RedirectResponse
 import mimetypes
 
 from dotenv import load_dotenv
@@ -642,102 +643,230 @@ async def delete_user(user_id: str, user_data: dict = Depends(verify_super_admin
     return {"status": "deleted", "userId": user_id, "emailSent": email_sent}
 
 # --- CLOUDFLARE R2 / S3 FILE UPLOAD & SERVING ---
+LOCAL_UPLOAD_DIR = ROOT_DIR / "static" / "uploads"
+
+# Lifetime of a presigned R2 link. Redirects are cached for half of it, so a cached
+# redirect can never outlive the signature it points at.
+R2_PRESIGN_TTL = 3600
+
+
+def r2_config():
+    """Returns R2 settings only when credentials are complete, else None."""
+    account_id = os.environ.get("R2_ACCOUNT_ID")
+    access_key = os.environ.get("R2_ACCESS_KEY_ID")
+    secret_key = os.environ.get("R2_SECRET_ACCESS_KEY")
+    if not (account_id and access_key and secret_key):
+        return None
+    return {
+        "account_id": account_id,
+        "access_key": access_key,
+        "secret_key": secret_key,
+        "bucket": os.environ.get("R2_BUCKET_NAME", "paperhoof"),
+        "public_domain": os.environ.get("R2_PUBLIC_DOMAIN"),
+    }
+
+
+def r2_client(cfg):
+    return boto3.client(
+        "s3",
+        endpoint_url=f"https://{cfg['account_id']}.r2.cloudflarestorage.com",
+        aws_access_key_id=cfg["access_key"],
+        aws_secret_access_key=cfg["secret_key"],
+        region_name="auto",
+    )
+
+
+def r2_public_base(cfg):
+    """Normalised https base for R2_PUBLIC_DOMAIN, or None when unset."""
+    domain = (cfg or {}).get("public_domain")
+    if not domain:
+        return None
+    if not domain.startswith("http"):
+        domain = f"https://{domain}"
+    return domain.rstrip("/")
+
+
+def normalise_media_key(file_path: str):
+    """Maps every historical media path shape onto one R2 key + filename.
+
+    Older builds stored '/api/uploads/uploads/<file>' because the upload response
+    echoed the full object key after the route prefix, so both shapes are in the DB.
+    """
+    clean = file_path.lstrip("/")
+    while clean.startswith("uploads/uploads/"):
+        clean = clean[len("uploads/"):]
+    if clean.startswith("static/uploads/"):
+        clean = clean[len("static/"):]
+    filename = Path(clean).name
+    key = clean if clean.startswith("uploads/") else f"uploads/{filename}"
+    return key, filename
+
+
+def range_file_response(path: Path, request: Request) -> Response:
+    """Serves a local file honouring HTTP Range and HEAD.
+
+    Without 206 range replies Safari refuses to start a <video> at all and seeking
+    is impossible everywhere, so a plain full-body 200 reads as a broken player.
+    """
+    stat = path.stat()
+    file_size = stat.st_size
+    content_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+    headers = {
+        "Accept-Ranges": "bytes",
+        "Cache-Control": "public, max-age=86400",
+        "ETag": f'"{int(stat.st_mtime)}-{file_size}"',
+    }
+
+    if request.method == "HEAD":
+        return Response(status_code=200, media_type=content_type,
+                        headers={**headers, "Content-Length": str(file_size)})
+
+    range_header = request.headers.get("range", "")
+    if range_header.startswith("bytes="):
+        first, _, last = range_header[len("bytes="):].split(",")[0].strip().partition("-")
+        try:
+            if first:
+                start = int(first)
+                end = int(last) if last else file_size - 1
+            else:
+                # Suffix form 'bytes=-N' asks for the trailing N bytes.
+                start = max(file_size - int(last), 0)
+                end = file_size - 1
+        except ValueError:
+            start, end = 0, file_size - 1
+        end = min(end, file_size - 1)
+        if start > end or start >= file_size:
+            return Response(status_code=416,
+                            headers={**headers, "Content-Range": f"bytes */{file_size}"})
+        with path.open("rb") as fh:
+            fh.seek(start)
+            chunk = fh.read(end - start + 1)
+        return Response(content=chunk, status_code=206, media_type=content_type,
+                        headers={**headers, "Content-Range": f"bytes {start}-{end}/{file_size}"})
+
+    return Response(content=path.read_bytes(), media_type=content_type, headers=headers)
+
+
 @api_router.post("/upload")
 async def upload_file(file: UploadFile = File(...), user_data: dict = Depends(verify_token)):
-    """Uploads media file to Cloudflare R2 / S3 bucket or local storage fallback."""
-    r2_account_id = os.environ.get("R2_ACCOUNT_ID")
-    r2_access_key = os.environ.get("R2_ACCESS_KEY_ID")
-    r2_secret_key = os.environ.get("R2_SECRET_ACCESS_KEY")
-    r2_bucket = os.environ.get("R2_BUCKET_NAME", "paperhoof")
-    r2_public_domain = os.environ.get("R2_PUBLIC_DOMAIN")
+    """Stores a media file in Cloudflare R2, falling back to local disk in development.
 
-    ext = Path(file.filename).suffix
+    A URL is only returned once the bytes are confirmed stored. Reporting success
+    without durable storage is what left the admin UI and the public site holding
+    URLs that 404 forever — the upload looked fine and the preview never loaded.
+    """
+    content = await file.read()
+    if not content:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+
+    ext = Path(file.filename or "").suffix.lower()
     file_id = f"{uuid.uuid4()}{ext}"
     file_key = f"uploads/{file_id}"
-    content = await file.read()
 
-    # Save copy locally in backend static uploads folder for instant fallback
-    static_uploads_dir = Path(__file__).parent / "static" / "uploads"
-    static_uploads_dir.mkdir(parents=True, exist_ok=True)
-    local_file_path = static_uploads_dir / file_id
-    try:
-        local_file_path.write_bytes(content)
-    except Exception as local_err:
-        logger.warning(f"Failed to write local upload copy: {local_err}")
+    # Browsers send application/octet-stream for many video types; a wrong type here
+    # makes the browser download the file instead of rendering it.
+    content_type = file.content_type
+    if not content_type or content_type == "application/octet-stream":
+        content_type = mimetypes.guess_type(file_id)[0] or "application/octet-stream"
 
-    if r2_account_id and r2_access_key and r2_secret_key:
+    cfg = r2_config()
+    r2_error = None
+
+    if cfg:
         try:
-            s3_client = boto3.client(
-                "s3",
-                endpoint_url=f"https://{r2_account_id}.r2.cloudflarestorage.com",
-                aws_access_key_id=r2_access_key,
-                aws_secret_access_key=r2_secret_key,
-                region_name="auto"
-            )
-            s3_client.put_object(
-                Bucket=r2_bucket,
+            r2_client(cfg).put_object(
+                Bucket=cfg["bucket"],
                 Key=file_key,
                 Body=content,
-                ContentType=file.content_type
+                ContentType=content_type,
+                CacheControl="public, max-age=31536000, immutable",
             )
-            if r2_public_domain:
-                domain = r2_public_domain if r2_public_domain.startswith("http") else f"https://{r2_public_domain}"
-                public_url = f"{domain.rstrip('/')}/{file_key}"
-            else:
-                public_url = f"/api/uploads/{file_id}"
-
-            logger.info(f"Successfully uploaded {file.filename} to R2 bucket '{r2_bucket}' -> {public_url}")
-            return {"url": public_url, "filename": file.filename, "key": file_key}
+            public_base = r2_public_base(cfg)
+            public_url = f"{public_base}/{file_key}" if public_base else f"/api/uploads/{file_id}"
+            logger.info(f"Uploaded {file.filename} to R2 '{cfg['bucket']}' key={file_key} -> {public_url}")
+            return {"url": public_url, "filename": file.filename, "key": file_key,
+                    "contentType": content_type, "storage": "r2"}
         except Exception as e:
-            logger.error(f"Cloudflare R2 Upload failed: {e}")
+            r2_error = str(e)
+            logger.error(f"Cloudflare R2 upload failed for {file.filename}: {e}")
+    else:
+        logger.warning("R2 is not configured — falling back to local disk for uploads.")
+
+    # Local disk fallback, verified after writing: a serverless filesystem is
+    # read-only/ephemeral, so an unchecked write here loses the file silently.
+    try:
+        LOCAL_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+        local_path = LOCAL_UPLOAD_DIR / file_id
+        local_path.write_bytes(content)
+        if local_path.stat().st_size != len(content):
+            raise OSError("file size mismatch after write")
+    except Exception as local_err:
+        logger.error(f"Local upload storage failed for {file.filename}: {local_err}")
+        if r2_error:
+            detail = f"Upload failed — Cloudflare R2 rejected the file ({r2_error}) and local storage is unavailable."
+        else:
+            detail = ("Upload failed — no durable storage available. Set R2_ACCOUNT_ID, "
+                      "R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY so uploads can be stored.")
+        raise HTTPException(status_code=502, detail=detail)
 
     public_url = f"/api/uploads/{file_id}"
-    return {"url": public_url, "filename": file.filename, "key": file_key}
+    logger.info(f"Stored {file.filename} on local disk -> {public_url}")
+    return {"url": public_url, "filename": file.filename, "key": file_key,
+            "contentType": content_type, "storage": "local"}
 
 
-@api_router.get("/uploads/{file_path:path}")
-async def serve_uploaded_file(file_path: str):
-    """Public media server proxy for uploaded images & videos."""
-    r2_account_id = os.environ.get("R2_ACCOUNT_ID")
-    r2_access_key = os.environ.get("R2_ACCESS_KEY_ID")
-    r2_secret_key = os.environ.get("R2_SECRET_ACCESS_KEY")
-    r2_bucket = os.environ.get("R2_BUCKET_NAME", "paperhoof")
+@api_router.api_route("/uploads/{file_path:path}", methods=["GET", "HEAD"])
+async def serve_uploaded_file(file_path: str, request: Request):
+    """Public media endpoint for uploaded images & videos.
 
-    clean_path = file_path.lstrip("/")
-    if clean_path.startswith("uploads/uploads/"):
-        clean_path = clean_path.replace("uploads/uploads/", "uploads/", 1)
+    R2-backed objects are served as a redirect so the browser fetches them from R2
+    directly. That keeps range requests working (needed for video playback and
+    seeking) and sidesteps the serverless response size cap, which silently broke
+    anything more than a few megabytes when the bytes were proxied through here.
+    """
+    r2_key, filename = normalise_media_key(file_path)
+    cfg = r2_config()
 
-    r2_key = clean_path if clean_path.startswith("uploads/") else f"uploads/{clean_path}"
-    filename = Path(clean_path).name
-
-    # 1. Try serving from Cloudflare R2
-    if r2_account_id and r2_access_key and r2_secret_key:
+    if cfg:
         try:
-            s3_client = boto3.client(
-                "s3",
-                endpoint_url=f"https://{r2_account_id}.r2.cloudflarestorage.com",
-                aws_access_key_id=r2_access_key,
-                aws_secret_access_key=r2_secret_key,
-                region_name="auto"
-            )
-            obj = s3_client.get_object(Bucket=r2_bucket, Key=r2_key)
-            content_type = obj.get("ContentType") or mimetypes.guess_type(filename)[0] or "image/jpeg"
-            body = obj["Body"].read()
-            return Response(content=body, media_type=content_type, headers={
-                "Cache-Control": "public, max-age=31536000, immutable",
-                "Access-Control-Allow-Origin": "*",
-            })
-        except Exception as e:
-            logger.warning(f"R2 fetch failed for key '{r2_key}': {e}")
+            client_s3 = r2_client(cfg)
+            # Confirm the object exists so a missing file returns our own 404
+            # rather than redirecting the browser to an R2 error page.
+            head = client_s3.head_object(Bucket=cfg["bucket"], Key=r2_key)
 
-    # 2. Local disk fallback
-    local_file_path = Path(__file__).parent / "static" / "uploads" / filename
-    if local_file_path.exists():
-        content_type = mimetypes.guess_type(local_file_path)[0] or "image/jpeg"
-        return Response(content=local_file_path.read_bytes(), media_type=content_type, headers={
-            "Cache-Control": "public, max-age=86400",
-            "Access-Control-Allow-Origin": "*",
-        })
+            if request.method == "HEAD":
+                # Answered here rather than redirected: a presigned GET signature is
+                # rejected when replayed as a HEAD request.
+                return Response(
+                    status_code=200,
+                    media_type=head.get("ContentType")
+                    or mimetypes.guess_type(filename)[0]
+                    or "application/octet-stream",
+                    headers={
+                        "Content-Length": str(head.get("ContentLength", 0)),
+                        "Accept-Ranges": "bytes",
+                        "Cache-Control": "public, max-age=31536000, immutable",
+                    },
+                )
+
+            public_base = r2_public_base(cfg)
+            if public_base:
+                target, max_age = f"{public_base}/{r2_key}", 31536000
+            else:
+                target = client_s3.generate_presigned_url(
+                    "get_object",
+                    Params={"Bucket": cfg["bucket"], "Key": r2_key},
+                    ExpiresIn=R2_PRESIGN_TTL,
+                )
+                max_age = R2_PRESIGN_TTL // 2
+            return RedirectResponse(url=target, status_code=307,
+                                    headers={"Cache-Control": f"public, max-age={max_age}"})
+        except Exception as e:
+            logger.warning(f"R2 lookup failed for key '{r2_key}': {e}")
+
+    local_path = LOCAL_UPLOAD_DIR / filename
+    if local_path.is_file():
+        return range_file_response(local_path, request)
 
     raise HTTPException(status_code=404, detail="File not found")
 
