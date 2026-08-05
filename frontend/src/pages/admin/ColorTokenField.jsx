@@ -8,10 +8,22 @@ import { BRAND_COLORS, isHexColor, brandColorName } from "../../utils/brandColor
  * Three ways in, because a quote may need either a brand colour or a client's own:
  * a token swatch, the OS colour picker, or a typed hex.
  */
-export default function ColorTokenField({ label, value, fallback, onChange, hint }) {
+export default function ColorTokenField({
+  label,
+  value,
+  fallback,
+  onChange,
+  hint,
+  // Adds a "None" choice that clears the value. Needed where the absence of a
+  // colour is a real option (a grid sitting transparent on the page background)
+  // rather than just "use the default".
+  allowEmpty = false,
+  emptyLabel = "None",
+}) {
   const current = (value || "").trim();
   const effective = current || fallback || "";
   const tokenName = brandColorName(effective);
+  const isEmpty = allowEmpty && !current;
 
   return (
     <div className="input-group space-y-2">
@@ -46,8 +58,34 @@ export default function ColorTokenField({ label, value, fallback, onChange, hint
       </div>
 
       <div className="flex flex-wrap gap-1.5">
+        {allowEmpty && (
+          <button
+            type="button"
+            title={`${emptyLabel} · transparent`}
+            aria-label={emptyLabel}
+            aria-pressed={isEmpty}
+            onClick={() => onChange("")}
+            className="text-[9px] font-bold uppercase tracking-wide"
+            style={{
+              height: 22,
+              padding: "0 7px",
+              borderRadius: 6,
+              // Checkerboard reads as "transparent" the way image editors show it.
+              backgroundImage:
+                "linear-gradient(45deg, #e5e7eb 25%, transparent 25%, transparent 75%, #e5e7eb 75%), linear-gradient(45deg, #e5e7eb 25%, transparent 25%, transparent 75%, #e5e7eb 75%)",
+              backgroundSize: "8px 8px",
+              backgroundPosition: "0 0, 4px 4px",
+              border: isEmpty ? "2px solid #123524" : "1px solid rgba(0,0,0,0.18)",
+              boxShadow: isEmpty ? "0 0 0 2px rgba(18,53,36,0.18)" : "none",
+              color: "#374151",
+              cursor: "pointer",
+            }}
+          >
+            {emptyLabel}
+          </button>
+        )}
         {BRAND_COLORS.map((c) => {
-          const active = effective.toLowerCase() === c.hex.toLowerCase();
+          const active = !isEmpty && effective.toLowerCase() === c.hex.toLowerCase();
           return (
             <button
               key={c.hex}
@@ -91,7 +129,13 @@ export default function ColorTokenField({ label, value, fallback, onChange, hint
       <p className="text-[10px] text-gray-500 flex items-center gap-1">
         <Palette style={{ width: 11, height: 11 }} className="shrink-0" />
         <span>
-          {tokenName ? `Studio token: ${tokenName}` : effective ? "Custom colour" : "Using default"}
+          {isEmpty
+            ? `${emptyLabel} — transparent`
+            : tokenName
+            ? `Studio token: ${tokenName}`
+            : effective
+            ? "Custom colour"
+            : "Using default"}
           {hint ? ` · ${hint}` : ""}
         </span>
       </p>

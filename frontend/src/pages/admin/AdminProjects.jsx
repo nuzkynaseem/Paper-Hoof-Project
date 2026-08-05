@@ -8,7 +8,6 @@ import {
   Star,
   Image as ImageIcon,
   Video,
-  Code2,
   Quote,
   LayoutGrid,
   ChevronUp,
@@ -35,7 +34,6 @@ import ProjectMedia from "../../components/ProjectMedia";
 const COMPONENT_TYPES = [
   { value: "image",  label: "Image",               icon: ImageIcon,   color: "#f0fdf4", iconColor: "#16a34a" },
   { value: "video",  label: "Video",               icon: Video,       color: "#eff6ff", iconColor: "#2563eb" },
-  { value: "html",   label: "Interactive HTML",    icon: Code2,       color: "#fef9c3", iconColor: "#b45309" },
   { value: "quote",  label: "Quote / Text Block",  icon: Quote,       color: "#fdf2f8", iconColor: "#9333ea" },
   { value: "grid",   label: "2-Column Image Grid", icon: LayoutGrid,  color: "#fff7ed", iconColor: "#ea580c" },
 ];
@@ -127,6 +125,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
         bgColor: c.bgColor || QUOTE_DEFAULTS.bgColor,
         textColor: c.textColor || QUOTE_DEFAULTS.textColor,
         authorColor: c.authorColor || QUOTE_DEFAULTS.authorColor,
+        gridBgColor: c.gridBgColor || "",
         gridUrls: c.gridUrls || ["", ""],
         insight: c.insight || { title: "", description: "" },
       })),
@@ -214,6 +213,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
       bgColor: QUOTE_DEFAULTS.bgColor,
       textColor: QUOTE_DEFAULTS.textColor,
       authorColor: QUOTE_DEFAULTS.authorColor,
+      gridBgColor: "",
       gridUrls: ["", ""],
       insight: { title: "", description: "" },
     };
@@ -479,25 +479,6 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
               </div>
             )}
 
-            {/* 3: INTERACTIVE HTML / NEXT.JS CODEBLOCK */}
-            {comp.type === "html" && (
-              <div className="space-y-3">
-                <div className="input-group">
-                  <label style={{ fontSize: 11 }}>HTML Code or Next.js / React Codeblock</label>
-                  <textarea
-                    rows={6}
-                    value={comp.contentUrl}
-                    onChange={(e) => handleUpdateComponent(index, "contentUrl", e.target.value)}
-                    placeholder={'<div className="my-widget">Showcase Widget</div> or Next.js codeblock'}
-                    className="custom-input font-mono text-xs"
-                  />
-                  <p className="text-[11px] text-gray-500">
-                    Supports HTML embeds or Next.js / React code snippets. Displays as a formatted code window or HTML preview on the live site.
-                  </p>
-                </div>
-              </div>
-            )}
-
             {/* 4: QUOTE / TEXT BLOCK */}
             {comp.type === "quote" && (
               <div className="space-y-3">
@@ -563,6 +544,16 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                   <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
                   <span><strong>2-Column Grid Guideline:</strong> Both images should share matching aspect ratios (e.g. 1000×750px or 1:1 square) for perfect side-by-side vertical alignment.</span>
                 </p>
+                <div className="pt-1">
+                  <ColorTokenField
+                    label="Grid Background"
+                    value={comp.gridBgColor}
+                    onChange={(hex) => handleUpdateComponent(index, "gridBgColor", hex)}
+                    allowEmpty
+                    hint="sits behind both images"
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[0, 1].map((slotIdx) => {
                     const slotUrl = (comp.gridUrls || ["", ""])[slotIdx] || "";
@@ -653,17 +644,16 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                   </div>
                 )}
                 {comp.type === "grid" && (
-                  <div className="grid grid-cols-2 gap-2">
+                  <div
+                    className="grid grid-cols-2 gap-2 rounded"
+                    style={comp.gridBgColor ? { backgroundColor: comp.gridBgColor, padding: 8 } : undefined}
+                  >
                     {(comp.gridUrls || ["", ""]).map((u, idx) => (
                       u ? <img key={idx} src={getMediaUrl(u)} alt="grid" className="w-full h-32 object-cover rounded" /> : <div key={idx} className="h-32 bg-neutral-800 rounded flex items-center justify-center text-xs text-neutral-500">Empty Slot</div>
                     ))}
                   </div>
                 )}
-                {comp.type === "html" && (
-                  <div className="p-3 bg-neutral-950 font-mono text-xs text-emerald-400 rounded overflow-x-auto whitespace-pre">
-                    {comp.contentUrl || "<!-- HTML or Next.js Codeblock -->"}
-                  </div>
-                )}
+
               </div>
             )}
           </div>

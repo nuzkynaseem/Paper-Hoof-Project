@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronDown, Plus, X, Code2, Copy, Check } from 'lucide-react';
+import { ChevronDown, Plus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { projects as mockProjects, slugify } from '../mock';
 import MacDockNavigation from '../components/MacDockNavigation';
@@ -25,57 +25,6 @@ const defaultDetails = [
     description: 'Curated color palettes balance functional clarity with emotional depth. Tones shift dynamically from subtle warm neutrals to high-contrast accents.',
   },
 ];
-
-// Helper component to render Next.js / Codeblocks or HTML embeds
-function CodeOrHtmlComponent({ content }) {
-  const [copied, setCopied] = useState(false);
-  if (!content) return null;
-
-  const isRawHtml = /^\s*<(div|iframe|svg|section|p|style|header|footer|main|article|span|a|ul|ol|li)/i.test(content.trim());
-
-  if (isRawHtml) {
-    return (
-      <div
-        className="w-full bg-neutral-900 text-white p-8 md:p-12 overflow-auto"
-        dangerouslySetInnerHTML={{ __html: content }}
-      />
-    );
-  }
-
-  const copyCode = () => {
-    navigator.clipboard.writeText(content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <div className="w-full bg-[#121619] border-y border-neutral-800 p-4 md:p-8 font-mono text-sm leading-relaxed overflow-x-auto text-neutral-100 relative">
-      {/* IDE Code Header */}
-      <div className="flex items-center justify-between pb-3 mb-4 border-b border-neutral-800 text-xs text-neutral-400">
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-red-500 inline-block opacity-80" />
-          <span className="w-3 h-3 rounded-full bg-yellow-500 inline-block opacity-80" />
-          <span className="w-3 h-3 rounded-full bg-green-500 inline-block opacity-80" />
-          <span className="ml-2 flex items-center gap-1.5 font-bold text-neutral-300">
-            <Code2 size={13} className="text-[#97D9AF]" /> Next.js / Codeblock
-          </span>
-        </div>
-        <button
-          onClick={copyCode}
-          className="flex items-center gap-1 px-2.5 py-1 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-300 transition-colors"
-          title="Copy Code"
-        >
-          {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-          <span>{copied ? "Copied" : "Copy"}</span>
-        </button>
-      </div>
-
-      <pre className="overflow-x-auto whitespace-pre font-mono text-xs md:text-sm text-emerald-400 leading-relaxed">
-        <code>{content}</code>
-      </pre>
-    </div>
-  );
-}
 
 const ProjectCaseStudy = () => {
   const { projectId } = useParams();
@@ -239,7 +188,10 @@ const ProjectCaseStudy = () => {
                     className="component-media-img"
                   />
                 ) : comp.type === "html" ? (
-                  <CodeOrHtmlComponent content={comp.contentUrl} />
+                  // The Interactive HTML block was retired. Any component still
+                  // stored with this type renders nothing, so an old draft cannot
+                  // fall through to the <img> default with code as its src.
+                  null
                 ) : comp.type === "quote" ? (
                   <div
                     className="case-study-quote-wrapper w-full py-16 px-6 md:py-28 md:px-16 flex flex-col items-center justify-center text-center transition-colors duration-300"
@@ -270,7 +222,14 @@ const ProjectCaseStudy = () => {
                     )}
                   </div>
                 ) : comp.type === "grid" ? (
-                  <div className="case-study-grid-wrapper w-full grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 bg-transparent py-2">
+                  <div
+                    className="case-study-grid-wrapper w-full grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 py-2"
+                    style={
+                      comp.gridBgColor
+                        ? { backgroundColor: comp.gridBgColor, padding: "clamp(12px, 3vw, 48px)" }
+                        : { backgroundColor: "transparent" }
+                    }
+                  >
                     {(comp.gridUrls && comp.gridUrls.filter(Boolean).length > 0
                       ? comp.gridUrls.filter(Boolean)
                       : [comp.contentUrl || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200", comp.contentUrl || "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?q=80&w=1200"]
