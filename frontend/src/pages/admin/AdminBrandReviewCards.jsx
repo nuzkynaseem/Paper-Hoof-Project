@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Layers, Save, Upload, Clock, Info } from "lucide-react";
+import { Layers, Save, Clock, Info } from "lucide-react";
 import { API_BASE, getMediaUrl } from "../../utils/api";
+import { IMAGE_ACCEPT } from "../../utils/media";
+import { uploadMedia } from "../../utils/uploadMedia";
+import UploadButton from "./UploadButton";
 
 export default function AdminBrandReviewCards({ showToast }) {
   const [cards, setCards] = useState([]);
   const [savingIndex, setSavingIndex] = useState(null);
   const [uploadingIndex, setUploadingIndex] = useState(null);
+  const [uploadPercent, setUploadPercent] = useState(null);
 
   const token = localStorage.getItem("paperhoof_admin_token");
 
@@ -31,37 +35,18 @@ export default function AdminBrandReviewCards({ showToast }) {
     });
   };
 
-  const handleFileUpload = async (e, index) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleFileUpload = async (file, index) => {
     setUploadingIndex(index);
-    const currentToken = localStorage.getItem("paperhoof_admin_token");
-    const body = new FormData();
-    body.append("file", file);
+    setUploadPercent(0);
     try {
-      const headers = {};
-      if (currentToken) headers["Authorization"] = `Bearer ${currentToken}`;
-      const res = await fetch(`${API_BASE}/upload`, {
-        method: "POST",
-        headers,
-        body,
-      });
-      if (!res.ok) {
-        const errText = await res.text();
-        let errMsg = `Upload failed (${res.status})`;
-        try {
-          const parsed = JSON.parse(errText);
-          errMsg = parsed.detail || errMsg;
-        } catch (_) {}
-        throw new Error(errMsg);
-      }
-      const data = await res.json();
+      const data = await uploadMedia(file, { onProgress: setUploadPercent });
       handleCardChange(index, "imageUrl", data.url);
       if (showToast) showToast("success", "Image uploaded", file.name);
     } catch (err) {
       if (showToast) showToast("error", "Upload failed", err.message || "Failed to fetch");
     } finally {
       setUploadingIndex(null);
+      setUploadPercent(null);
     }
   };
 
@@ -136,17 +121,16 @@ export default function AdminBrandReviewCards({ showToast }) {
                 </div>
                 <div className="input-group">
                   <label>Cover Image</label>
-                  <label className="upload-btn justify-center" style={{ height: 42 }}>
-                    <Upload style={{ width: 13, height: 13 }} />
-                    <span>{uploadingIndex === idx ? "Uploading..." : "Upload File"}</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileUpload(e, idx)}
-                      className="hidden"
-                      disabled={uploadingIndex === idx}
-                    />
-                  </label>
+                  <UploadButton
+                    className="justify-center"
+                    style={{ height: 42 }}
+                    iconSize={13}
+                    accept={IMAGE_ACCEPT}
+                    idleLabel="Upload File"
+                    busy={uploadingIndex === idx}
+                    progress={uploadingIndex === idx ? uploadPercent : null}
+                    onFile={(file) => handleFileUpload(file, idx)}
+                  />
                 </div>
               </div>
 

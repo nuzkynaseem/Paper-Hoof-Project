@@ -3,7 +3,6 @@ import {
   Plus,
   Edit2,
   Trash2,
-  Upload,
   X,
   Lightbulb,
   Star,
@@ -24,7 +23,9 @@ import {
   Info,
 } from "lucide-react";
 import { API_BASE, getMediaUrl } from "../../utils/api";
-import { isVideoMedia, MEDIA_ACCEPT } from "../../utils/media";
+import { isVideoMedia, IMAGE_ACCEPT, VIDEO_ACCEPT, MEDIA_ACCEPT } from "../../utils/media";
+import { uploadMedia } from "../../utils/uploadMedia";
+import UploadButton from "./UploadButton";
 import ProjectMedia from "../../components/ProjectMedia";
 
 // Component type config
@@ -52,9 +53,11 @@ function ComponentTypeIcon({ type, size = 14 }) {
 export default function AdminProjects({ projects = [], onProjectsChange, workScopes = [], showToast }) {
   const [editingProject, setEditingProject] = useState(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [uploadingCompIdx, setUploadingCompIdx] = useState(null);
+  // Keyed by upload target ("field:coverImage", "comp:2", "grid:2:1") -> percent, so
+  // only the button that was actually clicked shows a spinner. A single shared flag
+  // used to light up every cover/slider/hero button at once.
+  const [uploads, setUploads] = useState({});
   const [showPreviewIdx, setShowPreviewIdx] = useState(null);
   const [collapsedComps, setCollapsedComps] = useState({});
 
@@ -144,77 +147,58 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
   };
 
   // ── File Upload Helpers ──────────────────────────────────────────────────────
-  const uploadFile = async (file, field, compIndex = null, gridSlot = null) => {
-    const currentToken = localStorage.getItem("paperhoof_admin_token");
-    const body = new FormData();
-    body.append("file", file);
+  const isUploading = (key) => key in uploads;
+  const uploadPercent = (key) => uploads[key];
+
+  /** Runs one upload, tracking its progress under `key` and applying the URL. */
+  const runUpload = async (key, file, applyUrl) => {
+    setUploads((prev) => ({ ...prev, [key]: 0 }));
     try {
-      const headers = {};
-      if (currentToken) {
-        headers["Authorization"] = `Bearer ${currentToken}`;
-      }
-      const res = await fetch(`${API_BASE}/upload`, {
-        method: "POST",
-        headers,
-        body,
+      const data = await uploadMedia(file, {
+        // Ignored once the key is gone, so a late progress event from an aborted
+        // upload cannot resurrect a finished button.
+        onProgress: (percent) =>
+          setUploads((prev) => (key in prev ? { ...prev, [key]: percent } : prev)),
       });
-
-      if (!res.ok) {
-        const errText = await res.text();
-        let errMsg = `Upload failed (${res.status})`;
-        try {
-          const parsed = JSON.parse(errText);
-          errMsg = parsed.detail || errMsg;
-        } catch (_) {}
-        throw new Error(errMsg);
-      }
-
-      const data = await res.json();
-      if (compIndex !== null && gridSlot !== null) {
-        setFormData((prev) => {
-          const updated = [...prev.components];
-          const urls = [...(updated[compIndex].gridUrls || ["", ""])];
-          urls[gridSlot] = data.url;
-          updated[compIndex] = { ...updated[compIndex], gridUrls: urls };
-          return { ...prev, components: updated };
-        });
-      } else if (compIndex !== null) {
-        setFormData((prev) => {
-          const updated = [...prev.components];
-          updated[compIndex] = { ...updated[compIndex], contentUrl: data.url };
-          return { ...prev, components: updated };
-        });
-      } else {
-        setFormData((prev) => ({ ...prev, [field]: data.url }));
-      }
+      applyUrl(data.url);
       if (showToast) showToast("success", "File uploaded", file.name);
       return data.url;
     } catch (err) {
       if (showToast) showToast("error", "Upload failed", err.message || "Failed to fetch");
-      throw err;
+      return null;
+    } finally {
+      setUploads((prev) => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
     }
   };
 
-  const handleFileUpload = async (e, field) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUploading(true);
-    try { await uploadFile(file, field); } finally { setUploading(false); }
-  };
+  const handleFileUpload = (file, field) =>
+    runUpload(`field:${field}`, file, (url) =>
+      setFormData((prev) => ({ ...prev, [field]: url }))
+    );
 
-  const handleCompFileUpload = async (e, index) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUploadingCompIdx(index);
-    try { await uploadFile(file, null, index); } finally { setUploadingCompIdx(null); }
-  };
+  const handleCompFileUpload = (file, index) =>
+    runUpload(`comp:${index}`, file, (url) =>
+      setFormData((prev) => {
+        const updated = [...prev.components];
+        updated[index] = { ...updated[index], contentUrl: url };
+        return { ...prev, components: updated };
+      })
+    );
 
-  const handleGridFileUpload = async (e, compIndex, gridSlot) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUploadingCompIdx(`${compIndex}-${gridSlot}`);
-    try { await uploadFile(file, null, compIndex, gridSlot); } finally { setUploadingCompIdx(null); }
-  };
+  const handleGridFileUpload = (file, compIndex, gridSlot) =>
+    runUpload(`grid:${compIndex}:${gridSlot}`, file, (url) =>
+      setFormData((prev) => {
+        const updated = [...prev.components];
+        const urls = [...(updated[compIndex].gridUrls || ["", ""])];
+        urls[gridSlot] = url;
+        updated[compIndex] = { ...updated[compIndex], gridUrls: urls };
+        return { ...prev, components: updated };
+      })
+    );
 
   // ── Component Management ─────────────────────────────────────────────────────
   const handleAddComponent = (type = "image") => {
@@ -436,17 +420,14 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                       placeholder="https://domain.com/showcase.jpg"
                       className="custom-input flex-1 text-xs"
                     />
-                    <label className="upload-btn text-xs py-1.5">
-                      <Upload style={{ width: 13, height: 13 }} />
-                      <span>{uploadingCompIdx === index ? "Uploading..." : "Upload"}</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleCompFileUpload(e, index)}
-                        className="hidden"
-                        disabled={uploadingCompIdx === index}
-                      />
-                    </label>
+                    <UploadButton
+                      className="text-xs py-1.5"
+                      iconSize={13}
+                      accept={IMAGE_ACCEPT}
+                      busy={isUploading(`comp:${index}`)}
+                      progress={uploadPercent(`comp:${index}`)}
+                      onFile={(file) => handleCompFileUpload(file, index)}
+                    />
                   </div>
                 </div>
                 <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5">
@@ -474,17 +455,15 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                       placeholder="https://domain.com/showcase.mp4"
                       className="custom-input flex-1 text-xs"
                     />
-                    <label className="upload-btn text-xs py-1.5">
-                      <Upload style={{ width: 13, height: 13 }} />
-                      <span>{uploadingCompIdx === index ? "Uploading..." : "Upload Video"}</span>
-                      <input
-                        type="file"
-                        accept="video/*"
-                        onChange={(e) => handleCompFileUpload(e, index)}
-                        className="hidden"
-                        disabled={uploadingCompIdx === index}
-                      />
-                    </label>
+                    <UploadButton
+                      className="text-xs py-1.5"
+                      iconSize={13}
+                      accept={VIDEO_ACCEPT}
+                      idleLabel="Upload Video"
+                      busy={isUploading(`comp:${index}`)}
+                      progress={uploadPercent(`comp:${index}`)}
+                      onFile={(file) => handleCompFileUpload(file, index)}
+                    />
                   </div>
                 </div>
                 <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5">
@@ -559,7 +538,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[0, 1].map((slotIdx) => {
                     const slotUrl = (comp.gridUrls || ["", ""])[slotIdx] || "";
-                    const isUploadingSlot = uploadingCompIdx === `${index}-${slotIdx}`;
+                    const slotKey = `grid:${index}:${slotIdx}`;
                     return (
                       <div key={slotIdx} className="space-y-2 border border-gray-200 rounded-lg p-2.5 bg-gray-50">
                         <span className="text-[11px] font-bold text-gray-600 block">Image #{slotIdx + 1}</span>
@@ -571,17 +550,14 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                             placeholder="Image URL"
                             className="custom-input flex-1 text-xs"
                           />
-                          <label className="upload-btn text-xs py-1 px-2.5 shrink-0">
-                            <Upload style={{ width: 12, height: 12 }} />
-                            <span>{isUploadingSlot ? "..." : "Upload"}</span>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleGridFileUpload(e, index, slotIdx)}
-                              className="hidden"
-                              disabled={isUploadingSlot}
-                            />
-                          </label>
+                          <UploadButton
+                            className="text-xs py-1 px-2.5 shrink-0"
+                            iconSize={12}
+                            accept={IMAGE_ACCEPT}
+                            busy={isUploading(slotKey)}
+                            progress={uploadPercent(slotKey)}
+                            onFile={(file) => handleGridFileUpload(file, index, slotIdx)}
+                          />
                         </div>
                         {slotUrl && (
                           <img src={getMediaUrl(slotUrl)} alt={`slot-${slotIdx}`} className="w-full h-24 object-cover rounded border border-gray-200" />
@@ -811,11 +787,12 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                     placeholder="https://domain.com/cover.jpg"
                     className="custom-input flex-1"
                   />
-                  <label className="upload-btn">
-                    <Upload style={{ width: 14, height: 14 }} />
-                    <span>{uploading ? "..." : "Upload"}</span>
-                    <input type="file" accept={MEDIA_ACCEPT} onChange={(e) => handleFileUpload(e, "coverImage")} className="hidden" disabled={uploading} />
-                  </label>
+                  <UploadButton
+                    accept={MEDIA_ACCEPT}
+                    busy={isUploading("field:coverImage")}
+                    progress={uploadPercent("field:coverImage")}
+                    onFile={(file) => handleFileUpload(file, "coverImage")}
+                  />
                 </div>
                 <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5">
                   <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
@@ -836,11 +813,12 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                     placeholder="https://domain.com/slider.jpg"
                     className="custom-input flex-1"
                   />
-                  <label className="upload-btn">
-                    <Upload style={{ width: 14, height: 14 }} />
-                    <span>{uploading ? "..." : "Upload"}</span>
-                    <input type="file" accept={MEDIA_ACCEPT} onChange={(e) => handleFileUpload(e, "sliderImage")} className="hidden" disabled={uploading} />
-                  </label>
+                  <UploadButton
+                    accept={MEDIA_ACCEPT}
+                    busy={isUploading("field:sliderImage")}
+                    progress={uploadPercent("field:sliderImage")}
+                    onFile={(file) => handleFileUpload(file, "sliderImage")}
+                  />
                 </div>
                 <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5">
                   <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
@@ -886,11 +864,12 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
                         placeholder="https://domain.com/hero.mp4"
                         className="custom-input flex-1"
                       />
-                      <label className="upload-btn">
-                        <Upload style={{ width: 14, height: 14 }} />
-                        <span>{uploading ? "..." : "Upload"}</span>
-                        <input type="file" accept="image/*,video/*" onChange={(e) => handleFileUpload(e, "heroMedia")} className="hidden" disabled={uploading} />
-                      </label>
+                      <UploadButton
+                        accept={MEDIA_ACCEPT}
+                        busy={isUploading("field:heroMedia")}
+                        progress={uploadPercent("field:heroMedia")}
+                        onFile={(file) => handleFileUpload(file, "heroMedia")}
+                      />
                     </div>
                   </div>
                   <div className="input-group">

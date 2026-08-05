@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Video, FileText, Save, Upload, Play, Eye, Info } from "lucide-react";
+import { Video, FileText, Save, Play, Eye, Info } from "lucide-react";
 import { API_BASE, getMediaUrl } from "../../utils/api";
+import { VIDEO_ACCEPT } from "../../utils/media";
+import { uploadMedia } from "../../utils/uploadMedia";
+import UploadButton from "./UploadButton";
 
 export default function AdminHomepage({ showToast }) {
   const [heroVideoUrl, setHeroVideoUrl] = useState("");
   const [introText, setIntroText] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [uploadPercent, setUploadPercent] = useState(null);
   const [saving, setSaving] = useState(false);
 
   const token = localStorage.getItem("paperhoof_admin_token");
@@ -25,37 +29,18 @@ export default function AdminHomepage({ showToast }) {
     }
   };
 
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleFileUpload = async (file) => {
     setUploading(true);
-    const currentToken = localStorage.getItem("paperhoof_admin_token");
-    const formData = new FormData();
-    formData.append("file", file);
+    setUploadPercent(0);
     try {
-      const headers = {};
-      if (currentToken) headers["Authorization"] = `Bearer ${currentToken}`;
-      const res = await fetch(`${API_BASE}/upload`, {
-        method: "POST",
-        headers,
-        body: formData,
-      });
-      if (!res.ok) {
-        const errText = await res.text();
-        let errMsg = `Upload failed (${res.status})`;
-        try {
-          const parsed = JSON.parse(errText);
-          errMsg = parsed.detail || errMsg;
-        } catch (_) {}
-        throw new Error(errMsg);
-      }
-      const data = await res.json();
+      const data = await uploadMedia(file, { onProgress: setUploadPercent });
       setHeroVideoUrl(data.url);
       if (showToast) showToast("success", "Video uploaded", file.name);
     } catch (err) {
       if (showToast) showToast("error", "Upload failed", err.message || "Failed to fetch");
     } finally {
       setUploading(false);
+      setUploadPercent(null);
     }
   };
 
@@ -122,17 +107,14 @@ export default function AdminHomepage({ showToast }) {
                   placeholder="https://domain.com/video.mp4"
                   className="custom-input flex-1"
                 />
-                <label className="upload-btn">
-                  <Upload style={{ width: 15, height: 15 }} />
-                  <span>{uploading ? "Uploading..." : "Upload (Cloudflare R2)"}</span>
-                  <input
-                    type="file"
-                    accept="video/*"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                    disabled={uploading}
-                  />
-                </label>
+                <UploadButton
+                  iconSize={15}
+                  accept={VIDEO_ACCEPT}
+                  idleLabel="Upload (Cloudflare R2)"
+                  busy={uploading}
+                  progress={uploadPercent}
+                  onFile={handleFileUpload}
+                />
               </div>
               <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5 mt-2">
                 <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />

@@ -876,6 +876,34 @@ select.custom-input option,
   border-color: #86efac;
 }
 
+/* Busy state. An upload to R2 takes seconds, so the button has to look occupied
+   for the whole wait, not just flip its label. pointer-events is dropped so the
+   same file cannot be queued twice while the first request is still open. */
+.upload-btn.is-uploading {
+  background: #ecfdf5;
+  border-color: #86efac;
+  color: #15803d;
+  cursor: progress;
+  pointer-events: none;
+}
+
+.upload-btn-spinner {
+  flex-shrink: 0;
+  animation: uploadBtnSpin 0.7s linear infinite;
+}
+
+@keyframes uploadBtnSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .upload-btn-spinner {
+    animation-duration: 2.4s;
+  }
+}
+
 .tag-pill {
   display: inline-block;
   padding: 3px 10px;
