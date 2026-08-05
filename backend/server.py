@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Query, Depends, UploadFile, File, Form, Header, Request, Body, Request, Body
+from fastapi import FastAPI, APIRouter, HTTPException, Query, Depends, UploadFile, File, Form, Header, Request, Body, BackgroundTasks
 
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -186,13 +186,20 @@ def send_invitation_email(recipient_email: str, recipient_name: str, temp_passwo
         """
         msg.attach(MIMEText(html_content, "html"))
 
-        with smtplib.SMTP(smtp_host, smtp_port) as server:
-            server.starttls()
-            server.login(smtp_user, smtp_password)
-            server.send_message(msg)
-
-        logger.info(f"Invitation email successfully sent from {smtp_user} to {recipient_email}")
-        return True
+        try:
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
+                server.starttls()
+                server.login(smtp_user, smtp_password)
+                server.send_message(msg)
+            logger.info(f"Invitation email successfully sent from {smtp_user} to {recipient_email}")
+            return True
+        except Exception as primary_err:
+            logger.warning(f"SMTP port {smtp_port} failed ({primary_err}). Retrying via SSL port 465...")
+            with smtplib.SMTP_SSL(smtp_host, 465, timeout=10) as server:
+                server.login(smtp_user, smtp_password)
+                server.send_message(msg)
+            logger.info(f"Invitation email successfully sent via SSL port 465 to {recipient_email}")
+            return True
     except Exception as e:
         logger.error(f"Failed to send invitation email via SMTP: {e}")
         return False
@@ -284,13 +291,20 @@ def send_revocation_email(recipient_email: str, recipient_name: str) -> bool:
         """
         msg.attach(MIMEText(html_content, "html"))
 
-        with smtplib.SMTP(smtp_host, smtp_port) as server:
-            server.starttls()
-            server.login(smtp_user, smtp_password)
-            server.send_message(msg)
-
-        logger.info(f"Revocation email successfully sent from {smtp_user} to {recipient_email}")
-        return True
+        try:
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
+                server.starttls()
+                server.login(smtp_user, smtp_password)
+                server.send_message(msg)
+            logger.info(f"Revocation email successfully sent from {smtp_user} to {recipient_email}")
+            return True
+        except Exception as primary_err:
+            logger.warning(f"SMTP port {smtp_port} failed ({primary_err}). Retrying via SSL port 465...")
+            with smtplib.SMTP_SSL(smtp_host, 465, timeout=10) as server:
+                server.login(smtp_user, smtp_password)
+                server.send_message(msg)
+            logger.info(f"Revocation email successfully sent via SSL port 465 to {recipient_email}")
+            return True
     except Exception as e:
         logger.error(f"Failed to send revocation email via SMTP: {e}")
         return False
@@ -560,6 +574,39 @@ async def create_user(req: CreateUserRequest, user_data: dict = Depends(verify_s
         },
         "tempPassword": temp_password,
         "emailSent": email_sent
+    }
+
+@api_router.post("/users/{user_id}/resend-invite")
+async def resend_user_invite(user_id: str, user_data: dict = Depends(verify_super_admin)):
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    email = user.get("email")
+    name = user.get("name", "Team Member")
+    role = user.get("role", "admin")
+
+    # Generate a fresh temporary password for the user
+    temp_password = generate_temp_password()
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {
+            "passwordHash": hash_password(temp_password),
+            "mustChangePassword": True,
+            "updatedAt": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+
+    # Dispatch invitation email via Gmail SMTP
+    email_sent = send_invitation_email(email, name, temp_password, role)
+
+    return {
+        "status": "success",
+        "userId": user_id,
+        "email": email,
+        "tempPassword": temp_password,
+        "emailSent": email_sent,
+        "message": f"Invitation email resent to {email}"
     }
 
 @api_router.put("/users/{user_id}/role")

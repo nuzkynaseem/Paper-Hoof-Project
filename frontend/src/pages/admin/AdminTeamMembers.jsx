@@ -145,6 +145,33 @@ export default function AdminTeamMembers({ showToast, currentUser }) {
     }
   };
 
+  const [resendingId, setResendingId] = useState(null);
+
+  const handleResendInvite = async (userItem) => {
+    setResendingId(userItem.id);
+    try {
+      const res = await fetch(`${API_BASE}/users/${userItem.id}/resend-invite`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.detail || "Failed to resend invitation email.");
+      }
+      setCreatedResult({
+        user: { email: userItem.email, name: userItem.name },
+        tempPassword: data.tempPassword,
+        emailSent: data.emailSent
+      });
+      fetchUsers();
+      showToast("success", "Invitation Resent", `New login password sent to ${userItem.email}`);
+    } catch (err) {
+      showToast("error", "Resend Failed", err.message);
+    } finally {
+      setResendingId(null);
+    }
+  };
+
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -288,13 +315,26 @@ export default function AdminTeamMembers({ showToast, currentUser }) {
                       </td>
                       <td style={{ textAlign: "right" }}>
                         {!isPrimarySuperAdmin && !isCurrentLoggedInUser ? (
-                          <button
-                            onClick={() => setUserToDelete(u)}
-                            className="btn-danger-icon"
-                            title="Revoke Access"
-                          >
-                            <Trash2 style={{ width: 15, height: 15 }} />
-                          </button>
+                          <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                            <button
+                              onClick={() => handleResendInvite(u)}
+                              disabled={resendingId === u.id}
+                              className="action-btn-secondary"
+                              style={{ padding: "6px 12px", fontSize: 12, borderRadius: 8, display: "inline-flex", alignItems: "center", gap: 6 }}
+                              title="Resend Invitation Email & Temp Password"
+                            >
+                              <Mail style={{ width: 13, height: 13 }} className={resendingId === u.id ? "spin" : ""} />
+                              <span>{resendingId === u.id ? "Sending..." : "Resend Invite"}</span>
+                            </button>
+
+                            <button
+                              onClick={() => setUserToDelete(u)}
+                              className="btn-danger-icon"
+                              title="Revoke Access"
+                            >
+                              <Trash2 style={{ width: 15, height: 15 }} />
+                            </button>
+                          </div>
                         ) : (
                           <span className="protected-tag">Protected</span>
                         )}
