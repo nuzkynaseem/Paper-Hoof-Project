@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import SEO from '../components/SEO';
-import { API_BASE } from '../utils/api';
+import { API_BASE, getMediaUrl } from '../utils/api';
 import './BrandReview.css';
 
 const defaultBrandCards = [
@@ -84,7 +84,7 @@ const BrandTiltCardItem = ({ item }) => {
       >
         <div className="brand-card-img-wrapper">
           <img
-            src={item.image}
+            src={getMediaUrl(item.image)}
             alt={`Paper Hoof Brand Strategy Audit — ${item.title}`}
             className="brand-card-img"
           />

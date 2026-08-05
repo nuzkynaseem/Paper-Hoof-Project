@@ -6,6 +6,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
+import { getMediaUrl } from '../utils/api';
 import './MacDockNavigation.css';
 
 const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
@@ -92,7 +93,7 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
                           <CardContent className="flex flex-col items-center justify-between p-2.5 h-full">
                             <div className="w-full aspect-square rounded-md overflow-hidden relative mb-2">
                               <img
-                                src={p.coverImage || p.image || p.sliderImage}
+                                src={getMediaUrl(p.coverImage || p.image || p.sliderImage)}
                                 alt={`Paper Hoof Portfolio Case Study — ${p.name}`}
                                 className="w-full h-full object-cover"
                               />

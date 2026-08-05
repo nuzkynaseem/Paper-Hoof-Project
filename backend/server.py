@@ -652,13 +652,14 @@ async def upload_file(file: UploadFile = File(...), user_data: dict = Depends(ve
     r2_public_domain = os.environ.get("R2_PUBLIC_DOMAIN")
 
     ext = Path(file.filename).suffix
-    file_key = f"uploads/{uuid.uuid4()}{ext}"
+    file_id = f"{uuid.uuid4()}{ext}"
+    file_key = f"uploads/{file_id}"
     content = await file.read()
 
     # Save copy locally in backend static uploads folder for instant fallback
     static_uploads_dir = Path(__file__).parent / "static" / "uploads"
     static_uploads_dir.mkdir(parents=True, exist_ok=True)
-    local_file_path = static_uploads_dir / Path(file_key).name
+    local_file_path = static_uploads_dir / file_id
     try:
         local_file_path.write_bytes(content)
     except Exception as local_err:
@@ -683,14 +684,14 @@ async def upload_file(file: UploadFile = File(...), user_data: dict = Depends(ve
                 domain = r2_public_domain if r2_public_domain.startswith("http") else f"https://{r2_public_domain}"
                 public_url = f"{domain.rstrip('/')}/{file_key}"
             else:
-                public_url = f"/api/uploads/{file_key}"
+                public_url = f"/api/uploads/{file_id}"
 
             logger.info(f"Successfully uploaded {file.filename} to R2 bucket '{r2_bucket}' -> {public_url}")
             return {"url": public_url, "filename": file.filename, "key": file_key}
         except Exception as e:
             logger.error(f"Cloudflare R2 Upload failed: {e}")
 
-    public_url = f"/api/uploads/{file_key}"
+    public_url = f"/api/uploads/{file_id}"
     return {"url": public_url, "filename": file.filename, "key": file_key}
 
 
@@ -702,7 +703,12 @@ async def serve_uploaded_file(file_path: str):
     r2_secret_key = os.environ.get("R2_SECRET_ACCESS_KEY")
     r2_bucket = os.environ.get("R2_BUCKET_NAME", "paperhoof")
 
-    full_key = file_path if file_path.startswith("uploads/") else f"uploads/{file_path}"
+    clean_path = file_path.lstrip("/")
+    if clean_path.startswith("uploads/uploads/"):
+        clean_path = clean_path.replace("uploads/uploads/", "uploads/", 1)
+
+    r2_key = clean_path if clean_path.startswith("uploads/") else f"uploads/{clean_path}"
+    filename = Path(clean_path).name
 
     # 1. Try serving from Cloudflare R2
     if r2_account_id and r2_access_key and r2_secret_key:
@@ -714,18 +720,18 @@ async def serve_uploaded_file(file_path: str):
                 aws_secret_access_key=r2_secret_key,
                 region_name="auto"
             )
-            obj = s3_client.get_object(Bucket=r2_bucket, Key=full_key)
-            content_type = obj.get("ContentType") or mimetypes.guess_type(file_path)[0] or "image/jpeg"
+            obj = s3_client.get_object(Bucket=r2_bucket, Key=r2_key)
+            content_type = obj.get("ContentType") or mimetypes.guess_type(filename)[0] or "image/jpeg"
             body = obj["Body"].read()
             return Response(content=body, media_type=content_type, headers={
                 "Cache-Control": "public, max-age=31536000, immutable",
                 "Access-Control-Allow-Origin": "*",
             })
         except Exception as e:
-            logger.warning(f"R2 fetch failed for key '{full_key}': {e}")
+            logger.warning(f"R2 fetch failed for key '{r2_key}': {e}")
 
     # 2. Local disk fallback
-    local_file_path = Path(__file__).parent / "static" / "uploads" / Path(file_path).name
+    local_file_path = Path(__file__).parent / "static" / "uploads" / filename
     if local_file_path.exists():
         content_type = mimetypes.guess_type(local_file_path)[0] or "image/jpeg"
         return Response(content=local_file_path.read_bytes(), media_type=content_type, headers={

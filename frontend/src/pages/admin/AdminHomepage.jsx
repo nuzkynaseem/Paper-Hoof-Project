@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Video, FileText, Save, Upload, Play, Eye, Info } from "lucide-react";
-import { API_BASE } from "../../utils/api";
+import { API_BASE, getMediaUrl } from "../../utils/api";
 
 export default function AdminHomepage({ showToast }) {
   const [heroVideoUrl, setHeroVideoUrl] = useState("");
@@ -147,7 +147,7 @@ export default function AdminHomepage({ showToast }) {
                   <span>Video Preview</span>
                 </div>
                 <video
-                  src={heroVideoUrl}
+                  src={getMediaUrl(heroVideoUrl)}
                   controls
                   autoPlay
                   muted

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Maximize2, Minimize2 } from 'lucide-react';
+import { getMediaUrl } from '../utils/api';
 import './ProjectSlideDeck.css';
 
 const ProjectSlideDeck = ({ project }) => {
@@ -34,7 +35,7 @@ const ProjectSlideDeck = ({ project }) => {
     <div className={`jkr-slide-deck-wrapper ${isFullscreen ? 'fullscreen' : ''}`}>
       <div className="jkr-slide-viewport">
         <img
-          src={currentSlide.url}
+          src={getMediaUrl(currentSlide.url)}
           alt={currentSlide.title}
           className="jkr-slide-image"
         />

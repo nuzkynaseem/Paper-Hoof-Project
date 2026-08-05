@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { projects as mockProjects, slugify } from '../mock';
 import { ContainerScroll } from './ui/container-scroll-animation';
-import { API_BASE } from '../utils/api';
+import { API_BASE, getMediaUrl } from '../utils/api';
 import './RecentProjects.css';
 
 const MAX_TILT = 9;
@@ -95,7 +95,7 @@ const RecentProjects = () => {
             >
               <div className="featured-media" ref={mediaRef}>
                 <img
-                  src={featured.coverImage || featured.image}
+                  src={getMediaUrl(featured.coverImage || featured.image)}
                   alt={`Paper Hoof Brand Strategy Case Study — ${featured.name}`}
                   className="rp-image single-featured-img"
                   loading="eager"

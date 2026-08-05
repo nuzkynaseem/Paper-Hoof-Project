@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { X, ChevronUp } from 'lucide-react';
 import { designCategories, projects } from '../mock';
+import { getMediaUrl } from '../utils/api';
 import './DesignCategories.css';
 
 const DesignCategories = ({ scrollPosition, isHomePage = false, isDocked = false }) => {
@@ -100,7 +101,7 @@ const DesignCategories = ({ scrollPosition, isHomePage = false, isDocked = false
             {hoveredCategory ? (
               <div className="preview-content">
                 <img 
-                  src={getProjectForCategory(hoveredCategory).image} 
+                  src={getMediaUrl(getProjectForCategory(hoveredCategory).image)} 
                   alt={hoveredCategory}
                   className="preview-image"
                 />

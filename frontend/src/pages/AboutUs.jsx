@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight, ChevronDown } from 'lucide-react';
 import ReadyToMove from '../components/ReadyToMove';
 import SEO from '../components/SEO';
+import { getMediaUrl } from '../utils/api';
 import './AboutUs.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -322,7 +323,7 @@ const AboutUs = () => {
             {teamMembers.map((member, index) => (
               <div key={index} className="team-member-card">
                 <div className="team-img-wrapper">
-                  <img src={member.image} alt={`${member.name} — ${member.role} at Paper Hoof Studio`} className="team-img" />
+                  <img src={getMediaUrl(member.image)} alt={`${member.name} — ${member.role} at Paper Hoof Studio`} className="team-img" />
                   <a
                     href={member.instagram}
                     target="_blank"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ScrollIndicator from './ScrollIndicator';
-import { API_BASE } from '../utils/api';
+import { API_BASE, getMediaUrl } from '../utils/api';
 import './Hero.css';
 
 const DEFAULT_HERO_VIDEO = "https://assets.mixkit.co/videos/preview/mixkit-white-sand-under-water-4330-large.mp4";
@@ -25,7 +25,8 @@ const Hero = () => {
     }
   };
 
-  const videoUrl = heroContent?.heroVideoUrl || DEFAULT_HERO_VIDEO;
+  const rawVideoUrl = heroContent?.heroVideoUrl || DEFAULT_HERO_VIDEO;
+  const videoUrl = getMediaUrl(rawVideoUrl);
 
   useEffect(() => {
     if (videoRef.current) {

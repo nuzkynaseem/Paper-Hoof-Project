@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { getTagStyle } from '../utils/tagColors';
+import { getMediaUrl } from '../utils/api';
 import './TiltCard.css';
 
 const MAX_TILT = 9;
@@ -35,7 +36,7 @@ const TiltCard = ({ project, onClick }) => {
         ref={mediaRef}
         onMouseMove={handleMove}
         onMouseLeave={handleLeave}
-        style={{ backgroundImage: `url(${project.image})` }}
+        style={{ backgroundImage: `url(${getMediaUrl(project.image)})` }}
       >
         <div className="tilt-tags">
           {project.tags.slice(0, 2).map((tag, i) => (
