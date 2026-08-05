@@ -221,7 +221,7 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
             </div>
             <div className="brand-block-content">
               <img
-                src={`${process.env.PUBLIC_URL}/paperhoof-wordmark.svg`}
+                src={`${process.env.PUBLIC_URL}/paperhoof-wordmark-light.svg`}
                 alt="Paper Hoof"
                 className="brand-block-logo"
               />

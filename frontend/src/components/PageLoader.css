@@ -34,12 +34,17 @@
   align-items: center;
   justify-content: center;
   animation: pulseLogo 2s ease-in-out infinite alternate;
+  padding: 4px 0;
 }
 
+/* Dark wordmark on the cream loader backdrop. */
 .loader-wordmark-img {
-  height: 38px;
+  height: 20px;
   width: auto;
+  display: block;
   object-fit: contain;
+  flex-shrink: 0;
+  max-width: none;
 }
 
 @keyframes pulseLogo {

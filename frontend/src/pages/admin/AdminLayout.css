@@ -105,10 +105,13 @@
   gap: 12px;
 }
 
+/* White wordmark on the dark sidebar — uses the light asset, not an inverted dark one. */
 .sidebar-logo-img {
-  height: 32px;
+  height: 15px;
   width: auto;
-  filter: brightness(0) invert(1);
+  display: block;
+  flex-shrink: 0;
+  max-width: none;
 }
 
 .sidebar-brand-text {

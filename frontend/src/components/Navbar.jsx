@@ -56,6 +56,11 @@ const Navbar = ({ onMenuClick, isMenuOpen = false, darkHero = false }) => {
 
   const showNavbar = isVisible || isMenuOpen;
 
+  // Over the dark hero the navbar needs the white wordmark. Swapping the asset beats
+  // inverting the dark one with a CSS filter, which also lightens the artwork's edges.
+  const isOverDarkHero = darkHero && !isScrolled;
+  const wordmark = isOverDarkHero ? 'paperhoof-wordmark-light.svg' : 'paperhoof-wordmark.svg';
+
   return (
     <nav
       className={`navbar ${isScrolled ? 'navbar-scrolled' : ''} ${!showNavbar ? 'navbar-hidden' : ''} ${
@@ -75,7 +80,7 @@ const Navbar = ({ onMenuClick, isMenuOpen = false, darkHero = false }) => {
             aria-label="Paper Hoof homepage"
           >
             <img
-              src={`${process.env.PUBLIC_URL}/paperhoof-wordmark.svg`}
+              src={`${process.env.PUBLIC_URL}/${wordmark}`}
               alt="Paper Hoof"
               className="navbar-logo"
             />

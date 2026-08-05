@@ -426,12 +426,15 @@
   align-items: flex-start;
 }
 
+/* Sits on the dark menu overlay, so it uses the white wordmark asset directly. */
 .brand-block-logo {
-  height: 30px;
+  height: 22px;
   width: auto;
-  filter: brightness(0) invert(1);
+  display: block;
   opacity: 0.95;
   transition: transform 0.3s ease, opacity 0.3s ease;
+  flex-shrink: 0;
+  max-width: none;
 }
 
 .nav-panel-brand:hover .brand-block-logo {
@@ -488,7 +491,7 @@
   }
 
   .brand-block-logo {
-    height: 24px;
+    height: 18px;
   }
 
   .panel-badge {

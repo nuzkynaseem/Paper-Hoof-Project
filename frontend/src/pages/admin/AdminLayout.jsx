@@ -213,10 +213,9 @@ export default function AdminLayout() {
         <div className="sidebar-brand">
           <div className="brand-logo-badge flex items-center gap-2">
             <img
-              src="/paperhoof-wordmark.svg"
+              src="/paperhoof-wordmark-light.svg"
               alt="Paper Hoof"
-              className="sidebar-logo-img filter brightness-0 invert"
-              style={{ height: 26, width: "auto" }}
+              className="sidebar-logo-img"
             />
             <span className="text-[10px] font-extrabold tracking-widest text-[#97d9af] uppercase bg-[#123524] px-2 py-0.5 rounded border border-[#97d9af]/30 shadow-sm">
               CMS

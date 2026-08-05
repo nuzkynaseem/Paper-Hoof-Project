@@ -57,9 +57,9 @@ export default function AdminLogin({ onLoginSuccess }) {
         {/* Top: Paper Hoof Wordmark & CMS Subtitle */}
         <div className="login-brand-top flex flex-col items-start gap-1 z-10 relative">
           <img
-            src={`${process.env.PUBLIC_URL}/paperhoof-wordmark.svg`}
+            src={`${process.env.PUBLIC_URL}/paperhoof-wordmark-light.svg`}
             alt="Paper Hoof Wordmark"
-            className="login-wordmark-img h-9 w-auto filter brightness-0 invert"
+            className="login-wordmark-img"
           />
           <div className="flex items-center gap-1.5 mt-1">
             <span className="text-[11px] font-extrabold tracking-widest text-[#97d9af] uppercase bg-[#123524] px-2.5 py-0.5 rounded border border-[#97d9af]/30 shadow-sm">
@@ -84,7 +84,7 @@ export default function AdminLogin({ onLoginSuccess }) {
           <img
             src={`${process.env.PUBLIC_URL}/paperhoof-wordmark.svg`}
             alt="Paper Hoof"
-            className="h-8 w-auto"
+            className="h-4 w-auto"
           />
           <span className="text-[11px] font-extrabold text-[#123524] bg-[#dcfce7] border border-[#86efac] px-2 py-0.5 rounded-md">
             CMS

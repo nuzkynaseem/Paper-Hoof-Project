@@ -70,24 +70,25 @@
   border-radius: 8px;
 }
 
+/* Heights are the wordmark's true cap height: the SVG viewBox is now cropped to the
+   artwork, where it used to carry ~51% empty space above the letters. */
 .navbar-logo {
-  height: 40px;
+  height: 20px;
   width: auto;
   display: block;
-  transition: height 300ms ease, filter 300ms ease;
+  transition: height 300ms ease;
+  flex-shrink: 0;
+  max-width: none;
 }
 
 @media (max-width: 1024px) {
   .navbar-logo {
-    height: 36px;
+    height: 18px;
   }
 }
 
-/* Hero mode: navbar sits over the navy hero (homepage, top of page) */
-.navbar-hero-mode .navbar-logo {
-  filter: brightness(0) invert(1);
-}
-
+/* Hero mode: navbar sits over the navy hero (homepage, top of page).
+   The white wordmark asset is swapped in by Navbar.jsx — no filter needed. */
 .navbar-hero-mode .brand-review-btn,
 .navbar-hero-mode .hamburger-btn,
 .navbar-hero-mode .nav-work-btn {
@@ -232,7 +233,7 @@
   }
 
   .navbar-logo {
-    height: 32px;
+    height: 16px;
   }
 }
 

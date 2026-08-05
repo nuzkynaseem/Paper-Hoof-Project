@@ -66,9 +66,13 @@
   z-index: 2;
 }
 
+/* White wordmark on the dark brand panel. */
 .login-wordmark-img {
-  height: 38px;
+  height: 20px;
   width: auto;
+  display: block;
+  flex-shrink: 0;
+  max-width: none;
 }
 
 .login-brand-bottom {
