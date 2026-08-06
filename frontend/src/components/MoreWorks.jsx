@@ -3,53 +3,53 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import { projects as mockProjects, slugify } from '../mock';
 import TiltCard from './TiltCard';
-import { API_BASE } from '../utils/api';
+import { getHomepage, getProjects } from '../utils/siteData';
 import './MoreWorks.css';
 
 const MoreWorks = () => {
   const navigate = useNavigate();
-  const [works, setWorks] = useState([]);
+  // null = loading -> skeleton tiles; mock only if the API genuinely fails.
+  const [works, setWorks] = useState(null);
 
   useEffect(() => {
-    fetchWorks();
-  }, []);
-
-  const fetchWorks = async () => {
-    let limit = 4;
-    try {
-      const resConfig = await fetch(`${API_BASE}/site/homepage`);
-      if (resConfig.ok) {
-        const configData = await resConfig.json();
-        if (configData.homepageProjectsLimit) {
+    let mounted = true;
+    const load = async () => {
+      let limit = 4;
+      try {
+        const configData = await getHomepage();
+        if (configData && configData.homepageProjectsLimit) {
           limit = configData.homepageProjectsLimit;
         }
+      } catch (e) {
+        /* default limit stands */
       }
-    } catch (e) {
-      console.warn("Using default limit 4");
-    }
 
-    try {
-      const res = await fetch(`${API_BASE}/projects`);
-      if (res.ok) {
-        const list = await res.json();
-        if (list && list.length > 0) {
+      try {
+        const list = await getProjects();
+        if (list.length > 0) {
           const nonFeatured = list.filter((p) => !p.isFeatured);
           const displayList = nonFeatured.length > 0 ? nonFeatured : list;
-          const formatted = displayList.slice(0, limit).map((p) => ({
-            ...p,
-            slug: p.slug || slugify(p.name),
-            image: p.coverImage || p.image,
-          }));
-          setWorks(formatted);
+          if (mounted) {
+            setWorks(displayList.slice(0, limit).map((p) => ({
+              ...p,
+              slug: p.slug || slugify(p.name),
+              image: p.coverImage || p.image,
+            })));
+          }
           return;
         }
+      } catch (err) {
+        /* fall through to mock */
       }
-    } catch (err) {
-      console.warn("Using fallback more works");
-    }
-
-    setWorks(mockProjects.slice(1, 1 + limit).map((p) => ({ ...p, slug: slugify(p.name) })));
-  };
+      if (mounted) {
+        setWorks(mockProjects.slice(1, 1 + limit).map((p) => ({ ...p, slug: slugify(p.name) })));
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <section className="more-works-section">
@@ -65,7 +65,11 @@ const MoreWorks = () => {
         </div>
 
         <div className="tilt-grid">
-          {works.map((project) => (
+          {works === null &&
+            [0, 1, 2, 3].map((i) => (
+              <div key={i} className="ph-skeleton" style={{ aspectRatio: '4 / 3', borderRadius: 16 }} />
+            ))}
+          {(works || []).map((project) => (
             <TiltCard
               key={project.id}
               project={project}

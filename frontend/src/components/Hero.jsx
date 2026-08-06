@@ -1,32 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ScrollIndicator from './ScrollIndicator';
-import { API_BASE, getMediaUrl } from '../utils/api';
+import { getMediaUrl } from '../utils/api';
+import { getHomepage } from '../utils/siteData';
 import './Hero.css';
 
 const DEFAULT_HERO_VIDEO = "https://assets.mixkit.co/videos/preview/mixkit-white-sand-under-water-4330-large.mp4";
 
 const Hero = () => {
   const [heroContent, setHeroContent] = useState(null);
+  const [loadFailed, setLoadFailed] = useState(false);
   const videoRef = useRef(null);
 
   useEffect(() => {
-    fetchHeroData();
+    let mounted = true;
+    getHomepage({ onUpdate: (data) => mounted && setHeroContent(data) })
+      .then((data) => mounted && setHeroContent(data || {}))
+      .catch(() => mounted && setLoadFailed(true));
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  const fetchHeroData = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/site/homepage`);
-      if (res.ok) {
-        const data = await res.json();
-        setHeroContent(data);
-      }
-    } catch (e) {
-      console.warn("Using fallback hero data");
-    }
-  };
-
+  // While the homepage settings load, render a skeleton rather than eagerly
+  // streaming the external fallback video that would then be swapped out.
+  const isLoading = heroContent === null && !loadFailed;
   const rawVideoUrl = heroContent?.heroVideoUrl || DEFAULT_HERO_VIDEO;
-  const videoUrl = getMediaUrl(rawVideoUrl);
+  const videoUrl = isLoading ? "" : getMediaUrl(rawVideoUrl);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -43,7 +42,11 @@ const Hero = () => {
 
   return (
     <section className="hero-section relative overflow-hidden" data-testid="hero-section">
-      {videoUrl ? (
+      {isLoading ? (
+        <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+          <div className="ph-skeleton w-full h-full" style={{ borderRadius: 0 }} />
+        </div>
+      ) : videoUrl ? (
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <video
             ref={videoRef}

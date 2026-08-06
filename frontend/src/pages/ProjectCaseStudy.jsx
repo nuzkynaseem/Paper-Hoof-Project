@@ -7,7 +7,8 @@ import MacDockNavigation from '../components/MacDockNavigation';
 import ProjectMedia from '../components/ProjectMedia';
 import { getTagStyle } from '../utils/tagColors';
 import SEO from '../components/SEO';
-import { API_BASE, getMediaUrl } from '../utils/api';
+import { getMediaUrl } from '../utils/api';
+import { getCachedJson, getProjects } from '../utils/siteData';
 import { QUOTE_FONT, quoteColors } from '../utils/quoteStyle';
 import './ProjectCaseStudy.css';
 
@@ -40,34 +41,49 @@ const ProjectCaseStudy = () => {
   }, [projectId]);
 
   const fetchProjectData = async () => {
+    // The dock list and the case study load independently, both from cache when
+    // available, so navigating between projects paints instantly.
+    getProjects()
+      .then((list) =>
+        setAllProjects(list.map((p) => ({
+          ...p,
+          slug: p.slug || slugify(p.name),
+          image: p.coverImage || p.image || p.sliderImage,
+        })))
+      )
+      .catch(() => {});
+
     try {
-      const resAll = await fetch(`${API_BASE}/projects`);
-      if (resAll.ok) {
-        const list = await resAll.json();
-          setAllProjects(list.map((p) => ({
-            ...p,
-            slug: p.slug || slugify(p.name),
-            image: p.coverImage || p.image || p.sliderImage,
-          })));
-      }
-
-      const resSingle = await fetch(`${API_BASE}/projects/${projectId}`);
-      if (resSingle.ok) {
-        const data = await resSingle.json();
-        setProject(data);
-        return;
-      }
+      const data = await getCachedJson(`/projects/${projectId}`);
+      setProject(data);
     } catch (e) {
-      console.warn("Using fallback project case study data");
+      // Mock data is strictly a failure fallback — never shown while loading.
+      const found = mockProjects.find((p) => (p.slug || slugify(p.name)) === projectId) || mockProjects[0];
+      setProject(found);
     }
-
-    // Fallback to mock projects
-    const found = mockProjects.find((p) => (p.slug || slugify(p.name)) === projectId) || mockProjects[0];
-    setProject(found);
   };
 
   if (!project) {
-    return <div className="p-20 text-center text-neutral-800 font-semibold">Loading case study...</div>;
+    // Skeleton mirroring the page structure: title bar, hero canvas, overview lines.
+    return (
+      <div className="case-study-page" aria-busy="true">
+        <header className="case-study-title-section">
+          <div className="case-study-container">
+            <div className="ph-skeleton" style={{ height: '3.2rem', width: '55%', maxWidth: 520 }} />
+          </div>
+        </header>
+        <section className="case-study-hero-section">
+          <div className="ph-skeleton" style={{ width: '100%', height: 'min(60vh, 640px)', borderRadius: 0 }} />
+        </section>
+        <section className="case-study-overview-section">
+          <div className="case-study-container">
+            <div className="ph-skeleton ph-skeleton-line" style={{ width: '70%', marginBottom: 12 }} />
+            <div className="ph-skeleton ph-skeleton-line" style={{ width: '85%', marginBottom: 12 }} />
+            <div className="ph-skeleton ph-skeleton-line" style={{ width: '45%' }} />
+          </div>
+        </section>
+      </div>
+    );
   }
 
   const showcaseComponents = (project.components && project.components.length > 0)
@@ -185,6 +201,7 @@ const ProjectCaseStudy = () => {
                     muted
                     loop
                     playsInline
+                    preload="metadata"
                     className="component-media-img"
                   />
                 ) : comp.type === "html" ? (
@@ -237,6 +254,8 @@ const ProjectCaseStudy = () => {
                       <div key={gIdx} className="w-full overflow-hidden rounded-xl bg-neutral-100">
                         <img
                           src={getMediaUrl(url)}
+                          loading="lazy"
+                          decoding="async"
                           alt={`Paper Hoof Studio — ${project.name} design showcase grid item ${gIdx + 1}`}
                           className="w-full h-[380px] sm:h-[480px] md:h-[620px] object-cover block transition-transform duration-500 hover:scale-[1.02]"
                         />
@@ -246,6 +265,8 @@ const ProjectCaseStudy = () => {
                 ) : (
                   <img
                     src={getMediaUrl(comp.contentUrl)}
+                    loading="lazy"
+                    decoding="async"
                     alt={`Paper Hoof Studio — ${project.name} visual identity showcase ${index + 1}`}
                     className="component-media-img"
                   />

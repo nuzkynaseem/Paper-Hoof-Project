@@ -133,15 +133,72 @@ const uploadThroughApi = (file, onProgress) =>
     xhr.send(body);
   });
 
+// Re-encode heavy stills to WebP before they leave the browser. A 20 MB PNG cover
+// used to be stored verbatim and then shipped to every visitor; WebP at q0.85 is
+// typically 90%+ smaller with no visible difference. GIFs are skipped (canvas would
+// freeze the animation), as are SVGs, videos and anything already small.
+const CONVERT_TYPES = ["image/png", "image/jpeg"];
+const CONVERT_OVER_BYTES = 400 * 1024;
+const MAX_SIDE = 2560; // largest rendered size on the site is ~1920px wide
+
+const toWebP = (file) =>
+  new Promise((resolve) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    const giveUp = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(file);
+    };
+    img.onerror = giveUp;
+    img.onload = () => {
+      try {
+        let { width, height } = img;
+        const scale = Math.min(1, MAX_SIDE / Math.max(width, height));
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            URL.revokeObjectURL(objectUrl);
+            // Keep the original unless WebP is a real win — and if the browser
+            // cannot encode WebP, toBlob hands back null or a PNG.
+            if (blob && blob.type === "image/webp" && blob.size < file.size * 0.8) {
+              const name = file.name.replace(/\.[^.]+$/, "") + ".webp";
+              resolve(new File([blob], name, { type: "image/webp" }));
+            } else {
+              resolve(file);
+            }
+          },
+          "image/webp",
+          0.85
+        );
+      } catch (_) {
+        giveUp();
+      }
+    };
+    img.src = objectUrl;
+  });
+
+const prepareFile = (file) =>
+  CONVERT_TYPES.includes(file.type) && file.size > CONVERT_OVER_BYTES
+    ? toWebP(file)
+    : Promise.resolve(file);
+
 /**
  * Uploads one file and returns where it now lives.
  *
- * @param {File} file
+ * @param {File} rawFile
  * @param {{ onProgress?: (percent: number) => void }} [options]
  * @returns {Promise<{ url: string, key?: string, contentType?: string, storage?: string }>}
  */
-export const uploadMedia = async (file, { onProgress } = {}) => {
+export const uploadMedia = async (rawFile, { onProgress } = {}) => {
   if (onProgress) onProgress(0);
+
+  const file = await prepareFile(rawFile);
 
   let presigned = null;
   try {

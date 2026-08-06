@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './IntroReveal.css';
-import { API_BASE } from '../utils/api';
+import { getHomepage } from '../utils/siteData';
 
 const DEFAULT_TEXT =
   "We are here to design for you, that's what makes us distinctive. Since we started to work, we loved everyone who came across us.";
@@ -8,27 +8,27 @@ const DEFAULT_TEXT =
 const IntroReveal = () => {
   const textRef = useRef(null);
   const [progress, setProgress] = useState(0);
-  const [statementText, setStatementText] = useState(DEFAULT_TEXT);
+  // null = still loading -> skeleton. The default copy is only a failure fallback;
+  // painting it first meant the text visibly swapped once the API answered.
+  const [statementText, setStatementText] = useState(null);
 
   useEffect(() => {
-    fetchHomepageData();
+    let mounted = true;
+    getHomepage({ onUpdate: (data) => mounted && applyText(data) })
+      .then((data) => mounted && applyText(data))
+      .catch(() => mounted && setStatementText(DEFAULT_TEXT));
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  const fetchHomepageData = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/site/homepage`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.secondSectionDescription || data.secondSectionTitle) {
-          setStatementText(data.secondSectionDescription || data.secondSectionTitle);
-        }
-      }
-    } catch (e) {
-      console.warn("Using default intro text");
-    }
+  const applyText = (data) => {
+    setStatementText(
+      (data && (data.secondSectionDescription || data.secondSectionTitle)) || DEFAULT_TEXT
+    );
   };
 
-  const words = statementText.split(' ');
+  const words = (statementText || '').split(' ');
 
   useEffect(() => {
     let rafId = null;
@@ -74,6 +74,13 @@ const IntroReveal = () => {
   return (
     <section className="intro-reveal-section" data-testid="intro-reveal">
       <div className="intro-container">
+        {statementText === null ? (
+          <div className="intro-reveal-statement" aria-hidden="true">
+            <span className="ph-skeleton ph-skeleton-line" style={{ display: 'block', width: '92%', height: '1.1em', marginBottom: '0.5em' }} />
+            <span className="ph-skeleton ph-skeleton-line" style={{ display: 'block', width: '78%', height: '1.1em', marginBottom: '0.5em' }} />
+            <span className="ph-skeleton ph-skeleton-line" style={{ display: 'block', width: '55%', height: '1.1em' }} />
+          </div>
+        ) : (
         <p className="intro-reveal-statement" ref={textRef}>
           {words.map((word, i) => {
             const wordOpacity = Math.min(1, Math.max(0.15, activeIndex - i));
@@ -88,6 +95,7 @@ const IntroReveal = () => {
             );
           })}
         </p>
+        )}
       </div>
     </section>
   );

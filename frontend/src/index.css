@@ -136,3 +136,44 @@ code {
         border-bottom-color: inherit;
     }
 }
+
+/* ── Loading skeletons ─────────────────────────────────────────────────────────
+   Shown while real content is on its way. Replaces the old behaviour of painting
+   mock placeholder data first, which flashed wrong content and then swapped. */
+.ph-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgba(18, 53, 36, 0.08);
+  border-radius: 8px;
+}
+
+.ph-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
+  animation: ph-skeleton-sweep 1.4s ease-in-out infinite;
+}
+
+@keyframes ph-skeleton-sweep {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ph-skeleton::after {
+    animation-duration: 3.2s;
+  }
+}
+
+.ph-skeleton-line {
+  height: 1em;
+  border-radius: 6px;
+}

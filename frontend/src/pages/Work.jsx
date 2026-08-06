@@ -2,39 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { projects as mockProjects, slugify } from '../mock';
 import TiltCard from '../components/TiltCard';
-import { API_BASE } from '../utils/api';
+import { getProjects } from '../utils/siteData';
 
 import SEO from '../components/SEO';
 
 const Work = () => {
   const navigate = useNavigate();
-  const [projectList, setProjectList] = useState([]);
+  // null = loading -> skeleton grid; mock only if the API genuinely fails.
+  const [projectList, setProjectList] = useState(null);
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const fetchProjects = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/projects`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.length > 0) {
-          const formatted = data.map((p) => ({
+    let mounted = true;
+    getProjects()
+      .then((data) => {
+        if (!mounted) return;
+        if (data.length > 0) {
+          setProjectList(data.map((p) => ({
             ...p,
             slug: p.slug || slugify(p.name),
             image: p.coverImage || p.image,
-          }));
-          setProjectList(formatted);
-          return;
+          })));
+        } else {
+          setProjectList(mockProjects.map((p) => ({ ...p, slug: slugify(p.name) })));
         }
-      }
-    } catch (e) {
-      console.warn("Using fallback projects list");
-    }
-
-    setProjectList(mockProjects.map((p) => ({ ...p, slug: slugify(p.name) })));
-  };
+      })
+      .catch(() => {
+        if (mounted) setProjectList(mockProjects.map((p) => ({ ...p, slug: slugify(p.name) })));
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <div className="work-page-min">
@@ -45,7 +43,11 @@ const Work = () => {
       />
       <div className="container">
         <div className="tilt-grid">
-          {projectList.map((project) => (
+          {projectList === null &&
+            [0, 1, 2, 3, 5, 6].map((i) => (
+              <div key={i} className="ph-skeleton" style={{ aspectRatio: '4 / 3', borderRadius: 16 }} />
+            ))}
+          {(projectList || []).map((project) => (
             <TiltCard
               key={project.id}
               project={project}

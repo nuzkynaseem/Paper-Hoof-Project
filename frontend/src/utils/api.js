@@ -13,6 +13,17 @@ const getSecureBackendUrl = (url) => {
 export const BACKEND_URL = getSecureBackendUrl(rawBackendUrl);
 export const API_BASE = `${BACKEND_URL.replace(/\/$/, '')}/api`;
 
+// Stable public base for uploaded media. In production, /api/uploads/<file> is
+// rewritten straight to this domain: every object there is served with an
+// immutable year-long Cache-Control, so the browser downloads each image once,
+// and skipping the API redirect saves a serverless invocation per image.
+// Left empty in development so the backend's local-disk fallback keeps working.
+export const MEDIA_BASE =
+  process.env.REACT_APP_MEDIA_BASE ||
+  (process.env.NODE_ENV === 'production'
+    ? 'https://pub-890f739345cb4bd69d2c9be93e242605.r2.dev'
+    : '');
+
 export const getApiUrl = (endpoint) => {
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   return `${API_BASE}${cleanEndpoint}`;
@@ -56,6 +67,9 @@ export const getMediaUrl = (url) => {
     if (trimmed.startsWith("/")) return trimmed;
     path = `uploads/${path}`;
   }
+
+  // Production: fetch straight from the immutable public media domain.
+  if (MEDIA_BASE) return `${MEDIA_BASE.replace(/\/$/, "")}/${path}`;
 
   return `${base}/api/${path}`;
 };

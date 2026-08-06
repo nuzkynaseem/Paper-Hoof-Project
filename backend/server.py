@@ -743,11 +743,16 @@ def r2_client(cfg):
     )
 
 
+# The bucket's public development domain, used when R2_PUBLIC_DOMAIN is not set.
+# Media must be reachable at a *stable* URL: presigned links rotate their signature,
+# so the browser sees a different URL each time and re-downloads bytes it already
+# has — this is what made the site reload its images on every visit and scroll.
+R2_DEFAULT_PUBLIC_DOMAIN = "pub-890f739345cb4bd69d2c9be93e242605.r2.dev"
+
+
 def r2_public_base(cfg):
-    """Normalised https base for R2_PUBLIC_DOMAIN, or None when unset."""
-    domain = (cfg or {}).get("public_domain")
-    if not domain:
-        return None
+    """Normalised https base for the public media domain."""
+    domain = (cfg or {}).get("public_domain") or R2_DEFAULT_PUBLIC_DOMAIN
     if not domain.startswith("http"):
         domain = f"https://{domain}"
     return domain.rstrip("/")
