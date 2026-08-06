@@ -814,6 +814,66 @@ def range_file_response(path: Path, request: Request) -> Response:
     return Response(content=path.read_bytes(), media_type=content_type, headers=headers)
 
 
+R2_PRESIGN_PUT_TTL = 900
+
+
+@api_router.post("/upload/presign")
+async def presign_upload(payload: dict = Body(default=None), user_data: dict = Depends(verify_token)):
+    """Hands back a presigned PUT so the browser uploads straight to R2.
+
+    This exists to escape the host's request body limit: a serverless platform
+    rejects anything over a few megabytes *before* the function runs, so a large
+    image can never be fixed by changing code on this side. Sending the bytes
+    directly to R2 removes the cap entirely (a single PUT allows up to 5 GB) and
+    keeps the upload off this function's bandwidth.
+    """
+    cfg = r2_config()
+    if not cfg:
+        # 503 rather than 500: the client falls back to POST /api/upload, which is
+        # what local development without R2 credentials relies on.
+        raise HTTPException(
+            status_code=503,
+            detail="Direct upload unavailable — R2 is not configured on this server.",
+        )
+
+    payload = payload or {}
+    filename = (payload.get("filename") or "").strip()
+    ext = Path(filename).suffix.lower()
+    file_id = f"{uuid.uuid4()}{ext}"
+    file_key = f"uploads/{file_id}"
+
+    content_type = (payload.get("contentType") or "").strip()
+    if not content_type or content_type == "application/octet-stream":
+        content_type = mimetypes.guess_type(file_id)[0] or "application/octet-stream"
+
+    try:
+        # ContentType is signed in, so the browser must send exactly this header —
+        # the frontend echoes back the value returned here.
+        upload_url = r2_client(cfg).generate_presigned_url(
+            "put_object",
+            Params={"Bucket": cfg["bucket"], "Key": file_key, "ContentType": content_type},
+            ExpiresIn=R2_PRESIGN_PUT_TTL,
+        )
+    except Exception as e:
+        logger.error(
+            f"Failed to presign upload for {filename!r} "
+            f"(bucket={cfg['bucket']!r} account={cfg['account_id'][:6]}…): {e}"
+        )
+        raise HTTPException(status_code=502, detail=f"Could not prepare upload: {r2_error_hint(e, cfg)}")
+
+    public_base = r2_public_base(cfg)
+    public_url = f"{public_base}/{file_key}" if public_base else f"/api/uploads/{file_id}"
+
+    logger.info(f"Presigned direct upload {filename!r} -> {file_key}")
+    return {
+        "uploadUrl": upload_url,
+        "url": public_url,
+        "key": file_key,
+        "contentType": content_type,
+        "expiresIn": R2_PRESIGN_PUT_TTL,
+    }
+
+
 @api_router.post("/upload")
 async def upload_file(file: UploadFile = File(...), user_data: dict = Depends(verify_token)):
     """Stores a media file in Cloudflare R2, falling back to local disk in development.
