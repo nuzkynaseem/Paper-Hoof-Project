@@ -67,6 +67,15 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
     };
   }, [carouselApi, onSelectCarousel]);
 
+  const dockCenterClass =
+    projects.length <= 2
+      ? 'justify-center'
+      : projects.length === 3
+      ? 'sm:justify-center'
+      : projects.length === 4
+      ? 'md:justify-center'
+      : '';
+
   return (
     <section className="mac-dock-section" aria-label="Project Navigation Dock">
       <div className="dock-carousel-wrapper w-full px-4">
@@ -94,7 +103,7 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
               setApi={setCarouselApi}
               className="w-full"
             >
-              <CarouselContent className="-ml-2 items-stretch">
+              <CarouselContent className={`-ml-2 items-stretch ${dockCenterClass}`}>
                 {projects.map((p, index) => {
                   const isActive = p.slug === activeSlug;
 
@@ -118,11 +127,6 @@ const MacDockNavigation = ({ projects, activeSlug, onSelect }) => {
                           <CardContent className="flex flex-col items-center justify-between p-2.5 h-full">
                             <div className="w-full aspect-square rounded-md overflow-hidden relative mb-2">
                               <DockTileMedia project={p} />
-                              {isActive && (
-                                <div className="absolute inset-0 bg-[#FD6D1E]/15 flex items-center justify-center">
-                                  <span className="w-2.5 h-2.5 rounded-full bg-[#FD6D1E] shadow-[0_0_8px_#FD6D1E]" />
-                                </div>
-                              )}
                             </div>
 
                             {/* All project cards are properly named */}
