@@ -351,7 +351,12 @@
   }
 
   .case-study-hero-image {
-    min-height: 50vh;
+    /* On phones the hero must show whole at viewport width. The old 50vh
+       min-height forced object-fit: cover to crop a landscape image to roughly
+       half its frame — height now follows the image's own aspect ratio. */
+    min-height: 0;
+    height: auto;
+    max-height: none;
   }
 
   .overview-grid {

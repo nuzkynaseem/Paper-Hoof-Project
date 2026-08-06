@@ -7,8 +7,10 @@ import UploadButton from "./UploadButton";
 
 export default function AdminHomepage({ showToast }) {
   const [heroVideoUrl, setHeroVideoUrl] = useState("");
+  const [heroVideoUrlMobile, setHeroVideoUrlMobile] = useState("");
   const [introText, setIntroText] = useState("");
-  const [uploading, setUploading] = useState(false);
+  // Which variant ("desktop" | "mobile") is uploading, and its progress.
+  const [uploadingTarget, setUploadingTarget] = useState(null);
   const [uploadPercent, setUploadPercent] = useState(null);
   const [saving, setSaving] = useState(false);
 
@@ -23,23 +25,24 @@ export default function AdminHomepage({ showToast }) {
       const res = await fetch(`${API_BASE}/site/homepage`);
       const data = await res.json();
       setHeroVideoUrl(data.heroVideoUrl || "");
+      setHeroVideoUrlMobile(data.heroVideoUrlMobile || "");
       setIntroText(data.secondSectionDescription || data.secondSectionTitle || "");
     } catch (err) {
       console.error("Failed to load homepage content:", err);
     }
   };
 
-  const handleFileUpload = async (file) => {
-    setUploading(true);
+  const handleFileUpload = async (file, target) => {
+    setUploadingTarget(target);
     setUploadPercent(0);
     try {
       const data = await uploadMedia(file, { onProgress: setUploadPercent });
-      setHeroVideoUrl(data.url);
+      (target === "mobile" ? setHeroVideoUrlMobile : setHeroVideoUrl)(data.url);
       if (showToast) showToast("success", "Video uploaded", file.name);
     } catch (err) {
       if (showToast) showToast("error", "Upload failed", err.message || "Failed to fetch");
     } finally {
-      setUploading(false);
+      setUploadingTarget(null);
       setUploadPercent(null);
     }
   };
@@ -56,6 +59,7 @@ export default function AdminHomepage({ showToast }) {
         },
         body: JSON.stringify({
           heroVideoUrl,
+          heroVideoUrlMobile,
           secondSectionTitle: introText,
           secondSectionDescription: introText,
         }),
@@ -92,50 +96,103 @@ export default function AdminHomepage({ showToast }) {
             </div>
             <div>
               <h2 className="text-lg font-bold text-[#123524]">1: Homepage Hero Section (Video)</h2>
-              <p className="text-xs text-gray-500">Main background looping video stream</p>
+              <p className="text-xs text-gray-500">Background looping video — a desktop (16:9) version and an optional mobile (9:16) version</p>
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
+            {/* Desktop variant */}
             <div className="input-group">
-              <label>Hero Video URL or Direct Upload</label>
+              <label>Desktop Hero Video — URL or Direct Upload</label>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={heroVideoUrl}
                   onChange={(e) => setHeroVideoUrl(e.target.value)}
-                  placeholder="https://domain.com/video.mp4"
+                  placeholder="https://domain.com/hero-desktop.mp4"
                   className="custom-input flex-1"
                 />
                 <UploadButton
                   iconSize={15}
                   accept={VIDEO_ACCEPT}
-                  idleLabel="Upload (Cloudflare R2)"
-                  busy={uploading}
-                  progress={uploadPercent}
-                  onFile={handleFileUpload}
+                  idleLabel="Upload Desktop"
+                  busy={uploadingTarget === "desktop"}
+                  progress={uploadingTarget === "desktop" ? uploadPercent : null}
+                  onFile={(file) => handleFileUpload(file, "desktop")}
                 />
               </div>
               <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5 mt-2">
                 <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong>Recommended Hero Video Guidelines:</strong> 16:9 widescreen format · 1920×1080px MP4 (H.264) · Muted autoplay loop under 20MB for fast initial page load.</span>
+                <span><strong>Desktop — Recommended:</strong> 16:9 landscape · 1920×1080px MP4 (H.264) or WebM · muted autoplay loop, ideally under 20MB.</span>
               </p>
             </div>
 
-            {heroVideoUrl && (
+            {/* Mobile variant */}
+            <div className="input-group">
+              <label>Mobile Hero Video — URL or Direct Upload (Optional)</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={heroVideoUrlMobile}
+                  onChange={(e) => setHeroVideoUrlMobile(e.target.value)}
+                  placeholder="https://domain.com/hero-mobile.mp4"
+                  className="custom-input flex-1"
+                />
+                <UploadButton
+                  iconSize={15}
+                  accept={VIDEO_ACCEPT}
+                  idleLabel="Upload Mobile"
+                  busy={uploadingTarget === "mobile"}
+                  progress={uploadingTarget === "mobile" ? uploadPercent : null}
+                  onFile={(file) => handleFileUpload(file, "mobile")}
+                />
+              </div>
+              <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5 mt-2">
+                <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                <span><strong>Mobile — Recommended:</strong> 9:16 portrait · 1080×1920px MP4 (H.264) · muted autoplay loop, ideally under 10MB. Phones show this version; when left empty, the desktop video is used everywhere.</span>
+              </p>
+            </div>
+
+            {(heroVideoUrl || heroVideoUrlMobile) && (
               <div className="video-preview-wrapper">
                 <div className="flex items-center gap-2 mb-2 text-xs text-gray-600 font-semibold">
                   <Play style={{ width: 13, height: 13, color: "#166534" }} />
-                  <span>Video Preview</span>
+                  <span>Video Previews</span>
                 </div>
-                <video
-                  src={getMediaUrl(heroVideoUrl)}
-                  controls
-                  autoPlay
-                  muted
-                  loop
-                  className="w-full max-h-[260px] object-cover rounded-lg border border-gray-200"
-                />
+                <div className="flex flex-col sm:flex-row gap-4 items-start">
+                  {heroVideoUrl && (
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Desktop · 16:9</span>
+                      <video
+                        src={getMediaUrl(heroVideoUrl)}
+                        controls
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        className="w-full max-h-[240px] object-cover rounded-lg border border-gray-200"
+                        style={{ aspectRatio: "16 / 9" }}
+                      />
+                    </div>
+                  )}
+                  {heroVideoUrlMobile && (
+                    <div className="shrink-0">
+                      <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Mobile · 9:16</span>
+                      <video
+                        src={getMediaUrl(heroVideoUrlMobile)}
+                        controls
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        className="h-[240px] object-cover rounded-lg border border-gray-200"
+                        style={{ aspectRatio: "9 / 16" }}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

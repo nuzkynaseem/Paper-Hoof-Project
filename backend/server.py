@@ -430,6 +430,8 @@ class ProjectModel(BaseModel):
 class HomepageContent(BaseModel):
     model_config = ConfigDict(extra="ignore")
     heroVideoUrl: Optional[str] = "https://assets.mixkit.co/videos/preview/mixkit-white-sand-under-water-4330-large.mp4"
+    # Portrait variant served to phones; empty means "reuse the desktop video".
+    heroVideoUrlMobile: Optional[str] = ""
     secondSectionTitle: Optional[str] = "We craft enduring brand identities and digital experiences for ambitious teams."
     secondSectionDescription: Optional[str] = "Paper Hoof is an independent brand design studio operating at the intersection of clarity, tactile beauty, and strategy."
     homepageProjectsLimit: Optional[int] = 4

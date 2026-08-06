@@ -6,10 +6,31 @@ import './Hero.css';
 
 const DEFAULT_HERO_VIDEO = "https://assets.mixkit.co/videos/preview/mixkit-white-sand-under-water-4330-large.mp4";
 
+const MOBILE_QUERY = '(max-width: 768px)';
+
 const Hero = () => {
   const [heroContent, setHeroContent] = useState(null);
   const [loadFailed, setLoadFailed] = useState(false);
+  // Phones get the 9:16 hero variant when the admin has uploaded one.
+  const [isMobileViewport, setIsMobileViewport] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(MOBILE_QUERY).matches
+  );
   const videoRef = useRef(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_QUERY);
+    const sync = () => setIsMobileViewport(mq.matches);
+    if (mq.addEventListener) mq.addEventListener('change', sync);
+    else mq.addListener(sync); // Safari < 14
+    // Some webviews and emulated viewports re-evaluate matchMedia without ever
+    // dispatching its change event — resize is the belt to that suspender.
+    window.addEventListener('resize', sync);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener('change', sync);
+      else mq.removeListener(sync);
+      window.removeEventListener('resize', sync);
+    };
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -24,7 +45,11 @@ const Hero = () => {
   // While the homepage settings load, render a skeleton rather than eagerly
   // streaming the external fallback video that would then be swapped out.
   const isLoading = heroContent === null && !loadFailed;
-  const rawVideoUrl = heroContent?.heroVideoUrl || DEFAULT_HERO_VIDEO;
+  // Mobile variant wins on phones; an empty mobile field falls back to desktop.
+  const rawVideoUrl =
+    (isMobileViewport && heroContent?.heroVideoUrlMobile) ||
+    heroContent?.heroVideoUrl ||
+    DEFAULT_HERO_VIDEO;
   const videoUrl = isLoading ? "" : getMediaUrl(rawVideoUrl);
 
   useEffect(() => {
@@ -49,6 +74,7 @@ const Hero = () => {
       ) : videoUrl ? (
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <video
+            key={videoUrl}
             ref={videoRef}
             src={videoUrl}
             autoPlay
