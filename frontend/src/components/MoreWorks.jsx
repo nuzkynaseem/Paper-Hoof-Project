@@ -13,10 +13,24 @@ const MoreWorks = () => {
 
   useEffect(() => {
     let mounted = true;
+    let limit = 4;
+    const shape = (list) => {
+      const nonFeatured = list.filter((p) => !p.isFeatured);
+      const displayList = nonFeatured.length > 0 ? nonFeatured : list;
+      return displayList.slice(0, limit).map((p) => ({
+        ...p,
+        slug: p.slug || slugify(p.name),
+        image: p.coverImage || p.image,
+      }));
+    };
+
     const load = async () => {
-      let limit = 4;
       try {
-        const configData = await getHomepage();
+        const configData = await getHomepage({
+          onUpdate: (data) => {
+            if (data && data.homepageProjectsLimit) limit = data.homepageProjectsLimit;
+          },
+        });
         if (configData && configData.homepageProjectsLimit) {
           limit = configData.homepageProjectsLimit;
         }
@@ -25,17 +39,11 @@ const MoreWorks = () => {
       }
 
       try {
-        const list = await getProjects();
+        const list = await getProjects({
+          onUpdate: (fresh) => mounted && fresh.length > 0 && setWorks(shape(fresh)),
+        });
         if (list.length > 0) {
-          const nonFeatured = list.filter((p) => !p.isFeatured);
-          const displayList = nonFeatured.length > 0 ? nonFeatured : list;
-          if (mounted) {
-            setWorks(displayList.slice(0, limit).map((p) => ({
-              ...p,
-              slug: p.slug || slugify(p.name),
-              image: p.coverImage || p.image,
-            })));
-          }
+          if (mounted) setWorks(shape(list));
           return;
         }
       } catch (err) {

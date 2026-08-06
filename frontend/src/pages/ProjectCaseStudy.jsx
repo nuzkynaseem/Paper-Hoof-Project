@@ -43,18 +43,20 @@ const ProjectCaseStudy = () => {
   const fetchProjectData = async () => {
     // The dock list and the case study load independently, both from cache when
     // available, so navigating between projects paints instantly.
-    getProjects()
-      .then((list) =>
-        setAllProjects(list.map((p) => ({
-          ...p,
-          slug: p.slug || slugify(p.name),
-          image: p.coverImage || p.image || p.sliderImage,
-        })))
-      )
+    const shapeList = (list) =>
+      list.map((p) => ({
+        ...p,
+        slug: p.slug || slugify(p.name),
+        image: p.coverImage || p.image || p.sliderImage,
+      }));
+    getProjects({ onUpdate: (fresh) => setAllProjects(shapeList(fresh)) })
+      .then((list) => setAllProjects(shapeList(list)))
       .catch(() => {});
 
     try {
-      const data = await getCachedJson(`/projects/${projectId}`);
+      const data = await getCachedJson(`/projects/${projectId}`, {
+        onUpdate: (fresh) => fresh && setProject(fresh),
+      });
       setProject(data);
     } catch (e) {
       // Mock data is strictly a failure fallback — never shown while loading.

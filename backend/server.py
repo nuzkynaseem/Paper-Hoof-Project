@@ -1,5 +1,6 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Query, Depends, UploadFile, File, Form, Header, Request, Body, BackgroundTasks, Response
 from fastapi.responses import RedirectResponse
+import json
 import mimetypes
 
 from dotenv import load_dotenv
@@ -1149,6 +1150,31 @@ async def sync_vercel_analytics(token: str = Depends(verify_token)):
         return {"status": "error", "message": str(e)}
 
 # --- HOMEPAGE CONTENT ---
+# --- CONTENT VERSION ---
+# Bumped on every admin write to public content. Visitors' browsers cache site
+# data aggressively for instant paints; this stamp is the cheap signal that lets
+# them find out something changed without re-downloading everything — an admin
+# edit becomes visible in roughly one round-trip instead of a cache TTL.
+async def bump_content_version():
+    await db.site_content.update_one(
+        {"_id": "content_version"},
+        {"$set": {"version": datetime.now(timezone.utc).isoformat()}},
+        upsert=True,
+    )
+
+
+@api_router.get("/site/version")
+async def get_content_version():
+    doc = await db.site_content.find_one({"_id": "content_version"})
+    version = (doc or {}).get("version") or "0"
+    # no-store end to end: a cached version stamp would defeat its entire purpose.
+    return Response(
+        content=json.dumps({"version": version}),
+        media_type="application/json",
+        headers={"Cache-Control": "no-store"},
+    )
+
+
 @api_router.get("/site/homepage", response_model=HomepageContent)
 async def get_homepage_content():
     content = await db.site_content.find_one({"_id": "homepage"}, {"_id": 0})
@@ -1164,6 +1190,7 @@ async def update_homepage_content(data: HomepageContent, user_data: dict = Depen
         {"$set": doc},
         upsert=True
     )
+    await bump_content_version()
     return data
 
 # --- WORK SCOPE PILLS ---
@@ -1185,11 +1212,13 @@ async def get_work_scopes():
 async def create_work_scope(data: WorkScopePill, user_data: dict = Depends(verify_token)):
     doc = data.model_dump()
     await db.work_scopes.insert_one(doc)
+    await bump_content_version()
     return data
 
 @api_router.delete("/work-scopes/{scope_id}")
 async def delete_work_scope(scope_id: str, user_data: dict = Depends(verify_token)):
     await db.work_scopes.delete_one({"id": scope_id})
+    await bump_content_version()
     return {"status": "deleted"}
 
 # --- PROJECTS ---
@@ -1214,12 +1243,14 @@ async def create_project(data: ProjectModel, user_data: dict = Depends(verify_to
     if not doc.get("slug"):
         doc["slug"] = doc["name"].lower().replace(" ", "-")
     await db.projects.insert_one(doc)
+    await bump_content_version()
     return data
 
 @api_router.put("/projects/{project_id}", response_model=ProjectModel)
 async def update_project(project_id: str, data: ProjectModel, user_data: dict = Depends(verify_token)):
     doc = data.model_dump()
     await db.projects.update_one({"id": project_id}, {"$set": doc})
+    await bump_content_version()
     return data
 
 @api_router.put("/projects/featured/{project_id}")
@@ -1230,11 +1261,13 @@ async def set_featured_project(project_id: str, user_data: dict = Depends(verify
     res = await db.projects.update_one({"id": project_id}, {"$set": {"isFeatured": True}})
     if res.matched_count == 0:
         raise HTTPException(status_code=404, detail="Project not found")
+    await bump_content_version()
     return {"status": "success", "featuredProjectId": project_id}
 
 @api_router.delete("/projects/{project_id}")
 async def delete_project(project_id: str, user_data: dict = Depends(verify_token)):
     await db.projects.delete_one({"id": project_id})
+    await bump_content_version()
     return {"status": "deleted"}
 
 # --- BRAND REVIEW CARDS (Fixed 6 cards) ---
@@ -1264,6 +1297,7 @@ async def update_brand_review_card(card_index: int, data: BrandReviewCard, user_
         {"$set": doc},
         upsert=True
     )
+    await bump_content_version()
     return data
 
 # --- SOCIALS & CONTACT SETTINGS ---
@@ -1282,6 +1316,7 @@ async def update_socials(data: SocialsSettings, user_data: dict = Depends(verify
         {"$set": doc},
         upsert=True
     )
+    await bump_content_version()
     return data
 
 # --- SESSION BOOKINGS & STATUS MANAGEMENT ---

@@ -26,7 +26,9 @@ const RecentProjects = () => {
 
     const load = async () => {
       try {
-        const stats = await getCachedJson('/analytics/stats').catch(() => null);
+        const stats = await getCachedJson('/analytics/stats', {
+          onUpdate: (fresh) => mounted && fresh && fresh.featuredProject && setFeatured(shape(fresh.featuredProject)),
+        }).catch(() => null);
         if (stats && stats.featuredProject) {
           if (mounted) setFeatured(shape(stats.featuredProject));
           return;

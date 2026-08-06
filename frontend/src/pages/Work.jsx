@@ -13,15 +13,17 @@ const Work = () => {
 
   useEffect(() => {
     let mounted = true;
-    getProjects()
+    const shape = (data) =>
+      data.map((p) => ({
+        ...p,
+        slug: p.slug || slugify(p.name),
+        image: p.coverImage || p.image,
+      }));
+    getProjects({ onUpdate: (data) => mounted && data.length > 0 && setProjectList(shape(data)) })
       .then((data) => {
         if (!mounted) return;
         if (data.length > 0) {
-          setProjectList(data.map((p) => ({
-            ...p,
-            slug: p.slug || slugify(p.name),
-            image: p.coverImage || p.image,
-          })));
+          setProjectList(shape(data));
         } else {
           setProjectList(mockProjects.map((p) => ({ ...p, slug: slugify(p.name) })));
         }
