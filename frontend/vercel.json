@@ -5,6 +5,10 @@
   },
   "rewrites": [
     {
+      "source": "/sitemap.xml",
+      "destination": "https://api.paperhoof.com/api/sitemap.xml"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

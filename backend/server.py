@@ -1177,6 +1177,52 @@ async def get_content_version():
     )
 
 
+@api_router.get("/sitemap.xml")
+async def sitemap_xml():
+    """Live sitemap, served through the frontend's /sitemap.xml rewrite.
+
+    The old static file listed apex-domain URLs (each a 308 to www) and could not
+    know about case study pages. This builds from the database, on the canonical
+    www host, so new projects are discoverable the moment they are published.
+    """
+    base = "https://www.paperhoof.com"
+    today = datetime.now(timezone.utc).date().isoformat()
+
+    static_routes = [
+        ("/", "weekly", "1.0"),
+        ("/work", "weekly", "0.9"),
+        ("/about", "monthly", "0.8"),
+        ("/contact", "monthly", "0.8"),
+        ("/brand-review", "weekly", "0.9"),
+    ]
+    entries = [
+        f"<url><loc>{base}{path}</loc><lastmod>{today}</lastmod>"
+        f"<changefreq>{freq}</changefreq><priority>{prio}</priority></url>"
+        for path, freq, prio in static_routes
+    ]
+
+    projects = await db.projects.find({}, {"_id": 0, "slug": 1, "name": 1}).to_list(200)
+    for proj in projects:
+        slug = proj.get("slug") or ""
+        if not slug:
+            name = proj.get("name") or ""
+            slug = "-".join("".join(c if c.isalnum() or c == " " else "" for c in name.lower()).split())
+        if slug:
+            entries.append(
+                f"<url><loc>{base}/work/{slug}</loc><lastmod>{today}</lastmod>"
+                f"<changefreq>monthly</changefreq><priority>0.7</priority></url>"
+            )
+
+    xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + "\n".join(entries)
+        + "\n</urlset>"
+    )
+    return Response(content=xml, media_type="application/xml",
+                    headers={"Cache-Control": "public, max-age=3600"})
+
+
 @api_router.get("/site/homepage", response_model=HomepageContent)
 async def get_homepage_content():
     content = await db.site_content.find_one({"_id": "homepage"}, {"_id": 0})
