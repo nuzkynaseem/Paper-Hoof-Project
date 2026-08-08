@@ -149,7 +149,7 @@ export default function AdminHomepage({ showToast }) {
               </div>
               <p className="text-[11px] text-emerald-900 bg-emerald-50/90 border border-emerald-200/90 px-2.5 py-1.5 rounded-lg flex items-start gap-1.5 mt-2">
                 <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong>Mobile — Recommended:</strong> 9:16 portrait · 1080×1920px MP4 (H.264) · muted autoplay loop, ideally under 10MB. Phones show this version; when left empty, the desktop video is used everywhere.</span>
+                <span><strong>Mobile — Recommended:</strong> 3:4 portrait · 1080×1440px MP4 (H.264) · muted autoplay loop, ideally under 10MB. Phones show this version inside a 3:4 hero frame; when left empty, the desktop video is used everywhere.</span>
               </p>
             </div>
 
@@ -178,7 +178,7 @@ export default function AdminHomepage({ showToast }) {
                   )}
                   {heroVideoUrlMobile && (
                     <div className="shrink-0">
-                      <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Mobile · 9:16</span>
+                      <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Mobile · 3:4</span>
                       <video
                         src={getMediaUrl(heroVideoUrlMobile)}
                         controls
@@ -188,7 +188,7 @@ export default function AdminHomepage({ showToast }) {
                         playsInline
                         preload="metadata"
                         className="h-[240px] object-cover rounded-lg border border-gray-200"
-                        style={{ aspectRatio: "9 / 16" }}
+                        style={{ aspectRatio: "3 / 4" }}
                       />
                     </div>
                   )}

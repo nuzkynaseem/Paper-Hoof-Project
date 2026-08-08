@@ -111,7 +111,10 @@
 /* Mobile */
 @media (max-width: 768px) {
   .hero-section {
-    min-height: 60vh;
+    /* Designer spec: the phone hero holds a 3:4 portrait frame instead of a
+       viewport-height slab, matching the 3:4 mobile hero video. */
+    aspect-ratio: 3 / 4;
+    min-height: 0;
     padding: 0 20px;
   }
 
