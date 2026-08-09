@@ -318,3 +318,26 @@ html.is-scrolling::-webkit-scrollbar-thumb {
 html.is-scrolling::-webkit-scrollbar-thumb:hover {
   background: rgba(32, 36, 35, 0.4);
 }
+
+/* ── G2-continuous corners (squircles) ─────────────────────────────────────────
+   Every rounded corner on the site renders with Apple-style continuous curvature
+   where the browser supports it (Chrome/Edge 139+); others keep classic circular
+   rounding — same radii, so layouts are identical either way.
+
+   True circles and capsules are pinned back to `round` — a superellipse would
+   visibly square off avatars, dots and cursor rings. Stylesheet circles carry
+   their own `corner-shape: round` next to the radius; the selectors below catch
+   Tailwind's rounded-full and inline styles. */
+@supports (corner-shape: squircle) {
+  *,
+  *::before,
+  *::after {
+    corner-shape: squircle;
+  }
+
+  .rounded-full,
+  [style*="border-radius: 50%"],
+  [style*="border-radius:50%"] {
+    corner-shape: round;
+  }
+}

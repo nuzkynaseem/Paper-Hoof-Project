@@ -248,6 +248,7 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background: #97d9af;
   display: flex;
   align-items: center;
@@ -358,6 +359,7 @@
   border: 1px solid #bbf7d0;
   padding: 5px 12px;
   border-radius: 100px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
 }
 
 .header-live-dot {
@@ -365,6 +367,7 @@
   height: 6px;
   background: #22c55e;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
@@ -405,6 +408,7 @@
   width: 260px;
   height: 260px;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background: rgba(151, 217, 175, 0.08);
   pointer-events: none;
 }
@@ -417,6 +421,7 @@
   width: 160px;
   height: 160px;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background: rgba(151, 217, 175, 0.05);
   pointer-events: none;
 }
@@ -437,6 +442,7 @@
   background: rgba(151, 217, 175, 0.15);
   border: 1px solid rgba(151, 217, 175, 0.25);
   border-radius: 100px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   font-size: 11.5px;
   font-weight: 600;
   color: #97d9af;
@@ -589,6 +595,7 @@
   letter-spacing: 0.06em;
   padding: 3px 10px;
   border-radius: 100px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   border: 1px solid rgba(18, 53, 36, 0.15);
   color: #123524;
   background: rgba(18, 53, 36, 0.05);
@@ -733,6 +740,7 @@
   color: #97d9af;
   padding: 4px 10px;
   border-radius: 100px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   font-size: 10.5px;
   font-weight: 700;
   text-transform: uppercase;
@@ -863,6 +871,7 @@ select.custom-input option,
   background: #f0fdf4;
   border: 1.5px solid #bbf7d0;
   border-radius: 100px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   color: #166534;
   font-size: 12.5px;
   font-weight: 700;
@@ -910,6 +919,7 @@ select.custom-input option,
   background: rgba(18, 53, 36, 0.06);
   border: 1px solid rgba(18, 53, 36, 0.12);
   border-radius: 100px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   font-size: 11px;
   font-weight: 700;
   color: #123524;
@@ -946,6 +956,7 @@ select.custom-input option,
   color: #97d9af;
   padding: 4px 10px;
   border-radius: 100px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   font-size: 10.5px;
   font-weight: 700;
   display: flex;
@@ -1247,6 +1258,7 @@ select.custom-input option,
 .rounded-lg { border-radius: 0.5rem; }
 .rounded-xl { border-radius: 0.75rem; }
 .rounded-full { border-radius: 9999px; }
+corner-shape: round; /* true circle/capsule — exempt from global squircle */
 
 .text-xs { font-size: 0.75rem; line-height: 1rem; }
 .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
@@ -1399,6 +1411,7 @@ select.custom-input option,
   width: 36px;
   height: 36px;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background: #123524;
   color: #97d9af;
   font-weight: 800;
@@ -1425,6 +1438,7 @@ select.custom-input option,
   gap: 5px;
   padding: 4px 12px;
   border-radius: 100px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   font-size: 12px;
   font-weight: 700;
 }
@@ -1454,6 +1468,7 @@ select.custom-input option,
   font-weight: 600;
   padding: 3px 10px;
   border-radius: 100px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
 }
 
 .pwd-temp {

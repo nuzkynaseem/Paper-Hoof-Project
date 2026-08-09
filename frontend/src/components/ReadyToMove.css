@@ -83,6 +83,7 @@
   background: var(--mint-sprig, #97D9AF);
   border: 1.5px solid var(--mint-sprig, #97D9AF);
   border-radius: 999px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   padding: 14px 32px;
   cursor: pointer;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);

@@ -79,6 +79,7 @@
   gap: 10px;
   padding: 10px 22px;
   border-radius: 999px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background: var(--horse-black);
   color: var(--sheep-white);
   font-family: var(--font-primary);
@@ -166,6 +167,7 @@
   border: 1px solid rgba(32, 36, 35, 0.12);
   padding: 8px 18px;
   border-radius: 999px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   cursor: pointer;
   min-height: 44px;
   transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease, transform 250ms ease;

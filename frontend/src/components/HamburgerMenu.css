@@ -45,6 +45,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,6 +111,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background: var(--primary-green, #123524);
 }
 
@@ -311,6 +313,7 @@
   width: 100%;
   height: 48px;
   border-radius: 999px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background: var(--primary-green, #123524);
   color: #FFFFFF;
   font-family: var(--font-primary);

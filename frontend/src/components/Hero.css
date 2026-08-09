@@ -79,6 +79,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background: rgba(255, 253, 247, 0.35);
   border: none;
   cursor: pointer;

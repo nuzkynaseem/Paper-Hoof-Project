@@ -63,6 +63,7 @@
   height: 4px;
   background: rgba(32, 36, 35, 0.1);
   border-radius: 999px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   overflow: hidden;
   position: relative;
 }
@@ -71,6 +72,7 @@
   height: 100%;
   background: linear-gradient(90deg, var(--primary-green, #123524) 0%, var(--mane-orange, #FD6D1E) 100%);
   border-radius: 999px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   transition: width 120ms ease-out;
 }
 

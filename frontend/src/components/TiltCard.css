@@ -62,6 +62,7 @@
   align-items: center;
   padding: 0 12px;
   border-radius: 999px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   border: 1.5px solid currentColor;
   font-family: var(--font-primary);
   font-size: 11px;

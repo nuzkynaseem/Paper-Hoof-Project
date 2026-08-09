@@ -98,6 +98,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -126,6 +127,7 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -185,6 +187,7 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background: rgba(255, 255, 255, 0.25);
   border: none;
   cursor: pointer;
@@ -195,6 +198,7 @@
 .jkr-dot.active {
   width: 28px;
   border-radius: 999px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background: var(--mint-sprig, #97D9AF);
 }
 

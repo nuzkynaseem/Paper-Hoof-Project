@@ -69,6 +69,7 @@
   background: rgba(227, 76, 24, 0.08);
   padding: 4px 10px;
   border-radius: 999px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   flex-shrink: 0;
 }
 
@@ -86,6 +87,7 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background: var(--mane-orange);
   box-shadow: 0 0 10px var(--mane-orange);
   margin-left: auto;
@@ -290,6 +292,7 @@
   background: rgba(32, 36, 35, 0.04);
   padding: 10px 16px;
   border-radius: 999px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   width: fit-content;
 }
 
@@ -297,6 +300,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background: #22C55E;
   box-shadow: 0 0 8px #22C55E;
 }

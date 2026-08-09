@@ -107,6 +107,7 @@
 .login-brand-circle {
   position: absolute;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   pointer-events: none;
 }
 
@@ -201,6 +202,7 @@
   background: #dcfce7;
   border: 1.5px solid #86efac;
   border-radius: 999px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   padding: 5px 14px;
   margin-bottom: 16px;
   box-shadow: 0 2px 8px rgba(18, 53, 36, 0.08);
@@ -332,6 +334,7 @@
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: #ffffff;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   animation: spin 0.8s linear infinite;
 }
 

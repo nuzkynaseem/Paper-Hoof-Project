@@ -57,6 +57,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background-size: cover;
   background-position: center;
   background-color: var(--horse-black);
@@ -118,6 +119,7 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background: var(--mane-orange);
 }
 
@@ -129,6 +131,7 @@
   width: 80px;
   height: 26px;
   border-radius: 999px;
+  corner-shape: round; /* true circle/capsule — exempt from global squircle */
   background: var(--mane-orange);
 }
 
