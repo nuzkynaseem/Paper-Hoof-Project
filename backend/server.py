@@ -1177,8 +1177,8 @@ async def get_content_version():
     )
 
 
-@api_router.get("/sitemap.xml")
-async def sitemap_xml():
+@api_router.api_route("/sitemap.xml", methods=["GET", "HEAD"])
+async def sitemap_xml(request: Request):
     """Live sitemap, served through the frontend's /sitemap.xml rewrite.
 
     The old static file listed apex-domain URLs (each a 308 to www) and could not
