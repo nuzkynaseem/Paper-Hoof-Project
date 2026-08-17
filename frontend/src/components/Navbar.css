@@ -89,26 +89,39 @@
 }
 
 /* Hero mode: navbar sits over the video hero in rest mode (homepage, top of page).
-   Elements use blend mode to adapt contrast dynamically against the background video. */
-.navbar-hero-mode .logo-container,
+   Apply mix-blend-mode: difference to the navbar container so all elements (logo, brand review, hamburger menu)
+   adapt contrast dynamically against any frame of the video background. */
+.navbar.navbar-hero-mode {
+  mix-blend-mode: difference;
+}
+
+.navbar.navbar-hero-mode:not(.navbar-hidden) {
+  transform: none;
+  will-change: auto;
+}
+
 .navbar-hero-mode .navbar-logo,
 .navbar-hero-mode .brand-review-btn,
 .navbar-hero-mode .hamburger-btn,
 .navbar-hero-mode .nav-work-btn {
   color: #ffffff;
-  mix-blend-mode: difference;
 }
 
 .navbar-hero-mode .brand-review-btn:hover,
 .navbar-hero-mode .hamburger-btn:hover,
 .navbar-hero-mode .nav-work-btn:hover {
-  opacity: 0.8;
+  opacity: 0.75;
   color: #ffffff;
 }
 
 .navbar-hero-mode .brand-review-btn.active::after,
 .navbar-hero-mode .nav-work-btn.active::after {
   background: #ffffff;
+}
+
+/* When Hamburger Menu is Open: disable blend mode so menu overlay stays standard */
+.navbar.navbar-menu-open {
+  mix-blend-mode: normal !important;
 }
 
 .navbar-right {
