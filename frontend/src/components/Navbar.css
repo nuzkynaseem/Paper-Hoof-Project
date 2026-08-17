@@ -88,18 +88,27 @@
   }
 }
 
-/* Hero mode: navbar sits over the navy hero (homepage, top of page).
-   The white wordmark asset is swapped in by Navbar.jsx — no filter needed. */
+/* Hero mode: navbar sits over the video hero in rest mode (homepage, top of page).
+   Elements use blend mode to adapt contrast dynamically against the background video. */
+.navbar-hero-mode .logo-container,
+.navbar-hero-mode .navbar-logo,
 .navbar-hero-mode .brand-review-btn,
 .navbar-hero-mode .hamburger-btn,
 .navbar-hero-mode .nav-work-btn {
-  color: var(--sheep-white);
+  color: #ffffff;
+  mix-blend-mode: difference;
 }
 
 .navbar-hero-mode .brand-review-btn:hover,
 .navbar-hero-mode .hamburger-btn:hover,
 .navbar-hero-mode .nav-work-btn:hover {
-  color: var(--mint-sprig, #97D9AF);
+  opacity: 0.8;
+  color: #ffffff;
+}
+
+.navbar-hero-mode .brand-review-btn.active::after,
+.navbar-hero-mode .nav-work-btn.active::after {
+  background: #ffffff;
 }
 
 .navbar-right {

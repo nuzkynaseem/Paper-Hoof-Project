@@ -85,7 +85,6 @@ const Hero = () => {
           >
             <source src={videoUrl} />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-t from-[#123524]/60 via-transparent to-black/20 pointer-events-none" />
         </div>
       ) : null}
 
