@@ -31,19 +31,40 @@ const authHeader = () => {
   return token ? `Bearer ${token}` : null;
 };
 
-/** Asks the API where to PUT. Returns null when direct upload is unavailable. */
+/** Guesses mime type if browser leaves file.type empty (common for video files) */
+const getContentType = (file) => {
+  if (file.type && file.type.trim()) return file.type;
+  const name = (file.name || "").toLowerCase();
+  if (name.endsWith(".mp4")) return "video/mp4";
+  if (name.endsWith(".mov")) return "video/quicktime";
+  if (name.endsWith(".webm")) return "video/webm";
+  if (name.endsWith(".m4v")) return "video/x-m4v";
+  if (name.endsWith(".png")) return "image/png";
+  if (name.endsWith(".jpg") || name.endsWith(".jpeg")) return "image/jpeg";
+  if (name.endsWith(".webp")) return "image/webp";
+  return "application/octet-stream";
+};
+
+/** Asks the API where to PUT. Throws auth errors, returns null if server lacks R2 credentials. */
 const requestPresign = async (file) => {
+  const token = authHeader();
+  const contentType = getContentType(file);
+
   const res = await fetch(`${API_BASE}/upload/presign`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(authHeader() ? { Authorization: authHeader() } : {}),
+      ...(token ? { Authorization: token } : {}),
     },
-    body: JSON.stringify({ filename: file.name, contentType: file.type }),
+    body: JSON.stringify({ filename: file.name, contentType }),
   });
 
-  // 404 = server predates this endpoint, 503 = R2 not configured on that server.
-  // Both mean "use the old route", and neither is worth surfacing to the user.
+  // 401 / 403 = Authentication problem. Must not be swallowed.
+  if (res.status === 401 || res.status === 403) {
+    throw new Error("Your login session has expired. Please refresh the page and log in again.");
+  }
+
+  // 404 = server predates this endpoint, 503 = R2 not configured on server.
   if (res.status === 404 || res.status === 503) return null;
 
   if (!res.ok) throw new Error(errorMessage(await res.text(), res.status));
@@ -58,14 +79,13 @@ const putWithProgress = (url, file, contentType, onProgress) =>
   new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", url);
-    // Must match the ContentType signed into the URL, or R2 rejects the signature.
-    xhr.setRequestHeader("Content-Type", contentType);
+    if (contentType) {
+      xhr.setRequestHeader("Content-Type", contentType);
+    }
 
     if (onProgress) {
       xhr.upload.onprogress = (event) => {
         if (!event.lengthComputable) return;
-        // Not capped at 99 like the API route: when this PUT finishes the object
-        // is already stored, so there is no server-side step left to wait on.
         onProgress(Math.round((event.loaded / event.total) * 100));
       };
     }
@@ -75,13 +95,13 @@ const putWithProgress = (url, file, contentType, onProgress) =>
         ? resolve()
         : reject(new Error(errorMessage(xhr.responseText, xhr.status)));
     xhr.onerror = () =>
-      reject(new Error("Could not reach storage. Check the bucket's CORS rules."));
+      reject(new Error("Could not reach Cloudflare R2 storage. Check network connection or bucket CORS settings."));
     xhr.ontimeout = () => reject(new Error("Upload timed out."));
     xhr.onabort = () => reject(new Error("Upload cancelled."));
     xhr.send(file);
   });
 
-/** Legacy path: the file travels through the API. Subject to the host body limit. */
+/** Legacy path: the file travels through the API. Subject to host body limits (~4 MB). */
 const uploadThroughApi = (file, onProgress) =>
   new Promise((resolve, reject) => {
     const body = new FormData();
@@ -95,8 +115,6 @@ const uploadThroughApi = (file, onProgress) =>
       onProgress(0);
       xhr.upload.onprogress = (event) => {
         if (!event.lengthComputable) return;
-        // Held at 99: sending the bytes is only half the job here — the server
-        // still has to store them in R2 before it answers.
         onProgress(Math.min(Math.round((event.loaded / event.total) * 100), 99));
       };
     }
@@ -106,9 +124,7 @@ const uploadThroughApi = (file, onProgress) =>
         let payload = null;
         try {
           payload = JSON.parse(xhr.responseText);
-        } catch (_) {
-          /* handled below */
-        }
+        } catch (_) {}
         if (payload && payload.url) {
           if (onProgress) onProgress(100);
           resolve(payload);
@@ -120,26 +136,23 @@ const uploadThroughApi = (file, onProgress) =>
       if (xhr.status === 413) {
         reject(
           new Error(
-            "File is too large for this server's upload route. Configure R2 so uploads go directly to storage."
+            "File is too large for server upload route. Cloudflare R2 is required for direct uploads."
           )
         );
         return;
       }
       reject(new Error(errorMessage(xhr.responseText, xhr.status)));
     };
-    xhr.onerror = () => reject(new Error("Network error during upload."));
+    xhr.onerror = () => reject(new Error("Network error during upload. File may exceed host size limit."));
     xhr.ontimeout = () => reject(new Error("Upload timed out."));
     xhr.onabort = () => reject(new Error("Upload cancelled."));
     xhr.send(body);
   });
 
-// Re-encode heavy stills to WebP before they leave the browser. A 20 MB PNG cover
-// used to be stored verbatim and then shipped to every visitor; WebP at q0.85 is
-// typically 90%+ smaller with no visible difference. GIFs are skipped (canvas would
-// freeze the animation), as are SVGs, videos and anything already small.
+// Re-encode heavy stills to WebP before they leave the browser.
 const CONVERT_TYPES = ["image/png", "image/jpeg"];
 const CONVERT_OVER_BYTES = 400 * 1024;
-const MAX_SIDE = 2560; // largest rendered size on the site is ~1920px wide
+const MAX_SIDE = 2560;
 
 const toWebP = (file) =>
   new Promise((resolve) => {
@@ -164,8 +177,6 @@ const toWebP = (file) =>
         canvas.toBlob(
           (blob) => {
             URL.revokeObjectURL(objectUrl);
-            // Keep the original unless WebP is a real win — and if the browser
-            // cannot encode WebP, toBlob hands back null or a PNG.
             if (blob && blob.type === "image/webp" && blob.size < file.size * 0.8) {
               const name = file.name.replace(/\.[^.]+$/, "") + ".webp";
               resolve(new File([blob], name, { type: "image/webp" }));
@@ -201,24 +212,38 @@ export const uploadMedia = async (rawFile, { onProgress } = {}) => {
   const file = await prepareFile(rawFile);
 
   let presigned = null;
+  let presignErr = null;
+
   try {
     presigned = await requestPresign(file);
   } catch (err) {
-    // A presign failure that is not "unsupported" still shouldn't strand the
-    // upload — try the API route, which may well succeed for a small file.
-    presigned = null;
+    presignErr = err;
+    // If it's an auth error, abort immediately — do not fall back to POST /api/upload
+    if (err.message && err.message.includes("session has expired")) {
+      throw err;
+    }
   }
 
   if (presigned) {
-    await putWithProgress(presigned.uploadUrl, file, presigned.contentType || file.type, onProgress);
+    const targetType = presigned.contentType || getContentType(file);
+    await putWithProgress(presigned.uploadUrl, file, targetType, onProgress);
     if (onProgress) onProgress(100);
     return {
       url: presigned.url,
       key: presigned.key,
-      contentType: presigned.contentType,
+      contentType: targetType,
       storage: "r2-direct",
     };
   }
 
+  // If presign failed and the file is > 4MB (like most video files), serverless POST /api/upload will fail.
+  if (file.size > 4 * 1024 * 1024) {
+    if (presignErr) throw presignErr;
+    throw new Error(
+      `File size (${(file.size / (1024 * 1024)).toFixed(1)} MB) exceeds server direct limit (4 MB) and storage presign is unavailable.`
+    );
+  }
+
   return uploadThroughApi(file, onProgress);
 };
+
