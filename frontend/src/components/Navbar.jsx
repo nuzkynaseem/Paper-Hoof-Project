@@ -11,6 +11,12 @@ const Navbar = ({ onMenuClick, isMenuOpen = false, darkHero = false }) => {
   const isBrandReview = location.pathname === '/brand-review';
   const isWork = location.pathname.startsWith('/work');
 
+  // Always ensure navbar is visible and scroll state is synced on route changes
+  useEffect(() => {
+    setIsVisible(true);
+    setIsScrolled(window.scrollY > 20);
+  }, [location.pathname]);
+
   useEffect(() => {
     let lastY = window.scrollY;
 
@@ -34,7 +40,7 @@ const Navbar = ({ onMenuClick, isMenuOpen = false, darkHero = false }) => {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [location.pathname]);
 
   const handleLogoClick = () => {
     navigate('/');
