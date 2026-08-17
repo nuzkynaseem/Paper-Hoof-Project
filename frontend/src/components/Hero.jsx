@@ -52,17 +52,75 @@ const Hero = () => {
     DEFAULT_HERO_VIDEO;
   const videoUrl = isLoading ? "" : getMediaUrl(rawVideoUrl);
 
+  // Bulletproof video playback lifecycle: auto-resume on mobile screen unlock,
+  // tab switch, app resume, pageshow (bfcache), and window focus.
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.defaultMuted = true;
-      videoRef.current.muted = true;
-      const playPromise = videoRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((err) => {
-          console.warn("Hero video autoplay deferred:", err);
+    const video = videoRef.current;
+    if (!video) return;
+
+    const playVideo = () => {
+      const v = videoRef.current;
+      if (!v) return;
+
+      // Ensure muted properties are strictly set for mobile autoPlay policies
+      v.defaultMuted = true;
+      v.muted = true;
+
+      const promise = v.play();
+      if (promise !== undefined) {
+        promise.catch((err) => {
+          // Autoplay policy or deferred
         });
       }
-    }
+    };
+
+    // Initial attempt
+    playVideo();
+
+    // 1. Tab visibility / App unlock
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        playVideo();
+      }
+    };
+
+    // 2. iOS Safari / bfcache resume
+    const handlePageShow = () => {
+      playVideo();
+    };
+
+    // 3. Window focus (returning to browser window)
+    const handleFocus = () => {
+      playVideo();
+    };
+
+    // 4. Resume if browser paused video while tab is active
+    const handlePause = () => {
+      if (document.visibilityState === 'visible') {
+        setTimeout(playVideo, 80);
+      }
+    };
+
+    // 5. First touch fallback on mobile in case browser paused audio/video engine
+    const handleUserInteraction = () => {
+      playVideo();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pageshow', handlePageShow);
+    window.addEventListener('focus', handleFocus);
+    video.addEventListener('pause', handlePause);
+    window.addEventListener('touchstart', handleUserInteraction, { passive: true });
+    window.addEventListener('scroll', handleUserInteraction, { passive: true });
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pageshow', handlePageShow);
+      window.removeEventListener('focus', handleFocus);
+      video.removeEventListener('pause', handlePause);
+      window.removeEventListener('touchstart', handleUserInteraction);
+      window.removeEventListener('scroll', handleUserInteraction);
+    };
   }, [videoUrl]);
 
   return (
@@ -81,9 +139,12 @@ const Hero = () => {
             muted
             loop
             playsInline
+            webkit-playsinline="true"
+            x5-playsinline="true"
+            preload="auto"
             className="w-full h-full object-cover"
           >
-            <source src={videoUrl} />
+            <source src={videoUrl} type="video/mp4" />
           </video>
         </div>
       ) : null}

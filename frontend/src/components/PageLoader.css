@@ -33,12 +33,12 @@
 .loader-floating-shape {
   position: absolute;
   pointer-events: none;
-  opacity: 0.88;
+  opacity: 0.5; /* 50% brand shape opacity */
   display: flex;
   align-items: center;
   justify-content: center;
   will-change: transform;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.04));
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.03));
 }
 
 .loader-shape-svg {

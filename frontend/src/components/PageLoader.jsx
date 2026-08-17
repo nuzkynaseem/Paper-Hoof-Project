@@ -25,16 +25,23 @@ const TriangleShape = ({ className }) => (
   </svg>
 );
 
-// Paper Hoof Brand Shapes placed across the loading screen
+// Paper Hoof Brand Shapes placed across the loading screen with random big/medium/small sizes
 const BRAND_SHAPES = [
-  { id: 'shape-horse-1', type: 'horse', top: '14%', left: '12%', size: 44, color: '#FD6D1E', anim: 'float-1', delay: '0s' },
-  { id: 'shape-squircle-1', type: 'squircle', top: '18%', right: '14%', size: 38, color: '#123524', anim: 'float-2', delay: '0.4s' },
-  { id: 'shape-circle-1', type: 'circle', bottom: '22%', left: '14%', size: 34, color: '#FFD221', anim: 'float-3', delay: '0.8s' },
-  { id: 'shape-pill-1', type: 'pill', bottom: '18%', right: '15%', size: 44, color: '#97D9AF', anim: 'float-1', delay: '1.2s' },
-  { id: 'shape-star-1', type: 'star', top: '48%', left: '8%', size: 34, color: '#183165', anim: 'float-4', delay: '0.2s' },
-  { id: 'shape-triangle-1', type: 'triangle', top: '45%', right: '10%', size: 32, color: '#FD6D1E', anim: 'float-2', delay: '0.6s' },
-  { id: 'shape-horse-2', type: 'horse', bottom: '10%', left: '46%', size: 32, color: '#123524', anim: 'float-3', delay: '1s' },
-  { id: 'shape-squircle-2', type: 'squircle', top: '10%', left: '48%', size: 28, color: '#FFD221', anim: 'float-4', delay: '1.4s' },
+  // Extra Big / Big highlights
+  { id: 'shape-horse-1', type: 'horse', top: '12%', left: '8%', size: 68, color: '#FD6D1E', anim: 'float-1', delay: '0s' },
+  { id: 'shape-squircle-1', type: 'squircle', top: '16%', right: '10%', size: 54, color: '#123524', anim: 'float-2', delay: '0.4s' },
+  { id: 'shape-circle-1', type: 'circle', bottom: '18%', left: '10%', size: 48, color: '#FFD221', anim: 'float-3', delay: '0.8s' },
+  
+  // Medium accents
+  { id: 'shape-pill-1', type: 'pill', bottom: '14%', right: '12%', size: 46, color: '#97D9AF', anim: 'float-1', delay: '1.2s' },
+  { id: 'shape-star-1', type: 'star', top: '48%', left: '6%', size: 36, color: '#183165', anim: 'float-4', delay: '0.2s' },
+  { id: 'shape-triangle-1', type: 'triangle', top: '42%', right: '8%', size: 34, color: '#FD6D1E', anim: 'float-2', delay: '0.6s' },
+  
+  // Small subtle floaters
+  { id: 'shape-horse-2', type: 'horse', bottom: '8%', left: '46%', size: 24, color: '#123524', anim: 'float-3', delay: '1s' },
+  { id: 'shape-squircle-2', type: 'squircle', top: '8%', left: '48%', size: 18, color: '#FFD221', anim: 'float-4', delay: '1.4s' },
+  { id: 'shape-star-2', type: 'star', bottom: '36%', right: '20%', size: 20, color: '#183165', anim: 'float-1', delay: '0.9s' },
+  { id: 'shape-circle-2', type: 'circle', top: '32%', left: '20%', size: 16, color: '#FD6D1E', anim: 'float-2', delay: '0.5s' },
 ];
 
 const PageLoader = ({ isLoading: externalIsLoading }) => {
