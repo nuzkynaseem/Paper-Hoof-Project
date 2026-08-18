@@ -116,22 +116,22 @@ const philosophiesData = [
 
 const teamMembers = [
   {
-    name: 'Ashan Perera',
+    name: 'Nuzky Naseem',
     role: 'Co-Founder & Creative Director',
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
-    instagram: 'https://instagram.com/ashanperera'
+    instagram: 'https://instagram.com/nuzkynaseem'
   },
   {
-    name: 'Dineth Silva',
-    role: 'Co-Founder & Strategy Lead',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop',
-    instagram: 'https://instagram.com/dinethsilva'
-  },
-  {
-    name: 'Nimal Fernando',
+    name: 'Abdhullah Azmin',
     role: 'Co-Founder & Design Lead',
     image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop',
-    instagram: 'https://instagram.com/nimalfernando'
+    instagram: 'https://instagram.com/abdhullahazmin'
+  },
+  {
+    name: 'Aashik Nawas',
+    role: 'Co-Founder & Strategy Lead',
+    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop',
+    instagram: 'https://instagram.com/aashiknawas'
   }
 ];
 
