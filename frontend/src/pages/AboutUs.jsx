@@ -117,21 +117,21 @@ const philosophiesData = [
 const teamMembers = [
   {
     name: 'Nuzky Naseem',
-    role: 'Co-Founder & Creative Director',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
-    instagram: 'https://instagram.com/nuzkynaseem'
+    role: 'Creative Director',
+    badge: 'CO-FOUNDER',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=600&fit=crop'
   },
   {
     name: 'Abdhullah Azmin',
-    role: 'Co-Founder & Design Lead',
-    image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop',
-    instagram: 'https://instagram.com/abdhullahazmin'
+    role: 'Design Lead',
+    badge: 'CO-FOUNDER',
+    image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&h=600&fit=crop'
   },
   {
     name: 'Aashik Nawas',
-    role: 'Co-Founder & Strategy Lead',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop',
-    instagram: 'https://instagram.com/aashiknawas'
+    role: 'Strategy Lead',
+    badge: 'CO-FOUNDER',
+    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&h=600&fit=crop'
   }
 ];
 
@@ -319,24 +319,34 @@ const AboutUs = () => {
           <p className="team-intro">
             A tight-knit, disciplined collective of designers, strategists, and creative engineers.
           </p>
-          <div className="team-grid">
+
+          <div className="team-divider-label">
+            <span>PAPER HOOF LEADERSHIP</span>
+          </div>
+
+          <div className="team-capsules-grid">
             {teamMembers.map((member, index) => (
-              <div key={index} className="team-member-card">
-                <div className="team-img-wrapper">
-                  <img src={getMediaUrl(member.image)} alt={`${member.name} — ${member.role} at Paper Hoof Studio`} className="team-img" />
-                  <a
-                    href={member.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="team-social-overlay"
-                    aria-label={`${member.name} Instagram`}
-                  >
-                    <span>Instagram</span>
-                    <ArrowUpRight size={18} />
-                  </a>
+              <div key={index} className="team-capsule-card">
+                {/* Floating Photo Popup on Hover */}
+                <div className="team-photo-popup">
+                  <div className="team-photo-frame">
+                    <img
+                      src={getMediaUrl(member.image)}
+                      alt={`${member.name} — ${member.role}`}
+                      className="team-popup-img"
+                    />
+                    <div className="team-photo-overlay" />
+                  </div>
                 </div>
-                <h4 className="team-name">{member.name}</h4>
-                <p className="team-role">{member.role}</p>
+
+                {/* Main Pill Capsule Button */}
+                <div className="team-pill">
+                  <span className="team-pill-badge">{member.badge}</span>
+                  <div className="team-pill-content">
+                    <h3 className="team-pill-name">{member.name}</h3>
+                    <span className="team-pill-role">{member.role}</span>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
