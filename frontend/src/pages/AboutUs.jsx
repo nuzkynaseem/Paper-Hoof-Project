@@ -119,7 +119,7 @@ const teamMembers = [
     name: 'Nuzky Naseem',
     role: 'Creative Director',
     badge: 'CO-FOUNDER',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=600&fit=crop'
+    image: '/images/team/nuzky-naseem.jpg'
   },
   {
     name: 'Abdhullah Azmin',
