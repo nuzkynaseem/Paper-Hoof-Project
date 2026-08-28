@@ -125,13 +125,13 @@ const teamMembers = [
     name: 'Abdhullah Azmin',
     role: 'Design Lead',
     badge: 'CO-FOUNDER',
-    image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&h=600&fit=crop'
+    image: '/images/team/abdhullah-azmin.jpg'
   },
   {
     name: 'Aashik Nawas',
     role: 'Strategy Lead',
     badge: 'CO-FOUNDER',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&h=600&fit=crop'
+    image: '/images/team/aashik-nawas.jpg'
   }
 ];
 
@@ -327,7 +327,7 @@ const AboutUs = () => {
           <div className="team-capsules-grid">
             {teamMembers.map((member, index) => (
               <div key={index} className="team-capsule-card">
-                {/* Floating Photo Popup on Hover */}
+                {/* Floating Photo Popup on Hover (Desktop) */}
                 <div className="team-photo-popup">
                   <div className="team-photo-frame">
                     <img
@@ -341,6 +341,15 @@ const AboutUs = () => {
 
                 {/* Main Pill Capsule Button */}
                 <div className="team-pill">
+                  {/* Compact Avatar for Mobile */}
+                  <div className="team-mobile-avatar">
+                    <img
+                      src={getMediaUrl(member.image)}
+                      alt={`${member.name} — ${member.role}`}
+                      className="team-mobile-img"
+                    />
+                  </div>
+
                   <span className="team-pill-badge">{member.badge}</span>
                   <div className="team-pill-content">
                     <h3 className="team-pill-name">{member.name}</h3>
