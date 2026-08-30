@@ -117,19 +117,19 @@ const philosophiesData = [
 const teamMembers = [
   {
     name: 'Nuzky Naseem',
-    role: 'Creative Director',
+    role: 'Co-Founder & Executive Design Officer',
     badge: 'CO-FOUNDER',
     image: '/images/team/nuzky-naseem.jpg'
   },
   {
     name: 'Abdhullah Azmin',
-    role: 'Design Lead',
+    role: 'Co-Founder & Executive Creative Director',
     badge: 'CO-FOUNDER',
     image: '/images/team/abdhullah-azmin.jpg'
   },
   {
     name: 'Aashik Nawas',
-    role: 'Strategy Lead',
+    role: 'Co-Founder & Executive Managing Director',
     badge: 'CO-FOUNDER',
     image: '/images/team/aashik-nawas.jpg'
   }
