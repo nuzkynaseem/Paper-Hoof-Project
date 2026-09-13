@@ -12,6 +12,23 @@ import { getCachedJson, getProjects } from '../utils/siteData';
 import { QUOTE_FONT, quoteColors } from '../utils/quoteStyle';
 import './ProjectCaseStudy.css';
 
+const renderFormattedText = (text) => {
+  if (!text || typeof text !== 'string') return null;
+  const trimmed = text.trim();
+  if (!trimmed) return null;
+
+  const paragraphs = trimmed
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  return paragraphs.map((para, idx) => (
+    <p key={idx} className="overview-paragraph">
+      {para}
+    </p>
+  ));
+};
+
 const defaultDetails = [
   {
     title: 'Logotype & Geometry',
@@ -150,22 +167,18 @@ const ProjectCaseStudy = () => {
           <div className="overview-right-content">
             {/* Subtitle is visible when Read More is NOT pressed */}
             {project.subtitle && (
-              <p className="overview-lead-paragraph">
-                {project.subtitle}
-              </p>
+              <div className="overview-lead-paragraph">
+                {renderFormattedText(project.subtitle)}
+              </div>
             )}
             
             {/* Description & ReadMoreText are visible when Read More IS pressed */}
             {isExpanded && (
               <div className="overview-expanded-body">
-                {project.description && (
-                  <p>{project.description}</p>
-                )}
-                {project.readMoreText && (
-                  <p>{project.readMoreText}</p>
-                )}
+                {renderFormattedText(project.description)}
+                {renderFormattedText(project.readMoreText)}
                 {!project.description && !project.readMoreText && (
-                  <p>
+                  <p className="overview-paragraph">
                     {`${project.name} partnered with Paper Hoof to sharpen a brand that had grown faster than its identity could keep up. We began with research — stakeholder interviews, audience mapping, and a close look at the market.`}
                   </p>
                 )}

@@ -121,17 +121,19 @@
 .overview-expanded-body {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   animation: fadeInText 0.35s ease-out forwards;
 }
 
-.overview-expanded-body p {
+.overview-expanded-body p,
+.overview-paragraph {
   font-family: var(--font-primary);
   font-size: 1.05rem;
   font-weight: 400;
-  line-height: 1.75;
-  color: rgba(32, 36, 35, 0.85);
+  line-height: 1.8;
+  color: rgba(32, 36, 35, 0.88);
   margin: 0;
+  white-space: pre-line;
 }
 
 @keyframes fadeInText {
