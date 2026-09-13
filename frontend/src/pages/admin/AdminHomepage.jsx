@@ -49,12 +49,19 @@ export default function AdminHomepage({ showToast }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const currentToken = localStorage.getItem("paperhoof_admin_token");
+    if (!currentToken) {
+      if (showToast) showToast("error", "Session Expired", "Your login session has expired. Redirecting to login...");
+      setTimeout(() => { window.location.href = "/admin/login"; }, 1500);
+      return;
+    }
+
     setSaving(true);
     try {
       const res = await fetch(`${API_BASE}/site/homepage`, {
         method: "PUT",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${currentToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -66,6 +73,13 @@ export default function AdminHomepage({ showToast }) {
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
+        if (res.status === 401 || (err.detail && err.detail.toLowerCase().includes("unauthorized"))) {
+          localStorage.removeItem("paperhoof_admin_token");
+          localStorage.removeItem("paperhoof_admin_user");
+          if (showToast) showToast("error", "Session Expired", "Your session has expired. Redirecting to login...");
+          setTimeout(() => { window.location.href = "/admin/login"; }, 1500);
+          return;
+        }
         throw new Error(err.detail || "Failed to save homepage content");
       }
       if (showToast) showToast("success", "Homepage updated", "Hero video and intro text saved successfully.");

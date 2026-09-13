@@ -269,6 +269,13 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
       return;
     }
 
+    const currentToken = localStorage.getItem("paperhoof_admin_token");
+    if (!currentToken) {
+      if (showToast) showToast("error", "Session Expired", "Your login session has expired. Redirecting to login...");
+      setTimeout(() => { window.location.href = "/admin/login"; }, 1500);
+      return;
+    }
+
     setSaving(true);
     try {
       const isNew = !editingProject;
@@ -282,11 +289,19 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
 
       const res = await fetch(url, {
         method,
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        headers: { Authorization: `Bearer ${currentToken}`, "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
+        if (res.status === 401 || (errData.detail && errData.detail.toLowerCase().includes("unauthorized"))) {
+          localStorage.removeItem("paperhoof_admin_token");
+          localStorage.removeItem("paperhoof_admin_user");
+          if (showToast) showToast("error", "Session Expired", "Your session has expired. Redirecting to login...");
+          setTimeout(() => { window.location.href = "/admin/login"; }, 1500);
+          return;
+        }
         throw new Error(errData.detail || "Failed to save project");
       }
       if (showToast) showToast("success", isNew ? "Project created" : "Project updated", `"${formData.name}" was saved successfully.`);
@@ -301,12 +316,22 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
 
   const handleDelete = async (id, name) => {
     if (!window.confirm(`Delete "${name}"? This cannot be undone.`)) return;
+    const currentToken = localStorage.getItem("paperhoof_admin_token");
     try {
       const res = await fetch(`${API_BASE}/projects/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${currentToken}` },
       });
-      if (!res.ok) throw new Error("Failed to delete project");
+      if (!res.ok) {
+        if (res.status === 401) {
+          localStorage.removeItem("paperhoof_admin_token");
+          localStorage.removeItem("paperhoof_admin_user");
+          if (showToast) showToast("error", "Session Expired", "Your session has expired. Redirecting to login...");
+          setTimeout(() => { window.location.href = "/admin/login"; }, 1500);
+          return;
+        }
+        throw new Error("Failed to delete project");
+      }
       if (showToast) showToast("success", "Project deleted", `"${name}" has been removed.`);
       if (onProjectsChange) onProjectsChange();
     } catch (err) {
