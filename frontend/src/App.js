@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar";
@@ -9,20 +9,22 @@ import RecentProjects from "./components/RecentProjects";
 import MoreWorks from "./components/MoreWorks";
 import Footer from "./components/Footer";
 import BrandReviewForm from "./components/BrandReviewForm";
-import BrandReview from "./pages/BrandReview";
-import ContactUs from "./pages/ContactUs";
-import AboutUs from "./pages/AboutUs";
-import Work from "./pages/Work";
-import ProjectCaseStudy from "./pages/ProjectCaseStudy";
 import CustomCursor from "./components/CustomCursor";
 import PageLoader from "./components/PageLoader";
-import AdminLayout from "./pages/admin/AdminLayout";
-import AdminLogin from "./pages/admin/AdminLogin";
 import { API_BASE } from "./utils/api";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
 import SEO from "./components/SEO";
+
+// Route-level code splitting to keep initial bundle ultra-light
+const BrandReview = lazy(() => import("./pages/BrandReview"));
+const ContactUs = lazy(() => import("./pages/ContactUs"));
+const AboutUs = lazy(() => import("./pages/AboutUs"));
+const Work = lazy(() => import("./pages/Work"));
+const ProjectCaseStudy = lazy(() => import("./pages/ProjectCaseStudy"));
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 
 function HomePage() {
   return (
@@ -43,19 +45,9 @@ function HomePage() {
 function AppContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isBrandReviewOpen, setIsBrandReviewOpen] = useState(false);
-  const [isRouteLoading, setIsRouteLoading] = useState(true);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
   const isAdminRoute = location.pathname.startsWith('/admin');
-
-  // Trigger loader progress on route change
-  useEffect(() => {
-    setIsRouteLoading(true);
-    const timer = setTimeout(() => {
-      setIsRouteLoading(false);
-    }, 450);
-    return () => clearTimeout(timer);
-  }, [location.pathname]);
 
   // Record visit analytics on public load (syncs with Vercel Web Analytics)
   useEffect(() => {
@@ -111,10 +103,12 @@ function AppContent() {
 
   if (isAdminRoute) {
     return (
-      <Routes>
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/*" element={<AdminLayout />} />
-      </Routes>
+      <Suspense fallback={<div className="min-h-screen bg-[#0d1a14] flex items-center justify-center text-[#97D9AF]">Loading...</div>}>
+        <Routes>
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/*" element={<AdminLayout />} />
+        </Routes>
+      </Suspense>
     );
   }
 
@@ -122,7 +116,7 @@ function AppContent() {
     <div className="App">
       <Analytics />
       <SpeedInsights />
-      <PageLoader key={location.pathname} />
+      <PageLoader />
       <CustomCursor />
       <a href="#main-content" className="skip-link">
         Skip to main content
@@ -135,15 +129,17 @@ function AppContent() {
       />
       
       <main id="main-content" tabIndex="-1">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/brand-review" element={<BrandReview />} />
-          <Route path="/contact" element={<ContactUs />} />
-          <Route path="/contact-us" element={<Navigate to="/contact" replace />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/work" element={<Work />} />
-          <Route path="/work/:projectId" element={<ProjectCaseStudy />} />
-        </Routes>
+        <Suspense fallback={<div className="min-h-[60vh]" />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/brand-review" element={<BrandReview />} />
+            <Route path="/contact" element={<ContactUs />} />
+            <Route path="/contact-us" element={<Navigate to="/contact" replace />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/work" element={<Work />} />
+            <Route path="/work/:projectId" element={<ProjectCaseStudy />} />
+          </Routes>
+        </Suspense>
       </main>
 
       <Footer />

@@ -17,8 +17,13 @@
 }
 
 /* Hide browser default cursor globally on interactive elements for desktop */
-body, a, button, input, select, textarea, [role="button"], .tilt-card, .featured-scroll-card, .work-card, .sub-field-card, .gravity-canvas-container {
+body, a, button, [role="button"], .tilt-card, .featured-scroll-card, .work-card, .sub-field-card, .gravity-canvas-container {
   cursor: none !important;
+}
+
+/* Ensure form inputs and textareas retain accessible native text carets */
+input, select, textarea, [contenteditable="true"] {
+  cursor: text !important;
 }
 
 /* Central Solid Focal Dot */

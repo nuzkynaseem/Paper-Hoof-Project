@@ -48,16 +48,37 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+import bcrypt
+
 # Security & JWT Configuration
 JWT_SECRET = os.environ.get('JWT_SECRET', 'paper_hoof_super_secret_key_2026')
 JWT_ALGORITHM = 'HS256'
 ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@paperhoof.com')
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'paperhoof123')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', '')
 SUPER_ADMIN_EMAIL = os.environ.get('SUPER_ADMIN_EMAIL', 'paperhoof@gmail.com').lower().strip()
-SUPER_ADMIN_PASSWORD = os.environ.get('SUPER_ADMIN_PASSWORD', 'paperhoof123')
+SUPER_ADMIN_PASSWORD = os.environ.get('SUPER_ADMIN_PASSWORD', '')
 
 def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode('utf-8')).hexdigest()
+    """Hashes a password using salted bcrypt (rounds=12)."""
+    salt = bcrypt.gensalt(rounds=12)
+    return bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verifies a plain password against bcrypt hash or legacy SHA-256 hash."""
+    if not hashed_password or not plain_password:
+        return False
+    # Check if stored hash is bcrypt ($2a$, $2b$, or $2y$)
+    if hashed_password.startswith(("$2a$", "$2b$", "$2y$")):
+        try:
+            return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
+        except Exception:
+            return False
+    # Legacy SHA-256 fallback
+    try:
+        legacy_sha = hashlib.sha256(plain_password.encode('utf-8')).hexdigest()
+        return secrets.compare_digest(legacy_sha, hashed_password)
+    except Exception:
+        return False
 
 def generate_temp_password(length: int = 10) -> str:
     chars = string.ascii_letters + string.digits + "!@#$"
@@ -456,7 +477,7 @@ async def login(credentials: AuthLogin):
     password = credentials.password
 
     # 1. Super Admin fallback check against .env SUPER_ADMIN_EMAIL & SUPER_ADMIN_PASSWORD
-    if email == SUPER_ADMIN_EMAIL.lower() and password == SUPER_ADMIN_PASSWORD:
+    if SUPER_ADMIN_PASSWORD and password and secrets.compare_digest(password, SUPER_ADMIN_PASSWORD) and email == SUPER_ADMIN_EMAIL.lower():
         user = await db.users.find_one({"email": email})
         user_id = user.get("id") if user else str(uuid.uuid4())
         user_name = user.get("name", "Paper Hoof Super Admin") if user else "Paper Hoof Super Admin"
@@ -473,7 +494,7 @@ async def login(credentials: AuthLogin):
         }
 
     # 2. Legacy Admin fallback check
-    if email == ADMIN_EMAIL.lower() and password == ADMIN_PASSWORD:
+    if ADMIN_PASSWORD and password and secrets.compare_digest(password, ADMIN_PASSWORD) and email == ADMIN_EMAIL.lower():
         token = create_access_token({"sub": email, "role": "admin"})
         return {"token": token, "user": {"email": email, "name": "Paper Hoof Team", "role": "admin", "mustChangePassword": False}}
 
@@ -482,8 +503,21 @@ async def login(credentials: AuthLogin):
     if not user:
         raise HTTPException(status_code=400, detail="Invalid email or password")
 
-    if hash_password(password) != user.get("passwordHash"):
+    stored_hash = user.get("passwordHash", "")
+    if not verify_password(password, stored_hash):
         raise HTTPException(status_code=400, detail="Invalid email or password")
+
+    # Transparent upgrade: if legacy SHA-256, upgrade to bcrypt on login
+    if not stored_hash.startswith(("$2a$", "$2b$", "$2y$")):
+        try:
+            upgraded_hash = hash_password(password)
+            await db.users.update_one(
+                {"email": email},
+                {"$set": {"passwordHash": upgraded_hash, "updatedAt": datetime.now(timezone.utc).isoformat()}}
+            )
+            logger.info(f"Automatically upgraded legacy password hash to bcrypt for {email}")
+        except Exception as up_err:
+            logger.warning(f"Could not auto-upgrade legacy hash for {email}: {up_err}")
 
     user_role = user.get("role", "admin")
     must_change = bool(user.get("mustChangePassword", False))
@@ -508,7 +542,7 @@ async def change_password(data: ChangePasswordRequest, user_data: dict = Depends
     if not user:
         raise HTTPException(status_code=404, detail="User account not found")
 
-    if data.currentPassword and hash_password(data.currentPassword) != user.get("passwordHash"):
+    if data.currentPassword and not verify_password(data.currentPassword, user.get("passwordHash", "")):
         raise HTTPException(status_code=400, detail="Current password is incorrect")
 
     if len(data.newPassword) < 6:
@@ -1709,7 +1743,7 @@ if env_origins:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
-    allow_origin_regex=r"https://.*\.vercel\.app|https://.*\.paperhoof\.com|http://localhost:\d+|http://127\.0\.0\.1:\d+",
+    allow_origin_regex=r"^https:\/\/(www\.)?paperhoof\.com$|^https:\/\/([a-zA-Z0-9-]+\.)*paperhoof\.com$|^https:\/\/paper[-_]hoof[a-zA-Z0-9_-]*\.vercel\.app$|^http:\/\/localhost:\d+$|^http:\/\/127\.0\.0\.1:\d+$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

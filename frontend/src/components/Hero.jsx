@@ -111,7 +111,6 @@ const Hero = () => {
     window.addEventListener('focus', handleFocus);
     video.addEventListener('pause', handlePause);
     window.addEventListener('touchstart', handleUserInteraction, { passive: true });
-    window.addEventListener('scroll', handleUserInteraction, { passive: true });
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
@@ -119,7 +118,6 @@ const Hero = () => {
       window.removeEventListener('focus', handleFocus);
       video.removeEventListener('pause', handlePause);
       window.removeEventListener('touchstart', handleUserInteraction);
-      window.removeEventListener('scroll', handleUserInteraction);
     };
   }, [videoUrl]);
 

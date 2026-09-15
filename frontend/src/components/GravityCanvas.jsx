@@ -231,11 +231,13 @@ const GravityCanvas = () => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            Runner.start(runner, engine);
             if (!isCurrentlyVisible) {
               spawnShapes();
               isCurrentlyVisible = true;
             }
           } else {
+            Runner.stop(runner);
             isCurrentlyVisible = false;
           }
         });

@@ -28,10 +28,21 @@ const CustomCursor = () => {
 
     const handleMouseMove = (e) => {
       mousePos.current = { x: e.clientX, y: e.clientY };
-      if (!isVisible) setIsVisible(true);
+      const isInput = e.target.closest('input, textarea, select, [contenteditable="true"]');
+      if (isInput) {
+        if (isVisible) setIsVisible(false);
+      } else {
+        if (!isVisible) setIsVisible(true);
+      }
     };
 
     const handleMouseOver = (e) => {
+      const isInput = e.target.closest('input, textarea, select, [contenteditable="true"]');
+      if (isInput) {
+        setIsVisible(false);
+        return;
+      }
+
       const target = e.target.closest('[data-cursor], [data-cursor-text], .tilt-card, .featured-scroll-card, .work-card, .project-case-study-hero, .gravity-canvas-container, a, button');
 
       if (!target) {
