@@ -211,13 +211,20 @@ const ProjectCaseStudy = () => {
                 {comp.type === "video" ? (
                   <video
                     src={getMediaUrl(comp.contentUrl)}
-                    controls
                     autoPlay
                     muted
                     loop
                     playsInline
-                    preload="metadata"
+                    webkit-playsinline="true"
+                    x5-playsinline="true"
+                    disablePictureInPicture
+                    disableRemotePlayback
+                    onPause={(e) => {
+                      e.target.play().catch(() => {});
+                    }}
+                    preload="auto"
                     className="component-media-img"
+                    style={{ pointerEvents: "none", userSelect: "none" }}
                   />
                 ) : comp.type === "html" ? (
                   // The Interactive HTML block was retired. Any component still

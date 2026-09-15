@@ -29,13 +29,20 @@ const ProjectMedia = ({
       <video
         src={resolved}
         className={className}
-        style={style}
-        controls={controls}
+        style={{ pointerEvents: "none", userSelect: "none", ...style }}
+        controls={false}
         autoPlay
         muted
         loop
         playsInline
-        preload="metadata"
+        webkit-playsinline="true"
+        x5-playsinline="true"
+        disablePictureInPicture
+        disableRemotePlayback
+        onPause={(e) => {
+          e.target.play().catch(() => {});
+        }}
+        preload="auto"
         onError={onError}
         {...videoProps}
       />

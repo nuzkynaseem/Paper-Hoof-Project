@@ -220,6 +220,23 @@
   border: none;
   margin: 0;
   padding: 0;
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+video.component-media-img,
+video.case-study-hero-image,
+.case-study-hero-image video {
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+video.component-media-img::-webkit-media-controls,
+video.case-study-hero-image::-webkit-media-controls {
+  display: none !important;
+  -webkit-appearance: none !important;
 }
 
 /* Bottom-Left Expandable Insight Pill Container & Buttons */
