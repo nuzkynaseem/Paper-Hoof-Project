@@ -193,8 +193,12 @@ const GravityCanvas = () => {
       });
     });
 
-    // Mouse Dragging Support
+    // Mouse & Touch Dragging Support
+    const dpr = window.devicePixelRatio || 1;
     const mouse = Mouse.create(render.canvas);
+    mouse.pixelRatio = dpr;
+    canvas.setAttribute('data-pixel-ratio', dpr);
+
     const mouseConstraint = MouseConstraint.create(engine, {
       mouse: mouse,
       constraint: {
@@ -203,19 +207,77 @@ const GravityCanvas = () => {
       }
     });
 
-    // Guarantee 100% smooth native page scrolling over canvas
-    const handlePassiveWheel = (e) => {
-      // Passive listener ensures browser performs native scrolling without JS blocking
-    };
+    // Remove Matter.js default touch event listeners so they NEVER hijack page scrolling
+    canvas.removeEventListener('touchstart', mouse.mousedown);
+    canvas.removeEventListener('touchmove', mouse.mousemove);
+    canvas.removeEventListener('touchend', mouse.mouseup);
 
-    canvas.addEventListener('wheel', handlePassiveWheel, { passive: true });
-
-    // Remove any Matter.js default wheel interception
+    // Remove Matter.js default wheel interception so scrolling remains 100% smooth
     if (mouse.mousewheel) {
       canvas.removeEventListener('mousewheel', mouse.mousewheel);
       canvas.removeEventListener('DOMMouseScroll', mouse.mousewheel);
       canvas.removeEventListener('wheel', mouse.mousewheel);
     }
+
+    // Smart Touch System:
+    // Only capture touch when the user touches an EXACT physics shape.
+    // If empty canvas space is touched, let the browser scroll the page up & down natively!
+    let isDraggingBody = false;
+
+    const getTouchCoords = (touch) => {
+      const rect = canvas.getBoundingClientRect();
+      const curW = render.options.width;
+      const curH = render.options.height;
+      return {
+        x: (touch.clientX - rect.left) * (curW / rect.width),
+        y: (touch.clientY - rect.top) * (curH / rect.height)
+      };
+    };
+
+    const handleTouchStart = (e) => {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const coords = getTouchCoords(touch);
+
+      // Check if touch is directly on an active, dynamic physics shape
+      const dynamicBodies = Composite.allBodies(engine.world).filter((b) => !b.isStatic);
+      const hit = Matter.Query.point(dynamicBodies, coords);
+
+      if (hit.length > 0) {
+        // User touched an exact shape!
+        isDraggingBody = true;
+        mouse.position.x = coords.x;
+        mouse.position.y = coords.y;
+        mouse.mousedown(e);
+        if (e.cancelable) e.preventDefault();
+      } else {
+        // Empty space touched -> do NOT preventDefault, let native scrolling work!
+        isDraggingBody = false;
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (isDraggingBody && e.touches.length === 1) {
+        const touch = e.touches[0];
+        const coords = getTouchCoords(touch);
+        mouse.position.x = coords.x;
+        mouse.position.y = coords.y;
+        mouse.mousemove(e);
+        if (e.cancelable) e.preventDefault();
+      }
+    };
+
+    const handleTouchEnd = (e) => {
+      if (isDraggingBody) {
+        mouse.mouseup(e);
+        isDraggingBody = false;
+      }
+    };
+
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd, { passive: true });
+    canvas.addEventListener('touchcancel', handleTouchEnd, { passive: true });
 
     Composite.add(engine.world, mouseConstraint);
     render.mouse = mouse;
@@ -225,19 +287,19 @@ const GravityCanvas = () => {
       spawnShapes();
     }, 50);
 
-    // IntersectionObserver to re-spawn when scrolled into view
+    // IntersectionObserver to pause/resume simulation cleanly without crashing
     let isCurrentlyVisible = false;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            Runner.start(runner, engine);
+            runner.enabled = true;
             if (!isCurrentlyVisible) {
               spawnShapes();
               isCurrentlyVisible = true;
             }
           } else {
-            Runner.stop(runner);
+            runner.enabled = false;
             isCurrentlyVisible = false;
           }
         });
@@ -249,10 +311,13 @@ const GravityCanvas = () => {
     // ResizeObserver for canvas resolution syncing
     const resizeObserver = new ResizeObserver(() => {
       const { width: newW, height: newH } = getBounds();
-      render.canvas.width = newW * (window.devicePixelRatio || 1);
-      render.canvas.height = newH * (window.devicePixelRatio || 1);
+      const currentDpr = window.devicePixelRatio || 1;
+      render.canvas.width = newW * currentDpr;
+      render.canvas.height = newH * currentDpr;
       render.options.width = newW;
       render.options.height = newH;
+      mouse.pixelRatio = currentDpr;
+      canvas.setAttribute('data-pixel-ratio', currentDpr);
 
       Matter.Body.setPosition(ground, Vector.create(newW / 2, newH - 12));
       Matter.Body.setPosition(leftWall, Vector.create(-30, newH / 2));
@@ -262,7 +327,10 @@ const GravityCanvas = () => {
     resizeObserver.observe(container);
 
     return () => {
-      canvas.removeEventListener('wheel', handlePassiveWheel);
+      canvas.removeEventListener('touchstart', handleTouchStart);
+      canvas.removeEventListener('touchmove', handleTouchMove);
+      canvas.removeEventListener('touchend', handleTouchEnd);
+      canvas.removeEventListener('touchcancel', handleTouchEnd);
       clearTimeout(timer);
       observer.disconnect();
       resizeObserver.disconnect();
