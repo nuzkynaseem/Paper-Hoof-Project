@@ -12,7 +12,7 @@ import { getCachedJson, getProjects } from '../utils/siteData';
 import { QUOTE_FONT, quoteColors } from '../utils/quoteStyle';
 import './ProjectCaseStudy.css';
 
-const renderFormattedText = (text) => {
+const renderFormattedText = (text, className = "overview-paragraph") => {
   if (!text || typeof text !== 'string') return null;
   const trimmed = text.trim();
   if (!trimmed) return null;
@@ -23,7 +23,7 @@ const renderFormattedText = (text) => {
     .filter(Boolean);
 
   return paragraphs.map((para, idx) => (
-    <p key={idx} className="overview-paragraph">
+    <p key={idx} className={className}>
       {para}
     </p>
   ));
@@ -168,7 +168,7 @@ const ProjectCaseStudy = () => {
             {/* Subtitle is visible when Read More is NOT pressed */}
             {project.subtitle && (
               <div className="overview-lead-paragraph">
-                {renderFormattedText(project.subtitle)}
+                {renderFormattedText(project.subtitle, "overview-subtitle-paragraph")}
               </div>
             )}
             
