@@ -4,7 +4,7 @@ import { getMediaUrl } from '../utils/api';
 import { getHomepage } from '../utils/siteData';
 import './Hero.css';
 
-const DEFAULT_HERO_VIDEO = "https://assets.mixkit.co/videos/preview/mixkit-white-sand-under-water-4330-large.mp4";
+const DEFAULT_HERO_VIDEO = "https://pub-890f739345cb4bd69d2c9be93e242605.r2.dev/uploads/9dc9ebb3-3661-4d4b-b636-dde08a70de57.mp4";
 
 const MOBILE_QUERY = '(max-width: 768px)';
 
@@ -16,6 +16,13 @@ const Hero = () => {
     () => typeof window !== 'undefined' && window.matchMedia(MOBILE_QUERY).matches
   );
   const videoRef = useRef(null);
+
+  const notifyHeroReady = () => {
+    if (typeof window !== 'undefined' && !window.__PH_HERO_READY__) {
+      window.__PH_HERO_READY__ = true;
+      window.dispatchEvent(new CustomEvent('ph-hero-ready'));
+    }
+  };
 
   useEffect(() => {
     const mq = window.matchMedia(MOBILE_QUERY);
@@ -36,21 +43,23 @@ const Hero = () => {
     let mounted = true;
     getHomepage({ onUpdate: (data) => mounted && setHeroContent(data) })
       .then((data) => mounted && setHeroContent(data || {}))
-      .catch(() => mounted && setLoadFailed(true));
+      .catch(() => {
+        if (mounted) {
+          setLoadFailed(true);
+          notifyHeroReady();
+        }
+      });
     return () => {
       mounted = false;
     };
   }, []);
 
-  // While the homepage settings load, render a skeleton rather than eagerly
-  // streaming the external fallback video that would then be swapped out.
-  const isLoading = heroContent === null && !loadFailed;
   // Mobile variant wins on phones; an empty mobile field falls back to desktop.
   const rawVideoUrl =
     (isMobileViewport && heroContent?.heroVideoUrlMobile) ||
     heroContent?.heroVideoUrl ||
     DEFAULT_HERO_VIDEO;
-  const videoUrl = isLoading ? "" : getMediaUrl(rawVideoUrl);
+  const videoUrl = getMediaUrl(rawVideoUrl);
 
   // Bulletproof video playback lifecycle: auto-resume on mobile screen unlock,
   // tab switch, app resume, pageshow (bfcache), and window focus.
@@ -68,14 +77,23 @@ const Hero = () => {
 
       const promise = v.play();
       if (promise !== undefined) {
-        promise.catch((err) => {
-          // Autoplay policy or deferred
-        });
+        promise
+          .then(() => {
+            notifyHeroReady();
+          })
+          .catch((err) => {
+            // Autoplay policy or deferred
+          });
       }
     };
 
     // Initial attempt
     playVideo();
+
+    // Check if already actively playing
+    if (video.currentTime > 0 || !video.paused) {
+      notifyHeroReady();
+    }
 
     // 1. Tab visibility / App unlock
     const handleVisibilityChange = () => {
@@ -123,11 +141,7 @@ const Hero = () => {
 
   return (
     <section className="hero-section relative overflow-hidden" data-testid="hero-section">
-      {isLoading ? (
-        <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
-          <div className="ph-skeleton w-full h-full" style={{ borderRadius: 0 }} />
-        </div>
-      ) : videoUrl ? (
+      {videoUrl ? (
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <video
             key={videoUrl}
@@ -140,6 +154,13 @@ const Hero = () => {
             webkit-playsinline="true"
             x5-playsinline="true"
             preload="auto"
+            onPlaying={notifyHeroReady}
+            onTimeUpdate={(e) => {
+              if (e.target.currentTime > 0) {
+                notifyHeroReady();
+              }
+            }}
+            onError={notifyHeroReady}
             className="w-full h-full object-cover"
           >
             <source src={videoUrl} type="video/mp4" />

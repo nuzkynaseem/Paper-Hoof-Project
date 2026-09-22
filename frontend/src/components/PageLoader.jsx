@@ -1,48 +1,103 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './PageLoader.css';
 
 const PageLoader = ({ isLoading: externalIsLoading }) => {
-  const [internalLoading, setInternalLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
+  const isHomePage = typeof window !== 'undefined' && 
+    (window.location.pathname === '/' || window.location.pathname === '');
 
-  const activeLoading = externalIsLoading !== undefined ? externalIsLoading : internalLoading;
+  const [heroReady, setHeroReady] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    if (!isHomePage) return true;
+    return Boolean(window.__PH_HERO_READY__);
+  });
+
+  const [progress, setProgress] = useState(0);
+  const [isHiding, setIsHiding] = useState(false);
+  const [isDestroyed, setIsDestroyed] = useState(false);
+
+  const heroReadyRef = useRef(heroReady);
+  useEffect(() => {
+    heroReadyRef.current = heroReady;
+  }, [heroReady]);
+
+  // Listen for hero ready event if on homepage and not ready yet
+  useEffect(() => {
+    if (heroReady) return;
+
+    const handleHeroReady = () => {
+      setHeroReady(true);
+    };
+
+    window.addEventListener('ph-hero-ready', handleHeroReady);
+
+    if (window.__PH_HERO_READY__) {
+      setHeroReady(true);
+    }
+
+    // Safety timeout: dismiss after 3.5s so slow network/battery saver never traps user
+    const safetyTimer = setTimeout(() => {
+      setHeroReady(true);
+    }, 3500);
+
+    return () => {
+      window.removeEventListener('ph-hero-ready', handleHeroReady);
+      clearTimeout(safetyTimer);
+    };
+  }, [heroReady]);
 
   useEffect(() => {
-    // Initial load progress animation
-    let startTime = null;
-    let animationFrame = null;
-    const duration = 1200; // 1.2s smooth loader
+    let animId = null;
+    let current = 0;
+    let lastTime = null;
 
-    const animateProgress = (timestamp) => {
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const calculatedProgress = Math.min(100, Math.floor((elapsed / duration) * 100));
+    const tick = (time) => {
+      if (!lastTime) lastTime = time;
+      const dt = Math.min(time - lastTime, 100);
+      lastTime = time;
 
-      setProgress(calculatedProgress);
+      const isReady = heroReadyRef.current && (externalIsLoading === undefined || !externalIsLoading);
 
-      if (elapsed < duration) {
-        animationFrame = requestAnimationFrame(animateProgress);
+      if (!isReady) {
+        // Creep smoothly up to 90%
+        if (current < 90) {
+          const step = Math.max(0.2, (90 - current) * 0.05 * (dt / 16.67));
+          current = Math.min(90, current + step);
+          setProgress(Math.floor(current));
+        }
       } else {
+        // Hero is ready! Swiftly fill progress to 100%
+        if (current < 100) {
+          const step = Math.max(1.2, (101 - current) * 0.12 * (dt / 16.67));
+          current = Math.min(100, current + step);
+          setProgress(Math.floor(current));
+        }
+      }
+
+      if (current < 100) {
+        animId = requestAnimationFrame(tick);
+      } else {
+        // Complete! Start smooth fade-out
+        setIsHiding(true);
         setTimeout(() => {
-          setInternalLoading(false);
-        }, 150);
+          setIsDestroyed(true);
+        }, 450); // 450ms allows the 400ms transition in PageLoader.css to complete
       }
     };
 
-    animationFrame = requestAnimationFrame(animateProgress);
+    animId = requestAnimationFrame(tick);
 
     return () => {
-      if (animationFrame) cancelAnimationFrame(animationFrame);
+      if (animId) cancelAnimationFrame(animId);
     };
-  }, []);
+  }, [externalIsLoading]);
 
-  if (!activeLoading && progress >= 100) {
+  if (isDestroyed) {
     return null;
   }
 
   return (
     <div
-      className={`page-loader-overlay ${!activeLoading && progress >= 100 ? 'loader-hidden' : ''}`}
+      className={`page-loader-overlay ${isHiding ? 'loader-hidden' : ''}`}
       aria-label="Loading page"
       role="status"
     >
