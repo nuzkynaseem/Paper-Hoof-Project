@@ -28,9 +28,9 @@ const Navbar = ({ onMenuClick, isMenuOpen = false, darkHero = false }) => {
         setIsScrolled(false);
       } else {
         setIsScrolled(true);
-        if (currentY > lastY + 5) {
+        if (currentY > lastY + 12) {
           setIsVisible(false);
-        } else if (currentY < lastY - 5) {
+        } else if (currentY < lastY - 8) {
           setIsVisible(true);
         }
       }

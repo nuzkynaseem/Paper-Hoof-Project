@@ -453,7 +453,7 @@ class HomepageContent(BaseModel):
     model_config = ConfigDict(extra="ignore")
     heroVideoUrl: Optional[str] = "https://pub-890f739345cb4bd69d2c9be93e242605.r2.dev/uploads/9dc9ebb3-3661-4d4b-b636-dde08a70de57.mp4"
     # Portrait variant served to phones; empty means "reuse the desktop video".
-    heroVideoUrlMobile: Optional[str] = ""
+    heroVideoUrlMobile: Optional[str] = "https://pub-890f739345cb4bd69d2c9be93e242605.r2.dev/uploads/hero-mobile-9dc9ebb3.mp4"
     secondSectionTitle: Optional[str] = "We craft enduring brand identities and digital experiences for ambitious teams."
     secondSectionDescription: Optional[str] = "Paper Hoof is an independent brand design studio operating at the intersection of clarity, tactile beauty, and strategy."
     homepageProjectsLimit: Optional[int] = 4
@@ -1697,6 +1697,7 @@ async def seed_database():
         await db.site_content.insert_one({
             "_id": "homepage",
             "heroVideoUrl": "https://pub-890f739345cb4bd69d2c9be93e242605.r2.dev/uploads/9dc9ebb3-3661-4d4b-b636-dde08a70de57.mp4",
+            "heroVideoUrlMobile": "https://pub-890f739345cb4bd69d2c9be93e242605.r2.dev/uploads/hero-mobile-9dc9ebb3.mp4",
             "secondSectionTitle": "We craft enduring brand identities and digital experiences for ambitious teams.",
             "secondSectionDescription": "Paper Hoof is an independent brand design studio operating at the intersection of clarity, tactile beauty, and strategy.",
             "homepageProjectsLimit": 4

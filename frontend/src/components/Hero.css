@@ -1,7 +1,7 @@
 .hero-section {
   position: relative;
   min-height: 100vh;
-  background: var(--hero-navy);
+  background: #0d1a14;
   display: flex;
   padding: 0 48px;
   overflow: hidden;

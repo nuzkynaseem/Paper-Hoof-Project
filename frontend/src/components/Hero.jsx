@@ -5,13 +5,14 @@ import { getHomepage } from '../utils/siteData';
 import './Hero.css';
 
 const DEFAULT_HERO_VIDEO = "https://pub-890f739345cb4bd69d2c9be93e242605.r2.dev/uploads/9dc9ebb3-3661-4d4b-b636-dde08a70de57.mp4";
+const DEFAULT_HERO_VIDEO_MOBILE = "https://pub-890f739345cb4bd69d2c9be93e242605.r2.dev/uploads/hero-mobile-9dc9ebb3.mp4";
 
 const MOBILE_QUERY = '(max-width: 768px)';
 
 const Hero = () => {
   const [heroContent, setHeroContent] = useState(null);
   const [loadFailed, setLoadFailed] = useState(false);
-  // Phones get the 9:16 hero variant when the admin has uploaded one.
+  // Phones get the 9:16 mobile variant when available or default.
   const [isMobileViewport, setIsMobileViewport] = useState(
     () => typeof window !== 'undefined' && window.matchMedia(MOBILE_QUERY).matches
   );
@@ -29,8 +30,6 @@ const Hero = () => {
     const sync = () => setIsMobileViewport(mq.matches);
     if (mq.addEventListener) mq.addEventListener('change', sync);
     else mq.addListener(sync); // Safari < 14
-    // Some webviews and emulated viewports re-evaluate matchMedia without ever
-    // dispatching its change event — resize is the belt to that suspender.
     window.addEventListener('resize', sync);
     return () => {
       if (mq.removeEventListener) mq.removeEventListener('change', sync);
@@ -54,9 +53,9 @@ const Hero = () => {
     };
   }, []);
 
-  // Mobile variant wins on phones; an empty mobile field falls back to desktop.
+  // Mobile variant wins on phones; an empty mobile field falls back to mobile default.
   const rawVideoUrl =
-    (isMobileViewport && heroContent?.heroVideoUrlMobile) ||
+    (isMobileViewport && (heroContent?.heroVideoUrlMobile || DEFAULT_HERO_VIDEO_MOBILE)) ||
     heroContent?.heroVideoUrl ||
     DEFAULT_HERO_VIDEO;
   const videoUrl = getMediaUrl(rawVideoUrl);
@@ -71,18 +70,28 @@ const Hero = () => {
       const v = videoRef.current;
       if (!v) return;
 
-      // Ensure muted properties are strictly set for mobile autoPlay policies
+      // Ensure muted properties and attributes are strictly set for mobile autoPlay policies
       v.defaultMuted = true;
       v.muted = true;
+      v.setAttribute('muted', '');
+      v.setAttribute('playsinline', '');
+      v.setAttribute('webkit-playsinline', 'true');
 
       const promise = v.play();
       if (promise !== undefined) {
         promise
           .then(() => {
-            notifyHeroReady();
+            // Wait for an actual decoded frame to be rendered before signaling ready
+            if ('requestVideoFrameCallback' in v) {
+              v.requestVideoFrameCallback(() => {
+                notifyHeroReady();
+              });
+            } else {
+              notifyHeroReady();
+            }
           })
           .catch((err) => {
-            // Autoplay policy or deferred
+            // Autoplay policy deferred until user interaction
           });
       }
     };
@@ -90,8 +99,8 @@ const Hero = () => {
     // Initial attempt
     playVideo();
 
-    // Check if already actively playing
-    if (video.currentTime > 0 || !video.paused) {
+    // Check if already actively playing past first frame
+    if (video.currentTime > 0.05 || (!video.paused && video.readyState >= 3)) {
       notifyHeroReady();
     }
 
@@ -119,9 +128,12 @@ const Hero = () => {
       }
     };
 
-    // 5. First touch fallback on mobile in case browser paused audio/video engine
+    // 5. First touch/scroll fallback on mobile in case browser paused audio/video engine
     const handleUserInteraction = () => {
-      playVideo();
+      const v = videoRef.current;
+      if (v && v.paused) {
+        playVideo();
+      }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -129,6 +141,8 @@ const Hero = () => {
     window.addEventListener('focus', handleFocus);
     video.addEventListener('pause', handlePause);
     window.addEventListener('touchstart', handleUserInteraction, { passive: true });
+    window.addEventListener('touchend', handleUserInteraction, { passive: true });
+    window.addEventListener('scroll', handleUserInteraction, { passive: true, once: true });
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
@@ -136,13 +150,15 @@ const Hero = () => {
       window.removeEventListener('focus', handleFocus);
       video.removeEventListener('pause', handlePause);
       window.removeEventListener('touchstart', handleUserInteraction);
+      window.removeEventListener('touchend', handleUserInteraction);
+      window.removeEventListener('scroll', handleUserInteraction);
     };
   }, [videoUrl]);
 
   return (
     <section className="hero-section relative overflow-hidden" data-testid="hero-section">
       {videoUrl ? (
-        <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+        <div className="absolute inset-0 w-full h-full z-0 overflow-hidden bg-[#0d1a14]">
           <video
             key={videoUrl}
             ref={videoRef}
@@ -154,17 +170,28 @@ const Hero = () => {
             webkit-playsinline="true"
             x5-playsinline="true"
             preload="auto"
-            onPlaying={notifyHeroReady}
-            onTimeUpdate={(e) => {
-              if (e.target.currentTime > 0) {
+            onPlaying={() => {
+              const v = videoRef.current;
+              if (v && 'requestVideoFrameCallback' in v) {
+                v.requestVideoFrameCallback(() => notifyHeroReady());
+              } else {
                 notifyHeroReady();
+              }
+            }}
+            onTimeUpdate={(e) => {
+              if (e.target.currentTime > 0.05) {
+                notifyHeroReady();
+              }
+            }}
+            onLoadedData={() => {
+              const v = videoRef.current;
+              if (v && v.paused) {
+                v.play().catch(() => {});
               }
             }}
             onError={notifyHeroReady}
             className="w-full h-full object-cover"
-          >
-            <source src={videoUrl} type="video/mp4" />
-          </video>
+          />
         </div>
       ) : null}
 
