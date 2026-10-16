@@ -15,8 +15,9 @@ const MoreWorks = () => {
     let mounted = true;
     let limit = 4;
     const shape = (list) => {
-      const nonFeatured = list.filter((p) => !p.isFeatured);
-      const displayList = nonFeatured.length > 0 ? nonFeatured : list;
+      const activeList = (list || []).filter((p) => p && p.isActive !== false);
+      const nonFeatured = activeList.filter((p) => !p.isFeatured);
+      const displayList = nonFeatured.length > 0 ? nonFeatured : activeList;
       return displayList.slice(0, limit).map((p) => ({
         ...p,
         slug: p.slug || slugify(p.name),

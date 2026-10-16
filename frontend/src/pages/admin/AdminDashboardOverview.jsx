@@ -49,6 +49,12 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
   };
 
   const handleSetFeatured = async (projId) => {
+    const targetProj = projects.find((p) => p.id === projId);
+    if (targetProj && targetProj.isActive === false) {
+      if (showToast) showToast("error", "Cannot Feature Project", `"${targetProj.name}" is turned off. Please turn it on in Projects before featuring.`);
+      return;
+    }
+
     setSelectedFeaturedId(projId);
     setSavingFeatured(true);
 
@@ -113,10 +119,14 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
 
   const currentFeatured = projects.find((p) => p.id === selectedFeaturedId) || stats.featuredProject;
 
-  const projectOptions = projects.map((p) => ({
-    value: p.id,
-    label: `${p.name}${p.category ? ` (${p.category})` : ""}`,
-  }));
+  const projectOptions = projects.map((p) => {
+    const isLive = p.isActive !== false;
+    return {
+      value: p.id,
+      label: `${p.name}${p.category ? ` (${p.category})` : ""}${!isLive ? " [Turned Off]" : ""}`,
+      disabled: !isLive,
+    };
+  });
 
   const limitOptions = [
     { value: 2, label: "Show 2 Projects" },
@@ -167,9 +177,15 @@ export default function AdminDashboardOverview({ projects = [], onNavigateTab, o
             </div>
             <span className="stat-badge">Active Portfolio</span>
           </div>
-          <div className="stat-value">{projects.length || stats.totalProjects}</div>
-          <div className="stat-footer">
-            <span>Published studio projects</span>
+          <div className="stat-value">
+            {projects.filter((p) => p.isActive !== false).length}
+          </div>
+          <div className="stat-footer flex items-center justify-between">
+            <span>
+              {projects.filter((p) => p.isActive === false).length > 0
+                ? `${projects.filter((p) => p.isActive === false).length} turned off (${projects.length} total)`
+                : `${projects.length} published live`}
+            </span>
             <button onClick={() => onNavigateTab("projects")} className="stat-link">
               View All <ArrowRight className="w-3.5 h-3.5" />
             </button>

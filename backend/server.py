@@ -444,6 +444,7 @@ class ProjectModel(BaseModel):
     readMoreText: Optional[str] = ""
     components: List[ProjectComponent] = []
     isFeatured: bool = False
+    isActive: bool = True
     client: Optional[str] = ""
     year: Optional[str] = "2026"
     order: Optional[int] = 0
@@ -1112,9 +1113,10 @@ async def get_dashboard_stats():
         unique_visitors = max(1, int(visit_count * 0.68))
         
     total_projects = await db.projects.count_documents({})
-    featured_project = await db.projects.find_one({"isFeatured": True}, {"_id": 0})
-    if not featured_project and total_projects > 0:
-        featured_project = await db.projects.find_one({}, {"_id": 0})
+    active_projects = await db.projects.count_documents({"isActive": {"$ne": False}})
+    featured_project = await db.projects.find_one({"isFeatured": True, "isActive": {"$ne": False}}, {"_id": 0})
+    if not featured_project and active_projects > 0:
+        featured_project = await db.projects.find_one({"isActive": {"$ne": False}}, {"_id": 0})
         
     # Top pages breakdown
     top_pages_pipeline = [
@@ -1154,6 +1156,7 @@ async def get_dashboard_stats():
         "visitCount": visit_count,
         "uniqueVisitors": unique_visitors,
         "totalProjects": total_projects if total_projects > 0 else 6,
+        "activeProjects": active_projects,
         "featuredProject": featured_project,
         "topPages": top_pages,
         "vercelAnalyticsEnabled": True,
@@ -1305,18 +1308,44 @@ async def delete_work_scope(scope_id: str, user_data: dict = Depends(verify_toke
 
 # --- PROJECTS ---
 @api_router.get("/projects", response_model=List[ProjectModel])
-async def get_projects():
-    projects = await db.projects.find({}, {"_id": 0}).sort("order", 1).to_list(100)
+async def get_projects(all: bool = False, authorization: Optional[str] = Header(None)):
+    is_admin = False
+    if authorization and authorization.startswith("Bearer "):
+        try:
+            token = authorization.split(" ")[1]
+            jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+            is_admin = True
+        except Exception:
+            is_admin = False
+
+    query = {}
+    if not (all and is_admin):
+        query["isActive"] = {"$ne": False}
+
+    projects = await db.projects.find(query, {"_id": 0}).sort("order", 1).to_list(100)
     return [ProjectModel(**p) for p in projects]
 
 @api_router.get("/projects/{project_id_or_slug}", response_model=ProjectModel)
-async def get_project_by_id(project_id_or_slug: str):
+async def get_project_by_id(project_id_or_slug: str, authorization: Optional[str] = Header(None)):
     project = await db.projects.find_one(
         {"$or": [{"id": project_id_or_slug}, {"slug": project_id_or_slug}]},
         {"_id": 0}
     )
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+
+    if project.get("isActive", True) is False:
+        is_admin = False
+        if authorization and authorization.startswith("Bearer "):
+            try:
+                token = authorization.split(" ")[1]
+                jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+                is_admin = True
+            except Exception:
+                is_admin = False
+        if not is_admin:
+            raise HTTPException(status_code=404, detail="Project is currently private or unavailable")
+
     return ProjectModel(**project)
 
 @api_router.post("/projects", response_model=ProjectModel)
@@ -1331,18 +1360,36 @@ async def create_project(data: ProjectModel, user_data: dict = Depends(verify_to
 @api_router.put("/projects/{project_id}", response_model=ProjectModel)
 async def update_project(project_id: str, data: ProjectModel, user_data: dict = Depends(verify_token)):
     doc = data.model_dump()
+    if doc.get("isActive") is False and doc.get("isFeatured"):
+        doc["isFeatured"] = False
     await db.projects.update_one({"id": project_id}, {"$set": doc})
     await bump_content_version()
     return data
 
+@api_router.put("/projects/toggle-active/{project_id}")
+async def toggle_project_active(project_id: str, user_data: dict = Depends(verify_token)):
+    proj = await db.projects.find_one({"id": project_id})
+    if not proj:
+        raise HTTPException(status_code=404, detail="Project not found")
+    new_status = not proj.get("isActive", True)
+    update_fields = {"isActive": new_status}
+    if not new_status and proj.get("isFeatured", False):
+        update_fields["isFeatured"] = False
+    await db.projects.update_one({"id": project_id}, {"$set": update_fields})
+    await bump_content_version()
+    return {"status": "success", "id": project_id, "isActive": new_status}
+
 @api_router.put("/projects/featured/{project_id}")
 async def set_featured_project(project_id: str, user_data: dict = Depends(verify_token)):
+    proj = await db.projects.find_one({"id": project_id})
+    if not proj:
+        raise HTTPException(status_code=404, detail="Project not found")
+    if proj.get("isActive", True) is False:
+        raise HTTPException(status_code=400, detail="Cannot feature a project that is turned off. Please turn on the project first.")
     # Unset all featured flags
     await db.projects.update_many({}, {"$set": {"isFeatured": False}})
     # Set chosen project as featured
-    res = await db.projects.update_one({"id": project_id}, {"$set": {"isFeatured": True}})
-    if res.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Project not found")
+    await db.projects.update_one({"id": project_id}, {"$set": {"isFeatured": True}})
     await bump_content_version()
     return {"status": "success", "featuredProjectId": project_id}
 

@@ -29,12 +29,13 @@ const RecentProjects = () => {
         const stats = await getCachedJson('/analytics/stats', {
           onUpdate: (fresh) => mounted && fresh && fresh.featuredProject && setFeatured(shape(fresh.featuredProject)),
         }).catch(() => null);
-        if (stats && stats.featuredProject) {
+        if (stats && stats.featuredProject && stats.featuredProject.isActive !== false) {
           if (mounted) setFeatured(shape(stats.featuredProject));
           return;
         }
         const list = await getProjects();
-        const found = list.find((p) => p.isFeatured) || list[0];
+        const activeList = list.filter((p) => p && p.isActive !== false);
+        const found = activeList.find((p) => p.isFeatured) || activeList[0];
         if (mounted) setFeatured(found ? shape(found) : shape(mockProjects[0]));
       } catch (err) {
         if (mounted) setFeatured(shape(mockProjects[0]));

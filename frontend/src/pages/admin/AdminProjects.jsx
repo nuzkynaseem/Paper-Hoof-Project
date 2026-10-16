@@ -61,6 +61,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
   const [uploads, setUploads] = useState({});
   const [showPreviewIdx, setShowPreviewIdx] = useState(null);
   const [collapsedComps, setCollapsedComps] = useState({});
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const token = localStorage.getItem("paperhoof_admin_token");
 
@@ -83,6 +84,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
     readMoreText: "",
     components: [],
     isFeatured: false,
+    isActive: true,
     client: "",
     year: "2026",
     order: projects.length + 1,
@@ -130,6 +132,7 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
         insight: c.insight || { title: "", description: "" },
       })),
       isFeatured: project.isFeatured || false,
+      isActive: project.isActive !== undefined ? project.isActive : true,
       client: project.client || "",
       year: project.year || "2026",
       order: project.order || 0,
@@ -138,6 +141,43 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
     setCollapsedComps({});
     setIsEditorOpen(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleToggleActive = async (e, proj) => {
+    e.stopPropagation();
+    const currentToken = localStorage.getItem("paperhoof_admin_token");
+    if (!currentToken) {
+      if (showToast) showToast("error", "Session Expired", "Please log in again.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/projects/toggle-active/${proj.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${currentToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || "Failed to toggle project status");
+      }
+
+      const data = await res.json();
+      const isNowActive = data.isActive;
+      if (showToast) {
+        showToast(
+          isNowActive ? "success" : "info",
+          isNowActive ? "Project Turned ON" : "Project Turned OFF",
+          `"${proj.name}" is now ${isNowActive ? "LIVE on the website" : "HIDDEN from the website"}.`
+        );
+      }
+      if (onProjectsChange) onProjectsChange();
+    } catch (err) {
+      if (showToast) showToast("error", "Toggle failed", err.message);
+    }
   };
 
   const handleTagToggle = (tagName) => {
@@ -738,22 +778,83 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* ── 1. Basic Project Information ───────────────────────────────── */}
           <div className="editor-card space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-200 flex-wrap gap-3">
               <h2 className="text-lg font-bold text-[#123524] flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-[#f0fdf4] text-[#166534] text-xs flex items-center justify-center font-extrabold">1</span>
                 <span>Basic Project Information</span>
               </h2>
-              <label className="flex items-center gap-2.5 cursor-pointer bg-[#f9fafb] px-3.5 py-1.5 rounded-lg border border-gray-200">
-                <input
-                  type="checkbox"
-                  checked={formData.isFeatured}
-                  onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
-                  className="w-4 h-4 accent-[#123524] cursor-pointer"
-                />
-                <span className="text-xs font-bold text-[#123524] flex items-center gap-1">
-                  <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Featured Spotlight
-                </span>
-              </label>
+
+              <div className="flex items-center gap-2.5 flex-wrap">
+                {/* On / Off Visibility Toggle */}
+                <label
+                  className={`flex items-center gap-2.5 cursor-pointer px-3.5 py-1.5 rounded-lg border transition-all ${
+                    formData.isActive !== false
+                      ? "bg-emerald-50 border-emerald-300 text-emerald-950 shadow-sm"
+                      : "bg-gray-100 border-gray-300 text-gray-700"
+                  }`}
+                  title="Turn On to publish on public website. Turn Off to keep in CMS but hide from public visitors."
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.isActive !== false}
+                    onChange={(e) => {
+                      const active = e.target.checked;
+                      setFormData((prev) => ({
+                        ...prev,
+                        isActive: active,
+                        // If turning off, uncheck featured too
+                        isFeatured: active ? prev.isFeatured : false,
+                      }));
+                    }}
+                    className="sr-only"
+                  />
+                  <div
+                    className={`w-9 h-5 flex items-center rounded-full p-0.5 transition-colors duration-200 ${
+                      formData.isActive !== false ? "bg-[#166534]" : "bg-gray-400"
+                    }`}
+                  >
+                    <div
+                      className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-200 ${
+                        formData.isActive !== false ? "translate-x-4" : "translate-x-0"
+                      }`}
+                    />
+                  </div>
+                  <span className="text-xs font-bold flex items-center gap-1.5">
+                    {formData.isActive !== false ? (
+                      <>
+                        <Eye className="w-3.5 h-3.5 text-emerald-700" />
+                        <span>Live on Website (ON)</span>
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="w-3.5 h-3.5 text-gray-500" />
+                        <span>Turned Off (OFF)</span>
+                      </>
+                    )}
+                  </span>
+                </label>
+
+                {/* Featured Spotlight */}
+                <label
+                  className={`flex items-center gap-2.5 cursor-pointer px-3.5 py-1.5 rounded-lg border transition-all ${
+                    formData.isActive === false
+                      ? "opacity-50 cursor-not-allowed bg-gray-50 border-gray-200 text-gray-400"
+                      : "bg-[#f9fafb] border-gray-200 hover:border-gray-300"
+                  }`}
+                  title={formData.isActive === false ? "Cannot feature a project that is turned off." : ""}
+                >
+                  <input
+                    type="checkbox"
+                    disabled={formData.isActive === false}
+                    checked={Boolean(formData.isFeatured && formData.isActive !== false)}
+                    onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
+                    className="w-4 h-4 accent-[#123524] cursor-pointer"
+                  />
+                  <span className="text-xs font-bold text-[#123524] flex items-center gap-1">
+                    <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Featured Spotlight
+                  </span>
+                </label>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1046,10 +1147,21 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
           {/* Sticky Bottom Save Bar */}
           <div className="sticky bottom-4 z-40 bg-[#123524] text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between border border-[#97d9af]/30">
             <div className="flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full bg-[#97d9af] animate-pulse" />
-              <span className="text-sm font-bold">
-                {editingProject ? `Editing "${formData.name || "Project"}"` : "Creating New Project"}
-              </span>
+              <span className={`w-3 h-3 rounded-full ${formData.isActive !== false ? "bg-[#97d9af] animate-pulse" : "bg-amber-400"}`} />
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm font-bold">
+                  {editingProject ? `Editing "${formData.name || "Project"}"` : "Creating New Project"}
+                </span>
+                {formData.isActive === false ? (
+                  <span className="text-[10px] bg-amber-400/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-full uppercase tracking-wider font-extrabold flex items-center gap-1">
+                    <EyeOff className="w-2.5 h-2.5" /> Turned Off (Hidden)
+                  </span>
+                ) : (
+                  <span className="text-[10px] bg-emerald-500/20 text-[#97d9af] border border-[#97d9af]/30 px-2 py-0.5 rounded-full uppercase tracking-wider font-extrabold">
+                    Live
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <button
@@ -1091,43 +1203,149 @@ export default function AdminProjects({ projects = [], onProjectsChange, workSco
         </button>
       </div>
 
-      {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((proj) => (
-          <div key={proj.id} className="project-admin-card cursor-pointer">
-            <div className="project-card-image-wrap" onClick={() => handleOpenEdit(proj)}>
-              <ProjectMedia url={proj.coverImage || proj.image} alt={proj.name} className="w-full h-48 object-cover" />
-              {proj.isFeatured && (
-                <span className="featured-badge">
-                  <Star style={{ width: 11, height: 11, color: "#97d9af", fill: "#97d9af" }} /> Featured
-                </span>
-              )}
-            </div>
-            <div className="p-5 space-y-3">
-              <div className="flex justify-between items-start">
-                <div onClick={() => handleOpenEdit(proj)} className="cursor-pointer">
-                  <span className="text-xs uppercase font-bold text-[#166534] tracking-wider">{proj.category || "Project"}</span>
-                  <h3 className="text-lg font-bold text-[#123524] hover:text-[#166534] transition-colors">{proj.name}</h3>
-                </div>
-                <div className="flex items-center gap-1">
-                  <button onClick={() => handleOpenEdit(proj)} className="p-1.5 text-gray-500 hover:text-[#123524] transition-colors cursor-pointer" title="Edit Project">
-                    <Edit2 style={{ width: 15, height: 15 }} />
-                  </button>
-                  <button onClick={() => handleDelete(proj.id, proj.name)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Delete Project">
-                    <Trash2 style={{ width: 15, height: 15 }} />
-                  </button>
-                </div>
-              </div>
-              <p className="text-xs text-gray-600 line-clamp-2" onClick={() => handleOpenEdit(proj)}>{proj.subtitle || proj.description}</p>
-              <div className="flex flex-wrap gap-1.5 pt-1" onClick={() => handleOpenEdit(proj)}>
-                {(proj.tags || []).map((t, idx) => (
-                  <span key={idx} className="tag-pill text-[10px]">{t}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        ))}
+      {/* Status Filter Tabs */}
+      <div className="flex items-center gap-2 border-b border-gray-200 pb-3 flex-wrap">
+        <button
+          type="button"
+          onClick={() => setStatusFilter("all")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            statusFilter === "all"
+              ? "bg-[#123524] text-[#97d9af] shadow-sm"
+              : "bg-gray-100 text-gray-600 hover:text-[#123524] hover:bg-gray-200"
+          }`}
+        >
+          All Projects ({projects.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setStatusFilter("active")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            statusFilter === "active"
+              ? "bg-[#166534] text-white shadow-sm"
+              : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200"
+          }`}
+        >
+          <span className="w-2 h-2 rounded-full bg-[#97d9af]" />
+          <span>Live on Website ({projects.filter((p) => p.isActive !== false).length})</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setStatusFilter("inactive")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            statusFilter === "inactive"
+              ? "bg-gray-800 text-amber-300 shadow-sm"
+              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+          }`}
+        >
+          <EyeOff className="w-3.5 h-3.5 text-gray-500" />
+          <span>Turned Off ({projects.filter((p) => p.isActive === false).length})</span>
+        </button>
       </div>
+
+      {/* Projects Grid */}
+      {projects.filter((p) => {
+        if (statusFilter === "active") return p.isActive !== false;
+        if (statusFilter === "inactive") return p.isActive === false;
+        return true;
+      }).length === 0 ? (
+        <div className="p-12 border-2 border-dashed border-gray-200 rounded-2xl text-center space-y-3 bg-[#f9fafb]">
+          <div className="w-12 h-12 rounded-full bg-gray-100 text-gray-500 mx-auto flex items-center justify-center">
+            <FolderKanban className="w-6 h-6" />
+          </div>
+          <h3 className="text-sm font-bold text-[#123524]">No Projects In This View</h3>
+          <p className="text-xs text-gray-500 max-w-sm mx-auto">
+            {statusFilter === "inactive"
+              ? "There are currently no turned-off projects. All projects are live on the website."
+              : "No projects match the selected filter."}
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects
+            .filter((p) => {
+              if (statusFilter === "active") return p.isActive !== false;
+              if (statusFilter === "inactive") return p.isActive === false;
+              return true;
+            })
+            .map((proj) => {
+              const isLive = proj.isActive !== false;
+              return (
+                <div
+                  key={proj.id}
+                  className={`project-admin-card cursor-pointer transition-all duration-200 ${
+                    !isLive ? "border-dashed border-amber-300/80 bg-[#fafaf8]" : ""
+                  }`}
+                >
+                  <div className="project-card-image-wrap relative" onClick={() => handleOpenEdit(proj)}>
+                    <ProjectMedia url={proj.coverImage || proj.image} alt={proj.name} className="w-full h-48 object-cover" />
+
+                    {/* Status Badge (Top Left) */}
+                    <div className="absolute top-3 left-3 flex items-center gap-1.5 z-10">
+                      {isLive ? (
+                        <span className="bg-[#123524]/90 text-[#97d9af] backdrop-blur-md text-[10px] font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md border border-[#97d9af]/30">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#97d9af] animate-pulse" /> Live
+                        </span>
+                      ) : (
+                        <span className="bg-gray-900/90 text-amber-300 backdrop-blur-md text-[10px] font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md border border-amber-400/30">
+                          <EyeOff className="w-3 h-3 text-amber-400" /> Turned Off
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Featured Badge (Top Right) */}
+                    {proj.isFeatured && isLive && (
+                      <span className="featured-badge">
+                        <Star style={{ width: 11, height: 11, color: "#97d9af", fill: "#97d9af" }} /> Featured
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-5 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div onClick={() => handleOpenEdit(proj)} className="cursor-pointer">
+                        <span className="text-xs uppercase font-bold text-[#166534] tracking-wider">{proj.category || "Project"}</span>
+                        <h3 className="text-lg font-bold text-[#123524] hover:text-[#166534] transition-colors flex items-center gap-2">
+                          <span>{proj.name}</span>
+                          {!isLive && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold tracking-normal uppercase">
+                              Hidden
+                            </span>
+                          )}
+                        </h3>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {/* Quick 1-click On/Off toggle button */}
+                        <button
+                          type="button"
+                          onClick={(e) => handleToggleActive(e, proj)}
+                          className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+                            isLive
+                              ? "bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100"
+                              : "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
+                          }`}
+                          title={isLive ? "Turn Off Project (Hide from website)" : "Turn On Project (Show on website)"}
+                        >
+                          {isLive ? <Eye style={{ width: 15, height: 15 }} /> : <EyeOff style={{ width: 15, height: 15 }} />}
+                        </button>
+                        <button onClick={() => handleOpenEdit(proj)} className="p-1.5 text-gray-500 hover:text-[#123524] transition-colors cursor-pointer" title="Edit Project">
+                          <Edit2 style={{ width: 15, height: 15 }} />
+                        </button>
+                        <button onClick={() => handleDelete(proj.id, proj.name)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Delete Project">
+                          <Trash2 style={{ width: 15, height: 15 }} />
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-600 line-clamp-2" onClick={() => handleOpenEdit(proj)}>{proj.subtitle || proj.description}</p>
+                    <div className="flex flex-wrap gap-1.5 pt-1" onClick={() => handleOpenEdit(proj)}>
+                      {(proj.tags || []).map((t, idx) => (
+                        <span key={idx} className="tag-pill text-[10px]">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+        </div>
+      )}
     </div>
   );
 }

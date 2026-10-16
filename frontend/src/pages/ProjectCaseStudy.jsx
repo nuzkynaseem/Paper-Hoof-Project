@@ -7,7 +7,7 @@ import MacDockNavigation from '../components/MacDockNavigation';
 import ProjectMedia from '../components/ProjectMedia';
 import { getTagStyle } from '../utils/tagColors';
 import SEO from '../components/SEO';
-import { getMediaUrl } from '../utils/api';
+import { getMediaUrl, API_BASE } from '../utils/api';
 import { getCachedJson, getProjects } from '../utils/siteData';
 import { QUOTE_FONT, quoteColors } from '../utils/quoteStyle';
 import './ProjectCaseStudy.css';
@@ -61,26 +61,91 @@ const ProjectCaseStudy = () => {
     // The dock list and the case study load independently, both from cache when
     // available, so navigating between projects paints instantly.
     const shapeList = (list) =>
-      list.map((p) => ({
-        ...p,
-        slug: p.slug || slugify(p.name),
-        image: p.coverImage || p.image || p.sliderImage,
-      }));
+      (list || [])
+        .filter((p) => p && p.isActive !== false)
+        .map((p) => ({
+          ...p,
+          slug: p.slug || slugify(p.name),
+          image: p.coverImage || p.image || p.sliderImage,
+        }));
     getProjects({ onUpdate: (fresh) => setAllProjects(shapeList(fresh)) })
       .then((list) => setAllProjects(shapeList(list)))
       .catch(() => {});
 
     try {
-      const data = await getCachedJson(`/projects/${projectId}`, {
-        onUpdate: (fresh) => fresh && setProject(fresh),
-      });
+      const token = localStorage.getItem("paperhoof_admin_token");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const res = await fetch(`${API_BASE}/projects/${projectId}`, { headers });
+      if (!res.ok) {
+        if (res.status === 404) {
+          setProject({ notFound: true });
+          return;
+        }
+        throw new Error("Failed to load project");
+      }
+      const data = await res.json();
       setProject(data);
     } catch (e) {
-      // Mock data is strictly a failure fallback — never shown while loading.
-      const found = mockProjects.find((p) => (p.slug || slugify(p.name)) === projectId) || mockProjects[0];
-      setProject(found);
+      // Mock data fallback only if matching slug exists
+      const found = mockProjects.find((p) => (p.slug || slugify(p.name)) === projectId);
+      if (found) {
+        setProject(found);
+      } else {
+        setProject({ notFound: true });
+      }
     }
   };
+
+  const isAdmin = Boolean(localStorage.getItem("paperhoof_admin_token"));
+  const isTurnedOff = project && project.isActive === false;
+
+  if (project?.notFound || (isTurnedOff && !isAdmin)) {
+    return (
+      <div className="case-study-page">
+        <SEO title="Project Unavailable — Paper Hoof Studio" path={`/work/${projectId}`} />
+        <div
+          className="case-study-container text-center"
+          style={{
+            padding: '160px 24px',
+            minHeight: '60vh',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '20px'
+          }}
+        >
+          <span style={{ fontSize: '0.85rem', fontWeight: 800, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(32, 36, 35, 0.45)' }}>
+            PROJECT STATUS
+          </span>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(2rem, 4vw, 3.2rem)', fontWeight: 800, color: 'var(--horse-black, #123524)', margin: 0, textTransform: 'uppercase' }}>
+            Project Currently Unavailable
+          </h1>
+          <p style={{ maxWidth: '480px', color: 'rgba(32, 36, 35, 0.7)', fontSize: '1.05rem', lineHeight: 1.6, margin: 0 }}>
+            This project case study is private, offline, or does not exist.
+          </p>
+          <button
+            onClick={() => navigate('/work')}
+            style={{
+              marginTop: '12px',
+              padding: '14px 28px',
+              borderRadius: '999px',
+              backgroundColor: '#123524',
+              color: '#97d9af',
+              fontWeight: 800,
+              fontSize: '0.9rem',
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            &larr; Back to Selected Works
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!project) {
     // Skeleton mirroring the page structure: title bar, hero canvas, overview lines.
@@ -124,6 +189,14 @@ const ProjectCaseStudy = () => {
 
   return (
     <div className="case-study-page">
+      {/* Admin Preview Mode Banner */}
+      {isTurnedOff && isAdmin && (
+        <div style={{ backgroundColor: '#fef3c7', borderBottom: '1px solid #fcd34d', color: '#92400e', padding: '12px 24px', textAlign: 'center', fontSize: '0.82rem', fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <span>⚠️ ADMIN PREVIEW MODE</span>
+          <span>&bull;</span>
+          <span>This project is TURNED OFF and hidden from the public website.</span>
+        </div>
+      )}
       <SEO
         title={`${explainingTitle} — Paper Hoof Studio Case Study`}
         description={projectDescription}

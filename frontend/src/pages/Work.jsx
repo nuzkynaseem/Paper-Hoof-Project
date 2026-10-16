@@ -14,11 +14,13 @@ const Work = () => {
   useEffect(() => {
     let mounted = true;
     const shape = (data) =>
-      data.map((p) => ({
-        ...p,
-        slug: p.slug || slugify(p.name),
-        image: p.coverImage || p.image,
-      }));
+      data
+        .filter((p) => p && p.isActive !== false)
+        .map((p) => ({
+          ...p,
+          slug: p.slug || slugify(p.name),
+          image: p.coverImage || p.image,
+        }));
     getProjects({ onUpdate: (data) => mounted && data.length > 0 && setProjectList(shape(data)) })
       .then((data) => {
         if (!mounted) return;

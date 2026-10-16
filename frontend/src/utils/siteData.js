@@ -196,7 +196,8 @@ export const getCachedJson = (path, { onUpdate } = {}) => {
 /** Projects list with slugs guaranteed — the shape every consumer wants. */
 export const getProjects = async (options) => {
   const list = await getCachedJson("/projects", options);
-  return Array.isArray(list) ? list : [];
+  if (!Array.isArray(list)) return [];
+  return list.filter((p) => p && p.isActive !== false);
 };
 
 /** Homepage settings (hero video, intro text, more-works config). */

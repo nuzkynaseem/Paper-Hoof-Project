@@ -133,9 +133,11 @@ export default function AdminLayout() {
 
   const fetchProjects = async () => {
     try {
-      const res = await fetch(`${API_BASE}/projects`);
+      const currentToken = localStorage.getItem("paperhoof_admin_token");
+      const headers = currentToken ? { Authorization: `Bearer ${currentToken}` } : {};
+      const res = await fetch(`${API_BASE}/projects?all=true`, { headers });
       const data = await res.json();
-      setProjects(data);
+      setProjects(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to load projects:", err);
     }
