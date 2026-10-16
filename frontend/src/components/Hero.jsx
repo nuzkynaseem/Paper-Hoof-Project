@@ -4,8 +4,8 @@ import { getMediaUrl } from '../utils/api';
 import { getHomepage } from '../utils/siteData';
 import './Hero.css';
 
-const DEFAULT_HERO_VIDEO = "https://pub-890f739345cb4bd69d2c9be93e242605.r2.dev/uploads/9dc9ebb3-3661-4d4b-b636-dde08a70de57.mp4";
-const DEFAULT_HERO_VIDEO_MOBILE = "https://pub-890f739345cb4bd69d2c9be93e242605.r2.dev/uploads/hero-mobile-9dc9ebb3.mp4";
+const DEFAULT_HERO_VIDEO = "https://pub-890f739345cb4bd69d2c9be93e242605.r2.dev/uploads/hero-bg-master.mp4";
+const DEFAULT_HERO_VIDEO_MOBILE = "https://pub-890f739345cb4bd69d2c9be93e242605.r2.dev/uploads/hero-bg-master.mp4";
 
 const MOBILE_QUERY = '(max-width: 768px)';
 
